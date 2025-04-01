@@ -170,7 +170,7 @@ Add the following scripts to **`package.json`**:
 
 ```typescript
 bunAdapter(server).listen(3000, (message) => {
-    console.log(message)
+  console.log(message);
 });
 ```
 
@@ -186,7 +186,7 @@ bunAdapter(server).listen(3000, (message) => {
 
 ```typescript
 denoAdapter(server).listen(3000, (message) => {
-    console.log(message)
+  console.log(message);
 });
 ```
 
@@ -217,6 +217,7 @@ denoAdapter(server).listen(3000, (message) => {
     }
 }
 ```
+
 <!--
 ## 📖 Documentation
 
