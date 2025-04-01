@@ -1,13 +1,16 @@
-'use strict';
+"use strict";
 
 let GlobalConfig = class {
   static notFound = (ctx2) => {
     const {
       method,
-      urlRef: { pathname }
+      urlRef: { pathname },
     } = ctx2.req;
-    return ctx2.text(`${method}: '${pathname}' could not find
-`, 404);
+    return ctx2.text(
+      `${method}: '${pathname}' could not find
+`,
+      404,
+    );
   };
   static onError = (err, ctx2) => {
     return ctx2.text(err, 500);
@@ -29,7 +32,7 @@ function denoAdapter(TezX2) {
       return new Response(response.body, {
         status: response.status,
         statusText: response.statusText || "",
-        headers: new Headers(response.headers)
+        headers: new Headers(response.headers),
       });
     }
   }
@@ -56,7 +59,7 @@ function denoAdapter(TezX2) {
     }
   }
   return {
-    listen
+    listen,
   };
 }
 function bunAdapter(TezX2) {
@@ -76,10 +79,10 @@ function bunAdapter(TezX2) {
             return new Response(response.body, {
               status: response.status,
               statusText: response.statusText || "",
-              headers: new Headers(response.headers)
+              headers: new Headers(response.headers),
             });
           }
-        }
+        },
       });
       const protocol = "\x1B[1;34mhttp\x1B[0m";
       const message = `\x1B[1m Bun TezX Server running at ${protocol}://localhost:${port}/\x1B[0m`;
@@ -97,50 +100,52 @@ function bunAdapter(TezX2) {
     }
   }
   return {
-    listen
+    listen,
   };
 }
 function nodeAdapter(TezX2) {
   function listen(port, callback) {
-    import('http').then((r) => {
-      let server = r.createServer(async (req, res) => {
-        const response = await TezX2.serve(req);
-        const statusText = response?.statusText;
-        if (!(response instanceof Response)) {
-          throw new Error("Invalid response from TezX.serve");
-        }
-        const headers = Object.fromEntries(await response.headers.entries());
-        if (statusText) {
-          res.statusMessage = statusText;
-        }
-        res.writeHead(response.status, headers);
-        const { Readable } = await import('stream');
-        if (response.body instanceof Readable) {
-          response.body.pipe(res);
-        } else {
-          const body = await response.arrayBuffer();
-          res.end(Buffer.from(body));
-        }
-      });
-      server.listen(port, () => {
-        const protocol = "\x1B[1;34mhttp\x1B[0m";
-        const message = `\x1B[1m NodeJS TezX Server running at ${protocol}://localhost:${port}/\x1B[0m`;
-        if (typeof callback == "function") {
-          callback(message);
-        } else {
-          const logger = GlobalConfig.loggerFn();
-          if (logger.success) {
-            logger.success(message);
+    import("http")
+      .then((r) => {
+        let server = r.createServer(async (req, res) => {
+          const response = await TezX2.serve(req);
+          const statusText = response?.statusText;
+          if (!(response instanceof Response)) {
+            throw new Error("Invalid response from TezX.serve");
           }
-        }
-        return server;
+          const headers = Object.fromEntries(await response.headers.entries());
+          if (statusText) {
+            res.statusMessage = statusText;
+          }
+          res.writeHead(response.status, headers);
+          const { Readable } = await import("stream");
+          if (response.body instanceof Readable) {
+            response.body.pipe(res);
+          } else {
+            const body = await response.arrayBuffer();
+            res.end(Buffer.from(body));
+          }
+        });
+        server.listen(port, () => {
+          const protocol = "\x1B[1;34mhttp\x1B[0m";
+          const message = `\x1B[1m NodeJS TezX Server running at ${protocol}://localhost:${port}/\x1B[0m`;
+          if (typeof callback == "function") {
+            callback(message);
+          } else {
+            const logger = GlobalConfig.loggerFn();
+            if (logger.success) {
+              logger.success(message);
+            }
+          }
+          return server;
+        });
+      })
+      .catch((r) => {
+        throw Error(r.message);
       });
-    }).catch((r) => {
-      throw Error(r.message);
-    });
   }
   return {
-    listen
+    listen,
   };
 }
 
@@ -286,7 +291,7 @@ const mimeTypes = {
   ai: "application/postscript",
   swf: "application/x-shockwave-flash",
   jar: "application/java-archive",
-  gcode: "text/x.gcode"
+  gcode: "text/x.gcode",
 };
 const defaultMimeType = "application/octet-stream";
 async function getFiles(dir, basePath = "/", ref, option) {
@@ -297,36 +302,36 @@ async function getFiles(dir, basePath = "/", ref, option) {
       const path = `${dir}/${entry.name}`;
       if (entry.isDirectory) {
         files.push(
-          ...await getFiles(path, `${basePath}/${entry.name}`, ref, option)
+          ...(await getFiles(path, `${basePath}/${entry.name}`, ref, option)),
         );
       } else {
         const x = `${basePath}/${entry.name}`;
         files.push({
           file: path,
-          path: x.replace(/\\/g, "/")
+          path: x.replace(/\\/g, "/"),
         });
       }
     }
   } else {
-    const fs = await import('fs/promises');
-    const path = await import('path');
+    const fs = await import("fs/promises");
+    const path = await import("path");
     const entries = await fs.readdir(dir, { withFileTypes: true });
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
         files.push(
-          ...await getFiles(
+          ...(await getFiles(
             fullPath,
             `${basePath}/${entry.name}`,
             ref,
-            option
-          )
+            option,
+          )),
         );
       } else {
         const path2 = `${basePath}/${entry.name}`;
         files.push({
           file: fullPath,
-          path: path2.replace(/\\/g, "/")
+          path: path2.replace(/\\/g, "/"),
         });
       }
     }
@@ -349,7 +354,7 @@ class TezResponse {
   static json(body, ...args) {
     let status = 200;
     let headers = {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
     };
     if (typeof args[0] === "number") {
       status = args[0];
@@ -361,13 +366,13 @@ class TezResponse {
     }
     return new Response(JSON.stringify(body), {
       status,
-      headers
+      headers,
     });
   }
   static html(data, ...args) {
     let status = 200;
     let headers = {
-      "Content-Type": "text/html; charset=utf-8"
+      "Content-Type": "text/html; charset=utf-8",
     };
     if (typeof args[0] === "number") {
       status = args[0];
@@ -379,13 +384,13 @@ class TezResponse {
     }
     return new Response(data, {
       status,
-      headers
+      headers,
     });
   }
   static text(data, ...args) {
     let status = 200;
     let headers = {
-      "Content-Type": "text/plain; charset=utf-8"
+      "Content-Type": "text/plain; charset=utf-8",
     };
     if (typeof args[0] === "number") {
       status = args[0];
@@ -397,13 +402,13 @@ class TezResponse {
     }
     return new Response(data, {
       status,
-      headers
+      headers,
     });
   }
   static xml(data, ...args) {
     let status = 200;
     let headers = {
-      "Content-Type": "application/xml; charset=utf-8"
+      "Content-Type": "application/xml; charset=utf-8",
     };
     if (typeof args[0] === "number") {
       status = args[0];
@@ -415,7 +420,7 @@ class TezResponse {
     }
     return new Response(data, {
       status,
-      headers
+      headers,
     });
   }
   static send(body, ...args) {
@@ -441,7 +446,7 @@ class TezResponse {
     }
     return new Response(body, {
       status,
-      headers
+      headers,
     });
   }
   /**
@@ -454,7 +459,7 @@ class TezResponse {
   static redirect(url, status = 302, headers) {
     return new Response(null, {
       status,
-      headers: { Location: url }
+      headers: { Location: url },
     });
   }
   /**
@@ -468,7 +473,7 @@ class TezResponse {
       let fileExists = false;
       const runtime = EnvironmentDetector.getEnvironment;
       if (runtime === "node") {
-        const { existsSync } = await import('fs');
+        const { existsSync } = await import("fs");
         fileExists = existsSync(filePath);
       } else if (runtime === "bun") {
         fileExists = Bun.file(filePath).exists();
@@ -485,10 +490,12 @@ class TezResponse {
       }
       let fileBuffer;
       if (runtime === "node") {
-        const { readFileSync } = await import('fs');
+        const { readFileSync } = await import("fs");
         fileBuffer = await readFileSync(filePath);
       } else if (runtime === "bun") {
-        fileBuffer = await Bun.file(filePath).arrayBuffer().then((buf) => new Uint8Array(buf));
+        fileBuffer = await Bun.file(filePath)
+          .arrayBuffer()
+          .then((buf) => new Uint8Array(buf));
       } else if (runtime === "deno") {
         fileBuffer = await Deno.readFile(filePath);
       }
@@ -497,8 +504,8 @@ class TezResponse {
         headers: {
           "Content-Disposition": `attachment; filename="${fileName}"`,
           "Content-Type": "application/octet-stream",
-          "Content-Length": fileBuffer.byteLength.toString()
-        }
+          "Content-Length": fileBuffer.byteLength.toString(),
+        },
       });
     } catch (error) {
       throw Error("Internal Server Error" + error?.message);
@@ -510,7 +517,7 @@ class TezResponse {
       const resolvedPath = filePath;
       let fileExists = false;
       if (runtime === "node") {
-        const { existsSync } = await import('fs');
+        const { existsSync } = await import("fs");
         fileExists = existsSync(resolvedPath);
       } else if (runtime === "bun") {
         fileExists = Bun.file(resolvedPath).exists();
@@ -527,7 +534,7 @@ class TezResponse {
       }
       let fileSize = 0;
       if (runtime === "node") {
-        const { statSync } = await import('fs');
+        const { statSync } = await import("fs");
         fileSize = statSync(resolvedPath).size;
       } else if (runtime === "bun") {
         fileSize = (await Bun.file(resolvedPath).arrayBuffer()).byteLength;
@@ -539,7 +546,7 @@ class TezResponse {
       const mimeType = mimeTypes[ext] || defaultMimeType;
       let fileStream;
       if (runtime === "node") {
-        const { createReadStream } = await import('fs');
+        const { createReadStream } = await import("fs");
         fileStream = createReadStream(resolvedPath);
       } else if (runtime === "bun") {
         fileStream = Bun.file(resolvedPath).stream();
@@ -549,7 +556,7 @@ class TezResponse {
       }
       let headers = {
         "Content-Type": mimeType,
-        "Content-Length": fileSize.toString()
+        "Content-Length": fileSize.toString(),
       };
       let fileName = "";
       if (typeof args[0] === "string") {
@@ -565,7 +572,7 @@ class TezResponse {
       }
       return new Response(fileStream, {
         status: 200,
-        headers
+        headers,
       });
     } catch (error) {
       throw Error("Internal Server Error" + error?.message);
@@ -596,11 +603,15 @@ class CommonHandler {
 }
 
 function sanitizePathSplit(basePath, path) {
-  const parts = `${basePath}/${path}`.replace(/\\/g, "")?.split("/").filter(Boolean);
+  const parts = `${basePath}/${path}`
+    .replace(/\\/g, "")
+    ?.split("/")
+    .filter(Boolean);
   return parts;
 }
 function urlParse(url) {
-  const urlPattern = /^(?:(\w+):\/\/)?(?:([^:@]+)?(?::([^@]+))?@)?([^:/?#]+)?(?::(\d+))?(\/[^?#]*)?(?:\?([^#]*))?(?:#(.*))?$/;
+  const urlPattern =
+    /^(?:(\w+):\/\/)?(?:([^:@]+)?(?::([^@]+))?@)?([^:/?#]+)?(?::(\d+))?(\/[^?#]*)?(?:\?([^#]*))?(?:#(.*))?$/;
   let matches = url.match(urlPattern);
   const [
     _,
@@ -611,7 +622,7 @@ function urlParse(url) {
     port,
     path,
     queryString,
-    hash
+    hash,
   ] = matches;
   let origin = hostname;
   if (protocol) {
@@ -626,15 +637,13 @@ function urlParse(url) {
     if (queryString) {
       const queryPart = decodeURIComponent(queryString);
       const keyValuePairs = queryPart.split("&");
-      const paramsObj = keyValuePairs?.map(
-        (keyValue) => {
-          const [key, value] = keyValue.split("=");
-          return {
-            [key]: value
-          };
-        }
-      );
-      return paramsObj.reduce(function(total, value) {
+      const paramsObj = keyValuePairs?.map((keyValue) => {
+        const [key, value] = keyValue.split("=");
+        return {
+          [key]: value,
+        };
+      });
+      return paramsObj.reduce(function (total, value) {
         return { ...total, ...value };
       }, {});
     } else {
@@ -651,7 +660,7 @@ function urlParse(url) {
     hostname,
     href: url,
     port,
-    query: query()
+    query: query(),
   };
 }
 
@@ -763,7 +772,7 @@ class Router extends MiddlewareConfigure {
         break;
       default:
         throw new Error(
-          `\x1B[1;31m404 Not Found\x1B[0m \x1B[1;32mInvalid arguments\x1B[0m`
+          `\x1B[1;31m404 Not Found\x1B[0m \x1B[1;32mInvalid arguments\x1B[0m`,
         );
     }
     getFiles(dir, route, this, options);
@@ -832,7 +841,7 @@ class Router extends MiddlewareConfigure {
    */
   group(prefix, callback) {
     const router = new Router({
-      basePath: prefix
+      basePath: prefix,
       // env: this.env
     });
     callback(router);
@@ -895,7 +904,7 @@ class Router extends MiddlewareConfigure {
     }
     if (!middlewares.every((middleware) => typeof middleware === "function")) {
       throw new Error(
-        "Middleware must be a function or an array of functions."
+        "Middleware must be a function or an array of functions.",
       );
     }
     this.#addRoute(method, path, callback, middlewares);
@@ -913,7 +922,7 @@ class Router extends MiddlewareConfigure {
         handler = /* @__PURE__ */ new Map();
         handler.set(method, {
           callback,
-          middlewares: finalMiddleware
+          middlewares: finalMiddleware,
         });
         return this.routers.set(p, handler);
       }
@@ -941,7 +950,7 @@ class Router extends MiddlewareConfigure {
     if (!GlobalConfig.overwriteMethod && node.handlers.has(method)) return;
     node.handlers.set(method, {
       callback,
-      middlewares: finalMiddleware
+      middlewares: finalMiddleware,
     });
     node.pathname = path;
   }
@@ -1057,9 +1066,7 @@ class Router extends MiddlewareConfigure {
         if (n.children.has(path)) {
           let findNode = n.children.get(path);
           if (GlobalConfig.allowDuplicateMw) {
-            findNode.middlewares.push(
-              ...middlewareNode.middlewares
-            );
+            findNode.middlewares.push(...middlewareNode.middlewares);
           } else {
             for (const mw of middlewareNode.middlewares) {
               if (findNode.middlewares.has(mw)) {
@@ -1077,9 +1084,7 @@ class Router extends MiddlewareConfigure {
       }
     }
     if (GlobalConfig.allowDuplicateMw) {
-      rootMiddlewares.middlewares.push(
-        ...routerMiddlewares.middlewares
-      );
+      rootMiddlewares.middlewares.push(...routerMiddlewares.middlewares);
     } else {
       for (const mw of routerMiddlewares.middlewares) {
         if (rootMiddlewares.middlewares.has(mw)) {
@@ -1333,40 +1338,53 @@ async function parseMultipartBody(req, boundary, options) {
                 const fieldName = fieldNameMatch[1];
                 const contentType = contentTypeMatch[1];
                 if (options?.sanitized) {
-                  filename = `${Date.now()}-${filename.replace(/\s+/g, "")?.replace(/[^a-zA-Z0-9.-]/g, "-")}`?.toLowerCase();
+                  filename =
+                    `${Date.now()}-${filename.replace(/\s+/g, "")?.replace(/[^a-zA-Z0-9.-]/g, "-")}`?.toLowerCase();
                 }
-                if (Array.isArray(options?.allowedTypes) && !options.allowedTypes?.includes(contentType)) {
+                if (
+                  Array.isArray(options?.allowedTypes) &&
+                  !options.allowedTypes?.includes(contentType)
+                ) {
                   reject(
-                    `Invalid file type: "${contentType}". Allowed types: ${options.allowedTypes.join(", ")}`
+                    `Invalid file type: "${contentType}". Allowed types: ${options.allowedTypes.join(", ")}`,
                   );
                 }
                 const fileContentStartIndex = part.indexOf("\r\n\r\n") + 4;
                 const fileContent = Buffer.from(
                   part.substring(fileContentStartIndex),
-                  "binary"
+                  "binary",
                 );
                 const arrayBuffer = fileContent.buffer.slice(
                   fileContent.byteOffset,
-                  fileContent.byteOffset + fileContent.byteLength
+                  fileContent.byteOffset + fileContent.byteLength,
                 );
-                if (typeof options?.maxSize !== "undefined" && fileContent.byteLength > options.maxSize) {
+                if (
+                  typeof options?.maxSize !== "undefined" &&
+                  fileContent.byteLength > options.maxSize
+                ) {
                   reject(
-                    `File size exceeds the limit: ${fileContent.byteLength} bytes (Max: ${options.maxSize} bytes)`
+                    `File size exceeds the limit: ${fileContent.byteLength} bytes (Max: ${options.maxSize} bytes)`,
                   );
                 }
                 const file = new File([arrayBuffer], filename, {
-                  type: contentType
+                  type: contentType,
                 });
-                if (typeof options?.maxFiles != "undefined" && options.maxFiles == 0) {
+                if (
+                  typeof options?.maxFiles != "undefined" &&
+                  options.maxFiles == 0
+                ) {
                   reject(
-                    `Field "${fieldName}" exceeds the maximum allowed file count of ${options.maxFiles}.`
+                    `Field "${fieldName}" exceeds the maximum allowed file count of ${options.maxFiles}.`,
                   );
                 }
                 if (formDataField[fieldName]) {
                   if (Array.isArray(formDataField[fieldName])) {
-                    if (typeof options?.maxFiles != "undefined" && formDataField[fieldName]?.length >= options.maxFiles) {
+                    if (
+                      typeof options?.maxFiles != "undefined" &&
+                      formDataField[fieldName]?.length >= options.maxFiles
+                    ) {
                       reject(
-                        `Field "${fieldName}" exceeds the maximum allowed file count of ${options.maxFiles}.`
+                        `Field "${fieldName}" exceeds the maximum allowed file count of ${options.maxFiles}.`,
                       );
                     }
                     formDataField[fieldName].push(file);
@@ -1380,8 +1398,7 @@ async function parseMultipartBody(req, boundary, options) {
             }
           }
           resolve(formDataField);
-        } catch {
-        }
+        } catch {}
       });
     });
   } else if (runtime === "deno" || runtime === "bun") {
@@ -1392,32 +1409,43 @@ async function parseMultipartBody(req, boundary, options) {
       if (val instanceof File && typeof options == "object") {
         let filename = val.name;
         if (options?.sanitized) {
-          filename = `${Date.now()}-${filename.replace(/\s+/g, "")?.replace(/[^a-zA-Z0-9.-]/g, "-")}`?.toLowerCase();
+          filename =
+            `${Date.now()}-${filename.replace(/\s+/g, "")?.replace(/[^a-zA-Z0-9.-]/g, "-")}`?.toLowerCase();
         }
-        if (Array.isArray(options?.allowedTypes) && !options.allowedTypes?.includes(val.type)) {
+        if (
+          Array.isArray(options?.allowedTypes) &&
+          !options.allowedTypes?.includes(val.type)
+        ) {
           throw new Error(
-            `Invalid file type: "${val.type}". Allowed types: ${options.allowedTypes.join(", ")}`
+            `Invalid file type: "${val.type}". Allowed types: ${options.allowedTypes.join(", ")}`,
           );
         }
-        if (typeof options?.maxSize !== "undefined" && val.size > options.maxSize) {
+        if (
+          typeof options?.maxSize !== "undefined" &&
+          val.size > options.maxSize
+        ) {
           throw new Error(
-            `File size exceeds the limit: ${val.size} bytes (Max: ${options.maxSize} bytes)`
+            `File size exceeds the limit: ${val.size} bytes (Max: ${options.maxSize} bytes)`,
           );
         }
         if (typeof options?.maxFiles != "undefined" && options.maxFiles == 0) {
           throw new Error(
-            `Field "${key}" exceeds the maximum allowed file count of ${options.maxFiles}.`
+            `Field "${key}" exceeds the maximum allowed file count of ${options.maxFiles}.`,
           );
         }
         val = new File([await val.arrayBuffer()], filename, {
-          type: val.type
+          type: val.type,
         });
       }
       if (result[key]) {
         if (Array.isArray(result[key])) {
-          if (val instanceof File && typeof options?.maxFiles != "undefined" && result[key]?.length >= options.maxFiles) {
+          if (
+            val instanceof File &&
+            typeof options?.maxFiles != "undefined" &&
+            result[key]?.length >= options.maxFiles
+          ) {
             throw new Error(
-              `Field "${key}" exceeds the maximum allowed file count of ${options.maxFiles}.`
+              `Field "${key}" exceeds the maximum allowed file count of ${options.maxFiles}.`,
             );
           }
           result[key].push(val);
@@ -1457,7 +1485,7 @@ class Request {
     port: void 0,
     href: void 0,
     query: {},
-    pathname: "/"
+    pathname: "/",
   };
   /** Query parameters extracted from the URL */
   query;
@@ -1664,7 +1692,7 @@ const httpStatusMap = {
   507: "Insufficient Storage",
   508: "Loop Detected",
   510: "Not Extended",
-  511: "Network Authentication Required"
+  511: "Network Authentication Required",
 };
 class Context {
   #rawRequest;
@@ -1848,7 +1876,7 @@ class Context {
         const value = "";
         const cookieOptions = {
           ...options,
-          expires: /* @__PURE__ */ new Date(0)
+          expires: /* @__PURE__ */ new Date(0),
           // Set expiration time to the past
         };
         const cookieHeader = `${name}=${value};${serializeOptions(cookieOptions)}`;
@@ -1863,13 +1891,13 @@ class Context {
       set: (name, value, options) => {
         const cookieHeader = `${name}=${value};${serializeOptions(options || {})}`;
         this.headers.set("Set-Cookie", cookieHeader);
-      }
+      },
     };
   }
   json(body, ...args) {
     let status = this.#status;
     let headers = {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
     };
     if (typeof args[0] === "number") {
       status = args[0];
@@ -1881,7 +1909,7 @@ class Context {
     }
     return new Response(JSON.stringify(body), {
       status,
-      headers
+      headers,
     });
   }
   send(body, ...args) {
@@ -1907,13 +1935,13 @@ class Context {
     }
     return new Response(body, {
       status,
-      headers
+      headers,
     });
   }
   html(data, ...args) {
     let status = this.#status;
     let headers = {
-      "Content-Type": "text/html; charset=utf-8"
+      "Content-Type": "text/html; charset=utf-8",
     };
     if (typeof args[0] === "number") {
       status = args[0];
@@ -1925,13 +1953,13 @@ class Context {
     }
     return new Response(data, {
       status,
-      headers
+      headers,
     });
   }
   text(data, ...args) {
     let status = this.#status;
     let headers = {
-      "Content-Type": "text/plain; charset=utf-8"
+      "Content-Type": "text/plain; charset=utf-8",
     };
     if (typeof args[0] === "number") {
       status = args[0];
@@ -1943,13 +1971,13 @@ class Context {
     }
     return new Response(data, {
       status,
-      headers
+      headers,
     });
   }
   xml(data, ...args) {
     let status = this.#status;
     let headers = {
-      "Content-Type": "application/xml; charset=utf-8"
+      "Content-Type": "application/xml; charset=utf-8",
     };
     if (typeof args[0] === "number") {
       status = args[0];
@@ -1961,7 +1989,7 @@ class Context {
     }
     return new Response(data, {
       status,
-      headers
+      headers,
     });
   }
   /**
@@ -2047,10 +2075,7 @@ function serializeOptions(options) {
   return parts.join("; ");
 }
 
-function useParams({
-  path,
-  urlPattern
-}) {
+function useParams({ path, urlPattern }) {
   let params = {};
   path = path.replace(/^\/+|\/+$/g, "");
   urlPattern = urlPattern.replace(/^\/+|\/+$/g, "");
@@ -2066,11 +2091,16 @@ function useParams({
     const patternSegment = patternSegments[i];
     if (patternSegment?.startsWith("*")) {
       const trailingPatterns = patternSegments.slice(i + 1);
-      let paramName = patternSegment.length == 1 ? "*" : patternSegment?.slice(1);
+      let paramName =
+        patternSegment.length == 1 ? "*" : patternSegment?.slice(1);
       if (trailingPatterns.length > 0) {
         const expectedTrailing = trailingPatterns.join("/");
-        const actualTrailing = pathSegments.slice(pathLength - trailingPatterns.length).join("/");
-        const wildcardPath = pathSegments.slice(pathIndex, pathLength - trailingPatterns.length).join("/");
+        const actualTrailing = pathSegments
+          .slice(pathLength - trailingPatterns.length)
+          .join("/");
+        const wildcardPath = pathSegments
+          .slice(pathIndex, pathLength - trailingPatterns.length)
+          .join("/");
         if (expectedTrailing !== actualTrailing || !wildcardPath) {
           return { success: false, params: {} };
         }
@@ -2088,15 +2118,20 @@ function useParams({
     if (patternSegment.startsWith(":") && patternSegment.endsWith("?")) {
       const paramName = patternSegment.slice(1, -1);
       const nextPattern = patternSegments[i + 1];
-      if (nextPattern && !nextPattern.startsWith(":") && nextPattern !== "*" && pathIndex < pathLength && // !/test == /:user?/test
-      // বর্তমান পথ যদি পরবর্তী প্যাটার্ন মানে স্ট্যাটিক পথ এর সাথে মাইল তাহলে
-      pathSegments[pathIndex] === nextPattern) {
+      if (
+        nextPattern &&
+        !nextPattern.startsWith(":") &&
+        nextPattern !== "*" &&
+        pathIndex < pathLength && // !/test == /:user?/test
+        // বর্তমান পথ যদি পরবর্তী প্যাটার্ন মানে স্ট্যাটিক পথ এর সাথে মাইল তাহলে
+        pathSegments[pathIndex] === nextPattern
+      ) {
         params[paramName] = null;
         continue;
       }
       const remainingPatterns = patternSegments.slice(i + 1);
       const requiredCount = remainingPatterns.filter(
-        (seg) => !(seg.startsWith(":") && seg.endsWith("?"))
+        (seg) => !(seg.startsWith(":") && seg.endsWith("?")),
       ).length;
       const remainingPath = pathLength - pathIndex;
       if (remainingPath === requiredCount) {
@@ -2140,7 +2175,7 @@ class TezX extends Router {
     env = {},
     logger = void 0,
     allowDuplicateMw = false,
-    overwriteMethod = true
+    overwriteMethod = true,
   } = {}) {
     GlobalConfig.allowDuplicateMw = allowDuplicateMw;
     GlobalConfig.overwriteMethod = overwriteMethod;
@@ -2156,14 +2191,15 @@ class TezX extends Router {
     for (let pattern of this.routers.keys()) {
       const { success, params } = useParams({
         path: pathname,
-        urlPattern: pattern
+        urlPattern: pattern,
       });
-      const handlers = routers.get(pattern)?.get(method) || routers.get(pattern)?.get("ALL");
+      const handlers =
+        routers.get(pattern)?.get(method) || routers.get(pattern)?.get("ALL");
       if (success && handlers) {
         return {
           callback: handlers.callback,
           middlewares: handlers.middlewares,
-          params
+          params,
         };
       }
     }
@@ -2189,7 +2225,7 @@ class TezX extends Router {
         return {
           middlewares: handlers.middlewares,
           callback: handlers.callback,
-          params
+          params,
         };
       }
       return null;
@@ -2197,11 +2233,12 @@ class TezX extends Router {
     return null;
   }
   findRoute(method, pathname) {
-    const route = this.#triRouter(method, pathname) || this.#hashRouter(method, pathname);
+    const route =
+      this.#triRouter(method, pathname) || this.#hashRouter(method, pathname);
     if (route) {
       return {
         ...route,
-        middlewares: [...route.middlewares]
+        middlewares: [...route.middlewares],
       };
     }
     return null;
@@ -2259,12 +2296,13 @@ class TezX extends Router {
             let middlewares2 = find.middlewares;
             const response = await this.#createHandler(
               middlewares2,
-              callback
+              callback,
             )(ctx2);
             if (response?.headers) {
               ctx2.headers.add(response.headers);
             }
-            const statusText = response?.statusText || httpStatusMap[response?.status] || "";
+            const statusText =
+              response?.statusText || httpStatusMap[response?.status] || "";
             const status = response.status || 200;
             let headers = ctx2.headers.toObject();
             if (logger.response) {
@@ -2274,13 +2312,13 @@ class TezX extends Router {
               return new Response(response.body, {
                 status,
                 statusText,
-                headers
+                headers,
               });
             }
             return new Response(response.body, {
               status,
               statusText,
-              headers
+              headers,
             });
           } else {
             if (logger.response) {
@@ -2288,7 +2326,7 @@ class TezX extends Router {
             }
             return GlobalConfig.notFound(ctx2);
           }
-        }
+        },
       )(ctx);
     } catch (err) {
       let error = err;
@@ -2330,7 +2368,7 @@ function parseEnvFile(filePath, result) {
       fileContent = readFileSync(filePath, "utf8");
     } else if (runtime === "deno") {
       fileContent = new TextDecoder("utf-8").decode(
-        Deno.readFileSync(filePath)
+        Deno.readFileSync(filePath),
       );
     }
     const lines = fileContent.split("\n");
@@ -2339,7 +2377,9 @@ function parseEnvFile(filePath, result) {
       if (!trimmedLine || trimmedLine.startsWith("#")) continue;
       const [key, value] = trimmedLine.split("=", 2).map((part) => part.trim());
       if (key && value) {
-        const parsedValue = value.replace(/^"(.*)"$/, "$1").replace(/^'(.*)'$/, "$1");
+        const parsedValue = value
+          .replace(/^"(.*)"$/, "$1")
+          .replace(/^'(.*)'$/, "$1");
         result[key] = parsedValue;
         if (runtime === "node" || runtime === "bun") {
           process.env[key] = parsedValue;
@@ -2359,7 +2399,7 @@ function loadEnv(basePath = "./") {
     ".env.local",
     `.env.${process?.env?.NODE_ENV || "development"}`,
     // Supports NODE_ENV (e.g., .env.development, .env.production)
-    `.env.${process?.env?.NODE_ENV || "development"}.local`
+    `.env.${process?.env?.NODE_ENV || "development"}.local`,
   ];
   for (const envFile of envFiles) {
     parseEnvFile(`${basePath}${envFile}`, result);
@@ -2378,15 +2418,16 @@ const COLORS = {
   magenta: "\x1B[35m",
   cyan: "\x1B[36m",
   bgBlue: "\x1B[44m",
-  bgMagenta: "\x1B[45m"};
+  bgMagenta: "\x1B[45m",
+};
 const loggerOutput = (level, message, ...args) => {
-  const timestamp = (/* @__PURE__ */ new Date()).toISOString();
+  const timestamp = /* @__PURE__ */ new Date().toISOString();
   const LEVEL_COLORS = {
     info: COLORS.blue,
     warn: COLORS.yellow,
     error: COLORS.red,
     debug: COLORS.cyan,
-    success: COLORS.green
+    success: COLORS.green,
   };
   const prefix = `${COLORS.gray}[${timestamp}]${COLORS.reset}`;
   const levelText = `${LEVEL_COLORS[level]}[${level.toUpperCase()}]${COLORS.reset}`;
@@ -2398,37 +2439,30 @@ function logger() {
     return {
       request: (method, pathname) => {
         console.log(
-          `${COLORS.bold}<-- ${COLORS.reset}${COLORS.bgMagenta} ${method} ${COLORS.reset} ${pathname}`
+          `${COLORS.bold}<-- ${COLORS.reset}${COLORS.bgMagenta} ${method} ${COLORS.reset} ${pathname}`,
         );
       },
       response: (method, pathname, status) => {
         const elapsed = performance.now() - startTime;
         console.log(
-          `${COLORS.bold}--> ${COLORS.reset}${COLORS.bgBlue} ${method} ${COLORS.reset} ${pathname} ${COLORS.yellow}${status}${COLORS.reset} ${COLORS.magenta}${elapsed.toFixed(2)}ms${COLORS.reset}`
+          `${COLORS.bold}--> ${COLORS.reset}${COLORS.bgBlue} ${method} ${COLORS.reset} ${pathname} ${COLORS.yellow}${status}${COLORS.reset} ${COLORS.magenta}${elapsed.toFixed(2)}ms${COLORS.reset}`,
         );
       },
       info: (msg, ...args) => loggerOutput("info", msg, ...args),
       warn: (msg, ...args) => loggerOutput("warn", msg, ...args),
       error: (msg, ...args) => loggerOutput("error", msg, ...args),
       debug: (msg, ...args) => loggerOutput("debug", msg, ...args),
-      success: (msg, ...args) => loggerOutput("success", msg, ...args)
+      success: (msg, ...args) => loggerOutput("success", msg, ...args),
     };
   }
   return {
-    request: (method, pathname) => {
-    },
-    response: (method, pathname, status) => {
-    },
-    info: (msg, ...args) => {
-    },
-    warn: (msg, ...args) => {
-    },
-    error: (msg, ...args) => {
-    },
-    debug: (msg, ...args) => {
-    },
-    success: (msg, ...args) => {
-    }
+    request: (method, pathname) => {},
+    response: (method, pathname, status) => {},
+    info: (msg, ...args) => {},
+    warn: (msg, ...args) => {},
+    error: (msg, ...args) => {},
+    debug: (msg, ...args) => {},
+    success: (msg, ...args) => {},
   };
 }
 
@@ -2439,7 +2473,7 @@ function cors(option = {}) {
     credentials,
     exposedHeaders,
     maxAge,
-    origin
+    origin,
   } = option;
   return async (ctx, next) => {
     const reqOrigin = ctx.req.headers.get("origin") || "";
@@ -2463,16 +2497,16 @@ function cors(option = {}) {
     ctx.headers.set("Access-Control-Allow-Origin", allowOrigin);
     ctx.headers.set(
       "Access-Control-Allow-Methods",
-      (methods || ["GET", "POST", "PUT", "DELETE"]).join(", ")
+      (methods || ["GET", "POST", "PUT", "DELETE"]).join(", "),
     );
     ctx.headers.set(
       "Access-Control-Allow-Headers",
-      (allowedHeaders || ["Content-Type", "Authorization"]).join(", ")
+      (allowedHeaders || ["Content-Type", "Authorization"]).join(", "),
     );
     if (exposedHeaders) {
       ctx.headers.set(
         "Access-Control-Expose-Headers",
-        exposedHeaders.join(", ")
+        exposedHeaders.join(", "),
       );
     }
     if (credentials) {
@@ -2484,7 +2518,7 @@ function cors(option = {}) {
     if (ctx.req.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
-        headers: ctx.headers.toObject()
+        headers: ctx.headers.toObject(),
       });
     }
     return await next();

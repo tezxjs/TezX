@@ -51,14 +51,14 @@ const app = new TezX({ logger });
 app.static("/", "./static");
 
 app.get("/", (ctx) => {
-    return ctx.html(`
+  return ctx.html(`
         <h1>Welcome to TezX</h1>
         <p>A modern, high-performance cross-environment framework.</p>
     `);
 });
 
 nodeAdapter(app).listen(3001, (message) => {
-    console.log(message);
+  console.log(message);
 });
 ```
 
@@ -95,8 +95,8 @@ Enhance your application with middleware:
 
 ```javascript
 app.use((ctx, next) => {
-    console.log(`Incoming request: ${ctx.request.url}`);
-    return next();
+  console.log(`Incoming request: ${ctx.request.url}`);
+  return next();
 });
 ```
 
@@ -113,7 +113,9 @@ Access static files via `/public/filename.ext`.
 ```javascript
 app.get("/about", (ctx) => ctx.html("<h1>About Us</h1>"));
 
-app.post("/submit", (ctx) => ctx.json({ message: "Form submitted successfully" })); 
+app.post("/submit", (ctx) =>
+  ctx.json({ message: "Form submitted successfully" }),
+);
 ```
 
 ## ⚠️ Error Handling
@@ -123,7 +125,99 @@ app.onError((err, ctx) => {
   return ctx.status(500).json({ error: "Internal Server Error" });
 });
 ```
-<!-- 
+
+## ▶️ **Running the Server**
+
+### **Clone Repository & Install Dependencies**
+
+```bash
+git clone https://github.com/tezxjs/tezx-app-example
+npm install tezx@latest
+```
+
+### **Run Project in Development Mode**
+
+```bash
+npm run dev
+```
+
+This will start the TezX server on **<http://localhost:3000>**.
+
+## **Platform-Specific Configurations**
+
+### **Node.js**
+
+Add the following scripts to **`package.json`**:
+
+```json
+"scripts": {
+    "build": "npx pkgroll --clean-dist",
+    "start": "node dist/index.js",
+    "nodemon": "nodemon src/index.ts",
+    "dev": "tsx watch src/index.ts"
+}
+```
+
+### **Bun**
+
+```json
+"scripts": {
+    "dev": "bun run --hot --watch src/index.ts"
+}
+```
+
+**`src/index.ts`**
+
+```typescript
+bunAdapter(server).listen(3000, (message) => {
+    console.log(message)
+});
+```
+
+### **Deno**
+
+```json
+"scripts": {
+    "dev": "deno run --watch --allow-net --allow-read --allow-env --unstable-sloppy-imports src/index.ts"
+}
+```
+
+**`src/index.ts`**
+
+```typescript
+denoAdapter(server).listen(3000, (message) => {
+    console.log(message)
+});
+```
+
+## **Build & Deployment**
+
+### **Compiling TypeScript to JavaScript**
+
+#### **Using `tsc`**
+
+```json
+"build": "npx tsc"
+```
+
+#### **Using `pkgroll`**
+
+```json
+"build": "npx pkgroll --clean-dist"
+```
+
+### **Exports Configuration for Node.js**
+
+```json
+"exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+}
+```
+<!--
 ## 📖 Documentation
 
 For full documentation, visit: [TezX Docs](https://tezx.dev/docs) -->
@@ -131,11 +225,12 @@ For full documentation, visit: [TezX Docs](https://tezx.dev/docs) -->
 ## 🤝 Contributing
 
 We welcome contributions! Submit issues and pull requests on our GitHub repository.
-<!-- 
+
+<!--
 ## 👤 Author
 
-**TezX Team**  
-📧 Email: <support@tezx.dev>  
+**TezX Team**
+📧 Email: <support@tezx.dev>
 🌐 Website: [https://tezx.dev](https://tezx.dev) -->
 
 ## 📜 License

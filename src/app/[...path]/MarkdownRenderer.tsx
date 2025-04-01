@@ -2,8 +2,8 @@
 "use client";
 import ClipboardJS from "clipboard";
 import hljs from "highlight.js";
-// import "highlight.js/styles/night-owl.css"; // Syntax highlighting theme
-import "highlight.js/styles/atom-one-light.css"; // Syntax highlighting theme
+import "highlight.js/styles/night-owl.css"; // Syntax highlighting theme
+// import "highlight.js/styles/atom-one-light.css"; // Syntax highlighting theme
 
 import { marked } from "marked";
 import { useEffect, useMemo } from "react";
@@ -57,7 +57,7 @@ export default function MarkdownRenderer({ markdown }: { markdown: string }) {
       return `
         <div class="relative">
           <button 
-            class="absolute right-2 rounded top-2 btn btn-xs btn-outline hover:text-[white!important] copy-btn btn-accent"
+            class="absolute right-2 rounded top-2 btn btn-xs btn-outline hover:text-[white!important] copy-btn btn-primary"
             data-clipboard-text="${codeContent.trim()}"
           >
             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="18px" width="18px" xmlns="http://www.w3.org/2000/svg">
@@ -94,7 +94,7 @@ export default function MarkdownRenderer({ markdown }: { markdown: string }) {
 
   return (
     <div
-      className="prose xl:prose-2xl w-full"
+      className="prose lg:prose-lg max-w-full"
       dangerouslySetInnerHTML={{
         __html: updatedHtmlContent,
       }}
