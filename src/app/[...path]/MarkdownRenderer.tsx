@@ -2,7 +2,9 @@
 "use client";
 import ClipboardJS from "clipboard";
 import hljs from "highlight.js";
-import "highlight.js/styles/night-owl.css"; // Syntax highlighting theme
+// import "highlight.js/styles/night-owl.css"; // Syntax highlighting theme
+import "highlight.js/styles/github-dark.css"; // Syntax highlighting theme
+
 // import "highlight.js/styles/atom-one-light.css"; // Syntax highlighting theme
 
 import { marked } from "marked";
