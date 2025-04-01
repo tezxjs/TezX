@@ -11,13 +11,19 @@
     "dev": "nodemon --watch src --exec ts-node src/index.ts",
     "start": "node dist/index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tezxjs/TezX"
+  },
+  "bugs": {
+    "url": "https://github.com/tezxjs/TezX"
+  },
+  "homepage": "https://github.com/tezxjs/TezX",
   "files": [
     "dist/",
     "dist/index.js",
     "dist/index.mjs",
-    "dist/index.js.map",
-    "dist/index.d.ts",
-    "dist/index.mjs.map"
+    "dist/index.d.ts"
   ],
   "keywords": [
     "server",

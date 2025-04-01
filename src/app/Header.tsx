@@ -11,7 +11,7 @@ import { version } from "../../package/package.json";
 
 type Props = {};
 
-export default function Header({}: Props) {
+export default function Header({ }: Props) {
   const [theme, setTheme] = useState<"dark" | "light">("light");
   // const params: ParamsType = useParams();
   // const { content, name, type } = params;
