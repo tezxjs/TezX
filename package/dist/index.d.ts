@@ -138,85 +138,6 @@ declare class Request$1 {
     formData(options?: FormDataOptions): Promise<Record<string, any>>;
 }
 
-declare class TezResponse {
-    /**
-     * Sends a JSON response.
-     * @param body - The response data.
-     * @param status - (Optional) HTTP status code (default: 200).
-     * @param headers - (Optional) Additional response headers.
-     * @returns Response object with JSON data.
-     */
-    static json(body: any, status?: number, headers?: ResponseHeaders): Response;
-    static json(body: any, headers?: ResponseHeaders): Response;
-    static json(body: any, status?: number): Response;
-    /**
-     * Sends an HTML response.
-     * @param data - The HTML content as a string.
-     * @param status - (Optional) HTTP status code (default: 200).
-     * @param headers - (Optional) Additional response headers.
-     * @returns Response object with HTML data.
-     */
-    static html(data: string, status?: number, headers?: ResponseHeaders): Response;
-    static html(data: string, headers?: ResponseHeaders): Response;
-    static html(data: string, status?: number): Response;
-    /**
-     * Sends a plain text response.
-     * @param data - The text content.
-     * @param status - (Optional) HTTP status code (default: 200).
-     * @param headers - (Optional) Additional response headers.
-     * @returns Response object with plain text data.
-     */
-    static text(data: string, status?: number, headers?: ResponseHeaders): Response;
-    static text(data: string, headers?: ResponseHeaders): Response;
-    static text(data: string, status?: number): Response;
-    /**
-     * Sends an XML response.
-     * @param data - The XML content.
-     * @param status - (Optional) HTTP status code (default: 200).
-     * @param headers - (Optional) Additional response headers.
-     * @returns Response object with XML data.
-     */
-    static xml(data: string, status?: number, headers?: ResponseHeaders): Response;
-    static xml(data: string, headers?: ResponseHeaders): Response;
-    static xml(data: string, status?: number): Response;
-    /**
-     * Sends a response with any content type.
-     * Automatically determines content type if not provided.
-     * @param body - The response body.
-     * @param status - (Optional) HTTP status code.
-     * @param headers - (Optional) Additional response headers.
-     * @returns Response object.
-     */
-    static send(body: any, status?: number, headers?: ResponseHeaders): Response;
-    static send(body: any, headers?: ResponseHeaders): Response;
-    static send(body: any, status?: number): Response;
-    /**
-     * Redirects to a given URL.
-     * @param url - The target URL.
-     * @param status - (Optional) HTTP status code (default: 302).
-     * @param headers - (Optional) Additional headers.
-     * @returns Response object with redirect.
-     */
-    static redirect(url: string, status?: number, headers?: ResponseHeaders): Response;
-    /**
-     * Handles file downloads.
-     * @param filePath - The path to the file.
-     * @param fileName - The name of the downloaded file.
-     * @returns Response object for file download.
-     */
-    static download(filePath: string, fileName: string): Promise<Response>;
-    /**
-     * Serves a file to the client.
-     * @param filePath - Absolute or relative path to the file.
-     * @param fileName - (Optional) The name of the send file.
-     * @param headers - (Optional) Additional headers.
-     * @returns Response object with the file stream.
-     */
-    static sendFile(filePath: string, fileName?: string, headers?: ResponseHeaders): Promise<Response>;
-    static sendFile(filePath: string, headers?: ResponseHeaders): Promise<Response>;
-    static sendFile(filePath: string, fileName?: string): Promise<Response>;
-}
-
 /**
  * A simple key-value storage class using Map.
  */
@@ -366,9 +287,9 @@ declare class Context<T extends Record<string, any> = {}> {
      * @param headers - (Optional) Additional response headers.
      * @returns Response object with JSON data.
      */
-    json(body: any, status?: number, headers?: ResponseHeaders): TezResponse;
-    json(body: any, headers?: ResponseHeaders): TezResponse;
-    json(body: any, status?: number): TezResponse;
+    json(body: any, status?: number, headers?: ResponseHeaders): Response;
+    json(body: any, headers?: ResponseHeaders): Response;
+    json(body: any, status?: number): Response;
     /**
      * Sends a response with any content type.
      * Automatically determines content type if not provided.
@@ -416,14 +337,15 @@ declare class Context<T extends Record<string, any> = {}> {
      * @returns Response object with context all method.
      */
     status: (status: number) => this;
+    set setStatus(status: number);
+    get getStatus(): number;
     /**
      * Redirects to a given URL.
      * @param url - The target URL.
      * @param status - (Optional) HTTP status code (default: 302).
-     * @param headers - (Optional) Additional headers.
      * @returns Response object with redirect.
      */
-    redirect(url: string, status?: number, headers?: ResponseHeaders): Response;
+    redirect(url: string, status?: number): Response;
     /**
      * Handles file downloads.
      * @param filePath - The path to the file.
@@ -493,8 +415,8 @@ declare class MiddlewareConfigure<T extends Record<string, any> = {}> extends Co
 
 type NextCallback = () => Promise<any>;
 type ctx<T extends Record<string, any> = {}> = Context<T> & T;
-type Callback<T extends Record<string, any> = {}> = (ctx: ctx<T>) => Promise<TezResponse> | TezResponse;
-type Middleware<T extends Record<string, any> = {}> = (ctx: ctx<T>, next: NextCallback) => NextCallback | Promise<TezResponse> | TezResponse;
+type Callback<T extends Record<string, any> = {}> = (ctx: ctx<T>) => Promise<Response> | Response;
+type Middleware<T extends Record<string, any> = {}> = (ctx: ctx<T>, next: NextCallback) => NextCallback | Promise<Response> | Response;
 type RouterConfig = {
     /**
      * `env` allows you to define environment variables for the router.
@@ -789,4 +711,4 @@ type CorsOptions = {
 };
 declare function cors(option?: CorsOptions): (ctx: ctx, next: () => Promise<any>) => Promise<any>;
 
-export { type Callback, type ctx as Context, type CorsOptions, type LogLevel, type LoggerFnType, type Middleware, type NextCallback, Router, type RouterConfig, type StaticServeOption, TezResponse, TezX, type TezXConfig, type UrlRef, bunAdapter, cors, denoAdapter, loadEnv, logger, nodeAdapter, useParams };
+export { type Callback, type ctx as Context, type CorsOptions, type LogLevel, type LoggerFnType, type Middleware, type NextCallback, Router, type RouterConfig, type StaticServeOption, TezX, type TezXConfig, type UrlRef, bunAdapter, cors, denoAdapter, loadEnv, logger, nodeAdapter, useParams };

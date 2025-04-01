@@ -144,6 +144,145 @@ function nodeAdapter(TezX2) {
   };
 }
 
+class CommonHandler {
+  /**
+   * Register a custom 404 handler for missing routes
+   * @param {Callback} callback - Handler function to execute when no route matches
+   * @returns {this} - Returns current instance for chaining
+   *
+   * @example
+   * // Register a custom not-found handler
+   * app.notFound((ctx) => {
+   *   ctx.status(404).text('Custom not found message');
+   * });
+   */
+  notFound(callback) {
+    GlobalConfig.notFound = callback;
+    return this;
+  }
+  onError(callback) {
+    GlobalConfig.onError = callback;
+    return this;
+  }
+}
+
+function sanitizePathSplit(basePath, path) {
+  const parts = `${basePath}/${path}`.replace(/\\/g, "")?.split("/").filter(Boolean);
+  return parts;
+}
+function urlParse(url) {
+  const urlPattern = /^(?:(\w+):\/\/)?(?:([^:@]+)?(?::([^@]+))?@)?([^:/?#]+)?(?::(\d+))?(\/[^?#]*)?(?:\?([^#]*))?(?:#(.*))?$/;
+  let matches = url.match(urlPattern);
+  const [
+    _,
+    protocol,
+    username,
+    password,
+    hostname,
+    port,
+    path,
+    queryString,
+    hash
+  ] = matches;
+  let origin = hostname;
+  if (protocol) {
+    origin = protocol + "://" + hostname;
+  }
+  if (port) {
+    origin = origin + ":" + port;
+  }
+  let p = path;
+  if (p?.endsWith("/")) p.slice(0, -1);
+  function query() {
+    if (queryString) {
+      const queryPart = decodeURIComponent(queryString);
+      const keyValuePairs = queryPart.split("&");
+      const paramsObj = keyValuePairs?.map(
+        (keyValue) => {
+          const [key, value] = keyValue.split("=");
+          return {
+            [key]: value
+          };
+        }
+      );
+      return paramsObj.reduce(function(total, value) {
+        return { ...total, ...value };
+      }, {});
+    } else {
+      return {};
+    }
+  }
+  return {
+    pathname: p,
+    hash,
+    protocol,
+    origin,
+    username,
+    password,
+    hostname,
+    href: url,
+    port,
+    query: query()
+  };
+}
+
+class TriMiddleware {
+  children = /* @__PURE__ */ new Map();
+  middlewares = /* @__PURE__ */ new Set();
+  isOptional = false;
+  pathname;
+  constructor(pathname = "/") {
+    this.pathname = pathname;
+    if (GlobalConfig.allowDuplicateMw) {
+      this.middlewares = [];
+    } else {
+      this.middlewares = /* @__PURE__ */ new Set();
+    }
+  }
+}
+class MiddlewareConfigure extends CommonHandler {
+  triMiddlewares = new TriMiddleware();
+  basePath;
+  constructor(basePath = "/") {
+    super();
+    this.basePath = basePath;
+  }
+  addMiddleware(pathname, middlewares) {
+    const parts = sanitizePathSplit(this.basePath, pathname);
+    let node = this.triMiddlewares;
+    for (const part of parts) {
+      if (part.startsWith("*")) {
+        if (!node.children.has("*")) {
+          node.children.set("*", new TriMiddleware());
+        }
+        node = node.children.get("*");
+      } else if (part.startsWith(":")) {
+        const isOptional = part?.endsWith("?");
+        if (isOptional) {
+          node.isOptional = isOptional;
+          continue;
+        }
+        if (!node.children.has(":")) {
+          node.children.set(":", new TriMiddleware());
+        }
+        node = node.children.get(":");
+      } else {
+        if (!node.children.has(part)) {
+          node.children.set(part, new TriMiddleware());
+        }
+        node = node.children.get(part);
+      }
+    }
+    if (GlobalConfig.allowDuplicateMw) {
+      node.middlewares.push(...middlewares);
+    } else {
+      for (const middleware of middlewares) {
+        node.middlewares.add(middleware);
+      }
+    }
+  }
+}
+
 class EnvironmentDetector {
   static get getEnvironment() {
     if (typeof Bun !== "undefined") return "bun";
@@ -343,373 +482,6 @@ async function getFiles(dir, basePath = "/", ref, option) {
     });
   });
   return files;
-}
-
-class TezResponse {
-  static json(body, ...args) {
-    let status = 200;
-    let headers = {
-      "Content-Type": "application/json; charset=utf-8"
-    };
-    if (typeof args[0] === "number") {
-      status = args[0];
-      if (typeof args[1] === "object") {
-        headers = { ...headers, ...args[1] };
-      }
-    } else if (typeof args[0] === "object") {
-      headers = { ...headers, ...args[0] };
-    }
-    return new Response(JSON.stringify(body), {
-      status,
-      headers
-    });
-  }
-  static html(data, ...args) {
-    let status = 200;
-    let headers = {
-      "Content-Type": "text/html; charset=utf-8"
-    };
-    if (typeof args[0] === "number") {
-      status = args[0];
-      if (typeof args[1] === "object") {
-        headers = { ...headers, ...args[1] };
-      }
-    } else if (typeof args[0] === "object") {
-      headers = { ...headers, ...args[0] };
-    }
-    return new Response(data, {
-      status,
-      headers
-    });
-  }
-  static text(data, ...args) {
-    let status = 200;
-    let headers = {
-      "Content-Type": "text/plain; charset=utf-8"
-    };
-    if (typeof args[0] === "number") {
-      status = args[0];
-      if (typeof args[1] === "object") {
-        headers = { ...headers, ...args[1] };
-      }
-    } else if (typeof args[0] === "object") {
-      headers = { ...headers, ...args[0] };
-    }
-    return new Response(data, {
-      status,
-      headers
-    });
-  }
-  static xml(data, ...args) {
-    let status = 200;
-    let headers = {
-      "Content-Type": "application/xml; charset=utf-8"
-    };
-    if (typeof args[0] === "number") {
-      status = args[0];
-      if (typeof args[1] === "object") {
-        headers = { ...headers, ...args[1] };
-      }
-    } else if (typeof args[0] === "object") {
-      headers = { ...headers, ...args[0] };
-    }
-    return new Response(data, {
-      status,
-      headers
-    });
-  }
-  static send(body, ...args) {
-    let status = 200;
-    let headers = {};
-    if (typeof args[0] === "number") {
-      status = args[0];
-      if (typeof args[1] === "object") {
-        headers = args[1];
-      }
-    } else if (typeof args[0] === "object") {
-      headers = args[0];
-    }
-    if (!headers["Content-Type"]) {
-      if (typeof body === "string") {
-        headers["Content-Type"] = "text/plain;";
-      } else if (typeof body === "object" && body !== null) {
-        headers["Content-Type"] = "application/json;";
-        body = JSON.stringify(body);
-      } else {
-        headers["Content-Type"] = "application/octet-stream";
-      }
-    }
-    return new Response(body, {
-      status,
-      headers
-    });
-  }
-  /**
-   * Redirects to a given URL.
-   * @param url - The target URL.
-   * @param status - (Optional) HTTP status code (default: 302).
-   * @param headers - (Optional) Additional headers.
-   * @returns Response object with redirect.
-   */
-  static redirect(url, status = 302, headers) {
-    return new Response(null, {
-      status,
-      headers: { Location: url }
-    });
-  }
-  /**
-   * Handles file downloads.
-   * @param filePath - The path to the file.
-   * @param fileName - The name of the downloaded file.
-   * @returns Response object for file download.
-   */
-  static async download(filePath, fileName) {
-    try {
-      let fileExists = false;
-      const runtime = EnvironmentDetector.getEnvironment;
-      if (runtime === "node") {
-        const { existsSync } = await import('fs');
-        fileExists = existsSync(filePath);
-      } else if (runtime === "bun") {
-        fileExists = Bun.file(filePath).exists();
-      } else if (runtime === "deno") {
-        try {
-          await Deno.stat(filePath);
-          fileExists = true;
-        } catch {
-          fileExists = false;
-        }
-      }
-      if (!fileExists) {
-        throw Error("File not found");
-      }
-      let fileBuffer;
-      if (runtime === "node") {
-        const { readFileSync } = await import('fs');
-        fileBuffer = await readFileSync(filePath);
-      } else if (runtime === "bun") {
-        fileBuffer = await Bun.file(filePath).arrayBuffer().then((buf) => new Uint8Array(buf));
-      } else if (runtime === "deno") {
-        fileBuffer = await Deno.readFile(filePath);
-      }
-      return new Response(fileBuffer, {
-        status: 200,
-        headers: {
-          "Content-Disposition": `attachment; filename="${fileName}"`,
-          "Content-Type": "application/octet-stream",
-          "Content-Length": fileBuffer.byteLength.toString()
-        }
-      });
-    } catch (error) {
-      throw Error("Internal Server Error" + error?.message);
-    }
-  }
-  static async sendFile(filePath, ...args) {
-    try {
-      const runtime = EnvironmentDetector.getEnvironment;
-      const resolvedPath = filePath;
-      let fileExists = false;
-      if (runtime === "node") {
-        const { existsSync } = await import('fs');
-        fileExists = existsSync(resolvedPath);
-      } else if (runtime === "bun") {
-        fileExists = Bun.file(resolvedPath).exists();
-      } else if (runtime === "deno") {
-        try {
-          await Deno.stat(resolvedPath);
-          fileExists = true;
-        } catch {
-          fileExists = false;
-        }
-      }
-      if (!fileExists) {
-        throw Error("File not found");
-      }
-      let fileSize = 0;
-      if (runtime === "node") {
-        const { statSync } = await import('fs');
-        fileSize = statSync(resolvedPath).size;
-      } else if (runtime === "bun") {
-        fileSize = (await Bun.file(resolvedPath).arrayBuffer()).byteLength;
-      } else if (runtime === "deno") {
-        const fileInfo = await Deno.stat(resolvedPath);
-        fileSize = fileInfo.size;
-      }
-      const ext = filePath.split(".").pop()?.toLowerCase() || "";
-      const mimeType = mimeTypes[ext] || defaultMimeType;
-      let fileStream;
-      if (runtime === "node") {
-        const { createReadStream } = await import('fs');
-        fileStream = createReadStream(resolvedPath);
-      } else if (runtime === "bun") {
-        fileStream = Bun.file(resolvedPath).stream();
-      } else if (runtime === "deno") {
-        const file = await Deno.open(resolvedPath, { read: true });
-        fileStream = file.readable;
-      }
-      let headers = {
-        "Content-Type": mimeType,
-        "Content-Length": fileSize.toString()
-      };
-      let fileName = "";
-      if (typeof args[0] === "string") {
-        fileName = args[0];
-        if (typeof args[1] === "object") {
-          headers = { ...headers, ...args[1] };
-        }
-      } else if (typeof args[0] === "object") {
-        headers = { ...headers, ...args[0] };
-      }
-      if (fileName) {
-        headers["Content-Disposition"] = `attachment; filename="${fileName}"`;
-      }
-      return new Response(fileStream, {
-        status: 200,
-        headers
-      });
-    } catch (error) {
-      throw Error("Internal Server Error" + error?.message);
-    }
-  }
-}
-
-class CommonHandler {
-  /**
-   * Register a custom 404 handler for missing routes
-   * @param {Callback} callback - Handler function to execute when no route matches
-   * @returns {this} - Returns current instance for chaining
-   *
-   * @example
-   * // Register a custom not-found handler
-   * app.notFound((ctx) => {
-   *   ctx.status(404).text('Custom not found message');
-   * });
-   */
-  notFound(callback) {
-    GlobalConfig.notFound = callback;
-    return this;
-  }
-  onError(callback) {
-    GlobalConfig.onError = callback;
-    return this;
-  }
-}
-
-function sanitizePathSplit(basePath, path) {
-  const parts = `${basePath}/${path}`.replace(/\\/g, "")?.split("/").filter(Boolean);
-  return parts;
-}
-function urlParse(url) {
-  const urlPattern = /^(?:(\w+):\/\/)?(?:([^:@]+)?(?::([^@]+))?@)?([^:/?#]+)?(?::(\d+))?(\/[^?#]*)?(?:\?([^#]*))?(?:#(.*))?$/;
-  let matches = url.match(urlPattern);
-  const [
-    _,
-    protocol,
-    username,
-    password,
-    hostname,
-    port,
-    path,
-    queryString,
-    hash
-  ] = matches;
-  let origin = hostname;
-  if (protocol) {
-    origin = protocol + "://" + hostname;
-  }
-  if (port) {
-    origin = origin + ":" + port;
-  }
-  let p = path;
-  if (p?.endsWith("/")) p.slice(0, -1);
-  function query() {
-    if (queryString) {
-      const queryPart = decodeURIComponent(queryString);
-      const keyValuePairs = queryPart.split("&");
-      const paramsObj = keyValuePairs?.map(
-        (keyValue) => {
-          const [key, value] = keyValue.split("=");
-          return {
-            [key]: value
-          };
-        }
-      );
-      return paramsObj.reduce(function(total, value) {
-        return { ...total, ...value };
-      }, {});
-    } else {
-      return {};
-    }
-  }
-  return {
-    pathname: p,
-    hash,
-    protocol,
-    origin,
-    username,
-    password,
-    hostname,
-    href: url,
-    port,
-    query: query()
-  };
-}
-
-class TriMiddleware {
-  children = /* @__PURE__ */ new Map();
-  middlewares = /* @__PURE__ */ new Set();
-  isOptional = false;
-  pathname;
-  constructor(pathname = "/") {
-    this.pathname = pathname;
-    if (GlobalConfig.allowDuplicateMw) {
-      this.middlewares = [];
-    } else {
-      this.middlewares = /* @__PURE__ */ new Set();
-    }
-  }
-}
-class MiddlewareConfigure extends CommonHandler {
-  triMiddlewares = new TriMiddleware();
-  basePath;
-  constructor(basePath = "/") {
-    super();
-    this.basePath = basePath;
-  }
-  addMiddleware(pathname, middlewares) {
-    const parts = sanitizePathSplit(this.basePath, pathname);
-    let node = this.triMiddlewares;
-    for (const part of parts) {
-      if (part.startsWith("*")) {
-        if (!node.children.has("*")) {
-          node.children.set("*", new TriMiddleware());
-        }
-        node = node.children.get("*");
-      } else if (part.startsWith(":")) {
-        const isOptional = part?.endsWith("?");
-        if (isOptional) {
-          node.isOptional = isOptional;
-          continue;
-        }
-        if (!node.children.has(":")) {
-          node.children.set(":", new TriMiddleware());
-        }
-        node = node.children.get(":");
-      } else {
-        if (!node.children.has(part)) {
-          node.children.set(part, new TriMiddleware());
-        }
-        node = node.children.get(part);
-      }
-    }
-    if (GlobalConfig.allowDuplicateMw) {
-      node.middlewares.push(...middlewares);
-    } else {
-      for (const middleware of middlewares) {
-        node.middlewares.add(middleware);
-      }
-    }
-  }
 }
 
 class TrieRouter {
@@ -1982,15 +1754,23 @@ class Context {
     this.#status = status;
     return this;
   };
+  set setStatus(status) {
+    this.#status = status;
+  }
+  get getStatus() {
+    return this.#status;
+  }
   /**
    * Redirects to a given URL.
    * @param url - The target URL.
    * @param status - (Optional) HTTP status code (default: 302).
-   * @param headers - (Optional) Additional headers.
    * @returns Response object with redirect.
    */
-  redirect(url, status = 302, headers) {
-    return TezResponse.redirect(url, status, headers);
+  redirect(url, status = 302) {
+    return new Response(null, {
+      status,
+      headers: { Location: url }
+    });
   }
   /**
    * Handles file downloads.
@@ -1999,10 +1779,112 @@ class Context {
    * @returns Response object for file download.
    */
   async download(filePath, fileName) {
-    return await TezResponse.download(filePath, fileName);
+    try {
+      let fileExists = false;
+      const runtime = EnvironmentDetector.getEnvironment;
+      if (runtime === "node") {
+        const { existsSync } = await import('fs');
+        fileExists = existsSync(filePath);
+      } else if (runtime === "bun") {
+        fileExists = Bun.file(filePath).exists();
+      } else if (runtime === "deno") {
+        try {
+          await Deno.stat(filePath);
+          fileExists = true;
+        } catch {
+          fileExists = false;
+        }
+      }
+      if (!fileExists) {
+        throw Error("File not found");
+      }
+      let fileBuffer;
+      if (runtime === "node") {
+        const { readFileSync } = await import('fs');
+        fileBuffer = await readFileSync(filePath);
+      } else if (runtime === "bun") {
+        fileBuffer = await Bun.file(filePath).arrayBuffer().then((buf) => new Uint8Array(buf));
+      } else if (runtime === "deno") {
+        fileBuffer = await Deno.readFile(filePath);
+      }
+      return new Response(fileBuffer, {
+        status: 200,
+        headers: {
+          "Content-Disposition": `attachment; filename="${fileName}"`,
+          "Content-Type": "application/octet-stream",
+          "Content-Length": fileBuffer.byteLength.toString()
+        }
+      });
+    } catch (error) {
+      throw Error("Internal Server Error" + error?.message);
+    }
   }
   async sendFile(filePath, ...args) {
-    return await TezResponse.sendFile(filePath, ...args);
+    try {
+      const runtime = EnvironmentDetector.getEnvironment;
+      const resolvedPath = filePath;
+      let fileExists = false;
+      if (runtime === "node") {
+        const { existsSync } = await import('fs');
+        fileExists = existsSync(resolvedPath);
+      } else if (runtime === "bun") {
+        fileExists = Bun.file(resolvedPath).exists();
+      } else if (runtime === "deno") {
+        try {
+          await Deno.stat(resolvedPath);
+          fileExists = true;
+        } catch {
+          fileExists = false;
+        }
+      }
+      if (!fileExists) {
+        throw Error("File not found");
+      }
+      let fileSize = 0;
+      if (runtime === "node") {
+        const { statSync } = await import('fs');
+        fileSize = statSync(resolvedPath).size;
+      } else if (runtime === "bun") {
+        fileSize = (await Bun.file(resolvedPath).arrayBuffer()).byteLength;
+      } else if (runtime === "deno") {
+        const fileInfo = await Deno.stat(resolvedPath);
+        fileSize = fileInfo.size;
+      }
+      const ext = filePath.split(".").pop()?.toLowerCase() || "";
+      const mimeType = mimeTypes[ext] || defaultMimeType;
+      let fileStream;
+      if (runtime === "node") {
+        const { createReadStream } = await import('fs');
+        fileStream = createReadStream(resolvedPath);
+      } else if (runtime === "bun") {
+        fileStream = Bun.file(resolvedPath).stream();
+      } else if (runtime === "deno") {
+        const file = await Deno.open(resolvedPath, { read: true });
+        fileStream = file.readable;
+      }
+      let headers = {
+        "Content-Type": mimeType,
+        "Content-Length": fileSize.toString()
+      };
+      let fileName = "";
+      if (typeof args[0] === "string") {
+        fileName = args[0];
+        if (typeof args[1] === "object") {
+          headers = { ...headers, ...args[1] };
+        }
+      } else if (typeof args[0] === "object") {
+        headers = { ...headers, ...args[0] };
+      }
+      if (fileName) {
+        headers["Content-Disposition"] = `attachment; filename="${fileName}"`;
+      }
+      return new Response(fileStream, {
+        status: 200,
+        headers
+      });
+    } catch (error) {
+      throw Error("Internal Server Error" + error?.message);
+    }
   }
   /**
    * Getter that creates a standardized Request object from internal state
@@ -2274,7 +2156,7 @@ class TezX extends Router {
               ctx2.headers.add(response.headers);
             }
             const statusText = response?.statusText || httpStatusMap[response?.status] || "";
-            const status = response.status || 200;
+            const status = response.status || ctx2.getStatus;
             let headers = ctx2.headers.toObject();
             if (logger.response) {
               logger.response(ctx2.method, ctx2.pathname, status);
@@ -2501,7 +2383,6 @@ function cors(option = {}) {
 }
 
 exports.Router = Router;
-exports.TezResponse = TezResponse;
 exports.TezX = TezX;
 exports.bunAdapter = bunAdapter;
 exports.cors = cors;
