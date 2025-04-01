@@ -1452,7 +1452,7 @@ class Context {
   //  * Parser for handling and manipulating HTTP response(Read Only)
   //  * @type {Response}
   //  */
-  // public readonly res: Response = new Response();
+  res = new Response();
   /**
    * Request path without query parameters
    * @type {string}
@@ -1658,10 +1658,10 @@ class Context {
     } else if (typeof args[0] === "object") {
       headers = { ...headers, ...args[0] };
     }
-    return new Response(JSON.stringify(body), {
+    return this.#handleResponse(new Response(JSON.stringify(body), {
       status,
       headers
-    });
+    }));
   }
   send(body, ...args) {
     let status = this.#status;
@@ -1684,10 +1684,10 @@ class Context {
         headers["Content-Type"] = "application/octet-stream";
       }
     }
-    return new Response(body, {
+    return this.#handleResponse(new Response(body, {
       status,
       headers
-    });
+    }));
   }
   html(data, ...args) {
     let status = this.#status;
@@ -1702,10 +1702,10 @@ class Context {
     } else if (typeof args[0] === "object") {
       headers = { ...headers, ...args[0] };
     }
-    return new Response(data, {
+    return this.#handleResponse(new Response(data, {
       status,
       headers
-    });
+    }));
   }
   text(data, ...args) {
     let status = this.#status;
@@ -1720,10 +1720,10 @@ class Context {
     } else if (typeof args[0] === "object") {
       headers = { ...headers, ...args[0] };
     }
-    return new Response(data, {
+    return this.#handleResponse(new Response(data, {
       status,
       headers
-    });
+    }));
   }
   xml(data, ...args) {
     let status = this.#status;
@@ -1738,10 +1738,10 @@ class Context {
     } else if (typeof args[0] === "object") {
       headers = { ...headers, ...args[0] };
     }
-    return new Response(data, {
+    return this.#handleResponse(new Response(data, {
       status,
       headers
-    });
+    }));
   }
   /**
    * HTTP status code..
@@ -1805,14 +1805,14 @@ class Context {
       } else if (runtime === "deno") {
         fileBuffer = await Deno.readFile(filePath);
       }
-      return new Response(fileBuffer, {
+      return this.#handleResponse(new Response(fileBuffer, {
         status: 200,
         headers: {
           "Content-Disposition": `attachment; filename="${fileName}"`,
           "Content-Type": "application/octet-stream",
           "Content-Length": fileBuffer.byteLength.toString()
         }
-      });
+      }));
     } catch (error) {
       throw Error("Internal Server Error" + error?.message);
     }
@@ -1876,13 +1876,20 @@ class Context {
       if (fileName) {
         headers["Content-Disposition"] = `attachment; filename="${fileName}"`;
       }
-      return new Response(fileStream, {
-        status: 200,
-        headers
-      });
+      return this.#handleResponse(
+        new Response(fileStream, {
+          status: 200,
+          headers
+        })
+      );
     } catch (error) {
       throw Error("Internal Server Error" + error?.message);
     }
+  }
+  #handleResponse(res) {
+    let clone = res.clone();
+    this.res = clone;
+    return clone;
   }
   /**
    * Getter that creates a standardized Request object from internal state

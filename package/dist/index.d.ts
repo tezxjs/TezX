@@ -212,6 +212,7 @@ declare class Context<T extends Record<string, any> = {}> {
      * @type {HeadersParser}
      */
     headers: HeadersParser;
+    readonly res: Response;
     /**
      * Request path without query parameters
      * @type {string}
