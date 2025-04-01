@@ -1,0 +1,35 @@
+{
+  "name": "tezx",
+  "version": "1.0.2",
+  "description": "A high-performance server framework for Node.js, Bun, and Deno",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon --watch src --exec ts-node src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "dist/index.js",
+    "dist/index.mjs",
+    "dist/index.js.map",
+    "dist/index.d.ts",
+    "dist/index.mjs.map"
+  ],
+  "keywords": [
+    "server",
+    "framework",
+    "http",
+    "middleware",
+    "router",
+    "high-performance",
+    "node",
+    "bun",
+    "deno"
+  ],
+  "author": "SRAKIB17",
+  "license": "MIT"
+}

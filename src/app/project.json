@@ -1,0 +1,26 @@
+{
+  "npm": [
+    {
+      "title": "@dbnx/mysql(ORM)",
+      "name": "dbnx-mysql",
+      "github": "https://github.com/SRAKIB17/dbnx-mysql",
+      "link": "/npm/docs/dbnx-mysql",
+      "dirPath": "docs/package/npm/@dbnx/mysql",
+      "description": "@dbnx/mysql(ORM) powerful and enhanced ORM library for MySQL, offering query execution, model creation, and full relational management..",
+      "version": {
+        "image": "https: //img.shields.io/npm/v/@dbnx/mysql.svg?style=flat-square"
+      }
+    },
+    {
+      "title": "JetCore",
+      "name": "jetcore",
+      "github": "https://github.com/SRAKIB17/dbnx-mysql",
+      "link": "/npm/docs/jetcore",
+      "dirPath": "docs/package/npm/jetcore",
+      "description": "@dbnx/mysql(ORM) powerful and enhanced ORM library for MySQL, offering query execution, model creation, and full relational management..",
+      "version": {
+        "image": "https: //img.shields.io/npm/v/@dbnx/mysql.svg?style=flat-square"
+      }
+    }
+  ]
+}
