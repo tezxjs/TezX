@@ -20,8 +20,7 @@
     "react-hot-toast": "^2.4.1",
     "react-icons": "^4.11.0",
     "remark-gfm": "^4.0.0",
-    "remarkable": "^2.0.1",
-    "tezx": "^1.0.8"
+    "remarkable": "^2.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.13.8",
