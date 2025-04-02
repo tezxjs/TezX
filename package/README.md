@@ -44,7 +44,8 @@ bun add tezx
 Create a simple TezX server:
 
 ```javascript
-import { logger, nodeAdapter, TezX } from "tezx";
+import {  nodeAdapter, TezX } from "tezx";
+import {logger,} from "tezx/middleware";
 
 const app = new TezX({ logger });
 
