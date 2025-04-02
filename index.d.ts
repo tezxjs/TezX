@@ -212,7 +212,11 @@ declare class Context<T extends Record<string, any> = {}> {
      * @type {HeadersParser}
      */
     headers: HeadersParser;
-    readonly res: Response;
+    /**
+     * Parser for handling and manipulating HTTP response(Read Only)
+     * @type {Response}
+     */
+    readonly res: Response | undefined;
     /**
      * Request path without query parameters
      * @type {string}
@@ -417,7 +421,7 @@ declare class MiddlewareConfigure<T extends Record<string, any> = {}> extends Co
 type NextCallback = () => Promise<any>;
 type ctx<T extends Record<string, any> = {}> = Context<T> & T;
 type Callback<T extends Record<string, any> = {}> = (ctx: ctx<T>) => Promise<Response> | Response;
-type Middleware<T extends Record<string, any> = {}> = (ctx: ctx<T>, next: NextCallback) => NextCallback | Promise<Response> | Response;
+type Middleware<T extends Record<string, any> = {}> = (ctx: ctx<T>, next: NextCallback) => NextCallback | Promise<Response> | Response | any;
 type RouterConfig = {
     /**
      * `env` allows you to define environment variables for the router.

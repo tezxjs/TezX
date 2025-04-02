@@ -1448,11 +1448,11 @@ class Context {
    * @type {HeadersParser}
    */
   headers = new HeadersParser();
-  // /**
-  //  * Parser for handling and manipulating HTTP response(Read Only)
-  //  * @type {Response}
-  //  */
-  res = new Response();
+  /**
+   * Parser for handling and manipulating HTTP response(Read Only)
+   * @type {Response}
+   */
+  res;
   /**
    * Request path without query parameters
    * @type {string}
@@ -1487,81 +1487,10 @@ class Context {
   //  */
   // ws: WebSocket | null = null;
   /**
-   * Generic variable storage for internal framework use
-   * @private
-   * @type {any}
-   */
-  #var;
-  /**
    * Flag indicating if the request processing is complete
    * @type {boolean}
    */
   finalized = false;
-  /**
-   * HTTP response status code
-   * @private
-   * @type {number}
-   */
-  /**
-   * Execution context reference
-   * @private
-   * @type {any}
-   */
-  #executionCtx;
-  /**
-   * Internal headers storage
-   * @private
-   * @type {any}
-   */
-  #headers;
-  /**
-   * Processed headers ready for sending
-   * @private
-   * @type {any}
-   */
-  #preparedHeaders;
-  /**
-   * Native response object reference
-   * @private
-   * @type {any}
-   */
-  #res;
-  /**
-   * Flag indicating if the response is fresh/unmodified
-   * @private
-   * @type {boolean}
-   */
-  #isFresh = true;
-  /**
-   * Active layout template reference
-   * @private
-   * @type {any}
-   */
-  #layout;
-  /**
-   * Template renderer instance
-   * @private
-   * @type {any}
-   */
-  #renderer;
-  /**
-   * Custom 404 handler reference
-   * @private
-   * @type {any}
-   */
-  #notFoundHandler;
-  /**
-   * Route matching results
-   * @private
-   * @type {any}
-   */
-  #matchResult;
-  /**
-   * Processed path information
-   * @private
-   * @type {any}
-   */
-  #path;
   constructor(req) {
     this.#rawRequest = req;
     this.method = req?.method?.toUpperCase();
@@ -1658,10 +1587,10 @@ class Context {
     } else if (typeof args[0] === "object") {
       headers = { ...headers, ...args[0] };
     }
-    return this.#handleResponse(new Response(JSON.stringify(body), {
+    return this.#handleResponse(JSON.stringify(body), {
       status,
       headers
-    }));
+    });
   }
   send(body, ...args) {
     let status = this.#status;
@@ -1684,10 +1613,10 @@ class Context {
         headers["Content-Type"] = "application/octet-stream";
       }
     }
-    return this.#handleResponse(new Response(body, {
+    return this.#handleResponse(body, {
       status,
       headers
-    }));
+    });
   }
   html(data, ...args) {
     let status = this.#status;
@@ -1702,10 +1631,10 @@ class Context {
     } else if (typeof args[0] === "object") {
       headers = { ...headers, ...args[0] };
     }
-    return this.#handleResponse(new Response(data, {
+    return this.#handleResponse(data, {
       status,
       headers
-    }));
+    });
   }
   text(data, ...args) {
     let status = this.#status;
@@ -1720,10 +1649,10 @@ class Context {
     } else if (typeof args[0] === "object") {
       headers = { ...headers, ...args[0] };
     }
-    return this.#handleResponse(new Response(data, {
+    return this.#handleResponse(data, {
       status,
       headers
-    }));
+    });
   }
   xml(data, ...args) {
     let status = this.#status;
@@ -1738,10 +1667,10 @@ class Context {
     } else if (typeof args[0] === "object") {
       headers = { ...headers, ...args[0] };
     }
-    return this.#handleResponse(new Response(data, {
+    return this.#handleResponse(data, {
       status,
       headers
-    }));
+    });
   }
   /**
    * HTTP status code..
@@ -1805,14 +1734,14 @@ class Context {
       } else if (runtime === "deno") {
         fileBuffer = await Deno.readFile(filePath);
       }
-      return this.#handleResponse(new Response(fileBuffer, {
+      return this.#handleResponse(fileBuffer, {
         status: 200,
         headers: {
           "Content-Disposition": `attachment; filename="${fileName}"`,
           "Content-Type": "application/octet-stream",
           "Content-Length": fileBuffer.byteLength.toString()
         }
-      }));
+      });
     } catch (error) {
       throw Error("Internal Server Error" + error?.message);
     }
@@ -1876,21 +1805,29 @@ class Context {
       if (fileName) {
         headers["Content-Disposition"] = `attachment; filename="${fileName}"`;
       }
-      return this.#handleResponse(
-        new Response(fileStream, {
-          status: 200,
-          headers
-        })
-      );
+      return this.#handleResponse(fileStream, {
+        status: 200,
+        headers
+      });
     } catch (error) {
       throw Error("Internal Server Error" + error?.message);
     }
   }
-  #handleResponse(res) {
-    let clone = res.clone();
+  #handleResponse(body, { headers, status }) {
+    let response = new Response(body, {
+      status,
+      headers
+    });
+    let clone = response.clone();
     this.res = clone;
-    return clone;
+    return this.res;
   }
+  // get res() {
+  //   return this.res;
+  // }
+  // set res(res: Response) {
+  //   this.res = res;
+  // }
   /**
    * Getter that creates a standardized Request object from internal state
    * @returns {Request} - Normalized request object combining:
@@ -2102,18 +2039,21 @@ class TezX extends Router {
     }
     return null;
   }
-  #createHandler(middlewares, finalCallback) {
+  #createHandler(middlewares) {
     return async (ctx) => {
       let index = 0;
       const next = async () => {
-        if (index < middlewares.length) {
-          return middlewares[index++](ctx, next);
-        } else {
-          const response = await finalCallback(ctx);
-          return response;
+        await middlewares[index++](ctx, next);
+        if (ctx.res) {
+          ctx.finalized = true;
+          return ctx.res;
         }
       };
-      return await next();
+      const response = await next();
+      if (!response) {
+        throw new Error(`Handler did not return a response or next() was not called. Path: ${ctx.pathname}, Method: ${ctx.method}`);
+      }
+      return response;
     };
   }
   #findMiddleware(pathname) {
@@ -2145,47 +2085,40 @@ class TezX extends Router {
       logger.request(ctx.method, ctx.pathname);
     }
     try {
-      return await this.#createHandler(
-        [...this.triMiddlewares.middlewares, ...middlewares],
-        async (ctx2) => {
-          const find = this.findRoute(ctx2.req.method, pathname);
-          if (find?.callback) {
-            ctx2.params = find.params;
-            const callback = find.callback;
-            let middlewares2 = find.middlewares;
-            const response = await this.#createHandler(
-              middlewares2,
-              callback
-            )(ctx2);
-            if (response?.headers) {
-              ctx2.headers.add(response.headers);
-            }
-            const statusText = response?.statusText || httpStatusMap[response?.status] || "";
-            const status = response.status || ctx2.getStatus;
-            let headers = ctx2.headers.toObject();
-            if (logger.response) {
-              logger.response(ctx2.method, ctx2.pathname, status);
-            }
-            if (response instanceof Response) {
-              return new Response(response.body, {
-                status,
-                statusText,
-                headers
-              });
-            }
-            return new Response(response.body, {
-              status,
-              statusText,
-              headers
-            });
-          } else {
-            if (logger.response) {
-              logger.response(ctx2.method, ctx2.pathname, 404);
-            }
-            return GlobalConfig.notFound(ctx2);
+      let callback = async (ctx2) => {
+        const find = this.findRoute(ctx2.req.method, pathname);
+        if (find?.callback) {
+          ctx2.params = find.params;
+          const callback2 = find.callback;
+          let middlewares2 = find.middlewares;
+          return await this.#createHandler([...middlewares2, callback2])(ctx2);
+        } else {
+          if (logger.response) {
+            logger.response(ctx2.method, ctx2.pathname, 404);
           }
+          return GlobalConfig.notFound(ctx2);
         }
-      )(ctx);
+      };
+      let response = await this.#createHandler([...this.triMiddlewares.middlewares, ...middlewares, callback])(ctx);
+      let finalCallback = () => {
+        return (ctx2) => {
+          if (response?.headers) {
+            ctx2.headers.add(response.headers);
+          }
+          const statusText = response?.statusText || httpStatusMap[response?.status] || "";
+          const status = response.status || ctx2.getStatus;
+          let headers = ctx2.headers.toObject();
+          if (logger.response) {
+            logger.response(ctx2.method, ctx2.pathname, status);
+          }
+          return new Response(response.body, {
+            status,
+            statusText,
+            headers
+          });
+        };
+      };
+      return finalCallback()(ctx);
     } catch (err) {
       let error = err;
       if (err instanceof Error) {
