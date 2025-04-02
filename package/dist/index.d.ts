@@ -421,7 +421,7 @@ declare class MiddlewareConfigure<T extends Record<string, any> = {}> extends Co
 type NextCallback = () => Promise<any>;
 type ctx<T extends Record<string, any> = {}> = Context<T> & T;
 type Callback<T extends Record<string, any> = {}> = (ctx: ctx<T>) => Promise<Response> | Response;
-type Middleware<T extends Record<string, any> = {}> = (ctx: ctx<T>, next: NextCallback) => NextCallback | Promise<Response> | Response | any;
+type Middleware<T extends Record<string, any> = {}> = (ctx: ctx<T>, next: NextCallback) => NextCallback | Promise<NextCallback | Response> | Response;
 type RouterConfig = {
     /**
      * `env` allows you to define environment variables for the router.
@@ -614,15 +614,6 @@ interface ServeResponse {
     body: string;
     statusText: string;
 }
-type LoggerFnType = () => {
-    request?: (method: HTTPMethod, pathname: string) => void;
-    response?: (method: HTTPMethod, pathname: string, status?: number) => void;
-    info?: (msg: string, ...args: unknown[]) => void;
-    warn?: (msg: string, ...args: unknown[]) => void;
-    error?: (msg: string, ...args: unknown[]) => void;
-    debug?: (msg: string, ...args: unknown[]) => void;
-    success?: (msg: string, ...args: unknown[]) => void;
-};
 type TezXConfig = {
     /**
      * `allowDuplicateMw` determines whether duplicate middleware functions
@@ -648,16 +639,17 @@ type TezXConfig = {
      */
     overwriteMethod?: boolean;
     /**
-     * `logger` is an optional function that handles logging within the application.
-     * It should conform to the `LoggerFnType`, which defines the expected signature for the logging function.
+     * Enables or disables debugging for the middleware.
+     * When set to `true`, detailed debug logs will be output,
+     * useful for tracking the flow of requests and identifying issues.
      *
-     * If provided, this function will be called for logging purposes throughout the application.
+     * @default false
      */
-    logger?: LoggerFnType;
+    debugMode?: boolean;
 } & RouterConfig;
 declare class TezX<T extends Record<string, any> = {}> extends Router<T> {
     #private;
-    constructor({ basePath, env, logger, allowDuplicateMw, overwriteMethod, }?: TezXConfig);
+    constructor({ basePath, env, debugMode, allowDuplicateMw, overwriteMethod, }?: TezXConfig);
     protected findRoute(method: HTTPMethod, pathname: string): {
         callback: any;
         middlewares: Middleware<T>[];
@@ -685,26 +677,16 @@ declare function useParams({ path, urlPattern, }: {
 };
 
 /**
+ * Generate a unique request ID
+ * @returns {string} - A unique request identifier
+ */
+declare function generateID(): string;
+
+/**
  * Loads environment variables from .env files.
  * @param basePath - The base directory where .env files are located.
  */
 declare function loadEnv(basePath?: string): Record<string, string>;
-
-type LogLevel = "info" | "warn" | "error" | "debug" | "success";
-/**
- * A universal logger function that measures and logs the processing time of an operation.
- * @param label - A label to identify the operation being logged.
- * @param callback - The operation to measure and execute.
- */
-declare function logger(): {
-    request: (method: HTTPMethod, pathname: string) => void;
-    response: (method: HTTPMethod, pathname: string, status?: number) => void;
-    info: (msg: string, ...args: unknown[]) => void;
-    warn: (msg: string, ...args: unknown[]) => void;
-    error: (msg: string, ...args: unknown[]) => void;
-    debug: (msg: string, ...args: unknown[]) => void;
-    success: (msg: string, ...args: unknown[]) => void;
-};
 
 type CorsOptions = {
     origin?: string | RegExp | (string | RegExp)[] | ((reqOrigin: string) => boolean);
@@ -716,4 +698,37 @@ type CorsOptions = {
 };
 declare function cors(option?: CorsOptions): (ctx: ctx, next: () => Promise<any>) => Promise<any>;
 
-export { type Callback, type ctx as Context, type CorsOptions, type LogLevel, type LoggerFnType, type Middleware, type NextCallback, Router, type RouterConfig, type StaticServeOption, TezX, type TezXConfig, type UrlRef, bunAdapter, cors, denoAdapter, loadEnv, logger, nodeAdapter, useParams };
+/**
+ * Logger Middleware
+ * Logs incoming requests with method, pathname, status, and execution time.
+ *
+ * @returns {Middleware} - A middleware function for logging HTTP requests.
+ *
+ * @example
+ * ```ts
+ * import { logger } from 'tezx';
+ *
+ * app.use(logger());
+ * ```
+ */
+declare function logger(): Middleware;
+
+/**
+ * PoweredBy Middleware
+ * Adds an "X-Powered-By" header to responses.
+ *
+ * @param {string} [serverName] - Optional custom server name; defaults to "TezX".
+ * @returns {Middleware} - A middleware function for setting the "X-Powered-By" header.
+ *
+ * @example
+ * ```ts
+ * import { poweredBy } from 'tezx';
+ *
+ * app.use(poweredBy("MyServer"));
+ * ```
+ */
+declare const poweredBy: (serverName?: string) => Middleware;
+
+declare let version: string;
+
+export { type Callback, type ctx as Context, type CorsOptions, type Middleware, type NextCallback, Router, type RouterConfig, type StaticServeOption, TezX, type TezXConfig, type UrlRef, bunAdapter, cors, denoAdapter, generateID, loadEnv, logger, nodeAdapter, poweredBy, useParams, version };

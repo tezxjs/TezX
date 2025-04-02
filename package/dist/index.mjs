@@ -1,4 +1,38 @@
-'use strict';
+import{createRequire as _pkgrollCR}from"node:module";const require=_pkgrollCR(import.meta.url);const COLORS = {
+  reset: "\x1B[0m",
+  bold: "\x1B[1m",
+  underline: "\x1B[4m",
+  gray: "\x1B[90m",
+  white: "\x1B[97m",
+  black: "\x1B[30m",
+  red: "\x1B[31m",
+  green: "\x1B[32m",
+  yellow: "\x1B[33m",
+  blue: "\x1B[34m",
+  magenta: "\x1B[35m",
+  cyan: "\x1B[36m",
+  bgRed: "\x1B[41m",
+  bgGreen: "\x1B[42m",
+  bgYellow: "\x1B[43m",
+  bgBlue: "\x1B[44m",
+  bgMagenta: "\x1B[45m",
+  bgCyan: "\x1B[46m",
+  bgWhite: "\x1B[47m"
+};
+
+const loggerOutput = (level, message, ...args) => {
+  const timestamp = (/* @__PURE__ */ new Date()).toISOString();
+  const LEVEL_COLORS = {
+    info: COLORS.blue,
+    warn: COLORS.yellow,
+    error: COLORS.red,
+    debug: COLORS.cyan,
+    success: COLORS.green
+  };
+  const prefix = `${COLORS.gray}[${timestamp}]${COLORS.reset}`;
+  const levelText = `${LEVEL_COLORS[level]}[${level.toUpperCase()}]${COLORS.reset}`;
+  console.log(`${prefix} ${levelText} ${message}`, ...args?.flat());
+};
 
 let GlobalConfig = class {
   static notFound = (ctx2) => {
@@ -14,10 +48,27 @@ let GlobalConfig = class {
   };
   static allowDuplicateMw = false;
   static overwriteMethod = true;
-  static enableLogger = false;
-  static loggerFn = () => {
-    return {};
-  };
+  static debugMode = false;
+  static get debugging() {
+    return this.debugMode ? {
+      info: (msg, ...args) => loggerOutput("info", msg, ...args),
+      warn: (msg, ...args) => loggerOutput("warn", msg, ...args),
+      error: (msg, ...args) => loggerOutput("error", msg, ...args),
+      debug: (msg, ...args) => loggerOutput("debug", msg, ...args),
+      success: (msg, ...args) => loggerOutput("success", msg, ...args)
+    } : {
+      info: (msg, ...args) => {
+      },
+      warn: (msg, ...args) => {
+      },
+      error: (msg, ...args) => {
+      },
+      debug: (msg, ...args) => {
+      },
+      success: (msg, ...args) => {
+      }
+    };
+  }
 };
 
 function denoAdapter(TezX2) {
@@ -45,10 +96,7 @@ function denoAdapter(TezX2) {
       if (typeof callback === "function") {
         callback(message);
       } else {
-        const logger = GlobalConfig.loggerFn();
-        if (logger.success) {
-          logger.success(message);
-        }
+        GlobalConfig.debugging.success(message);
       }
       return server;
     } catch (err) {
@@ -86,10 +134,7 @@ function bunAdapter(TezX2) {
       if (typeof callback == "function") {
         callback(message);
       } else {
-        const logger = GlobalConfig.loggerFn();
-        if (logger.success) {
-          logger.success(message);
-        }
+        GlobalConfig.debugging.success(message);
       }
       return server;
     } catch (err) {
@@ -128,10 +173,7 @@ function nodeAdapter(TezX2) {
         if (typeof callback == "function") {
           callback(message);
         } else {
-          const logger = GlobalConfig.loggerFn();
-          if (logger.success) {
-            logger.success(message);
-          }
+          GlobalConfig.debugging.success(message);
         }
         return server;
       });
@@ -1489,10 +1531,81 @@ class Context {
   //  */
   // ws: WebSocket | null = null;
   /**
+   * Generic variable storage for internal framework use
+   * @private
+   * @type {any}
+   */
+  #var;
+  /**
    * Flag indicating if the request processing is complete
    * @type {boolean}
    */
   finalized = false;
+  /**
+   * HTTP response status code
+   * @private
+   * @type {number}
+   */
+  /**
+   * Execution context reference
+   * @private
+   * @type {any}
+   */
+  #executionCtx;
+  /**
+   * Internal headers storage
+   * @private
+   * @type {any}
+   */
+  #headers;
+  /**
+   * Processed headers ready for sending
+   * @private
+   * @type {any}
+   */
+  #preparedHeaders;
+  // /**
+  //  * Native response object reference
+  //  * @private
+  //  * @type {any}
+  //  */
+  // res: any;
+  /**
+   * Flag indicating if the response is fresh/unmodified
+   * @private
+   * @type {boolean}
+   */
+  #isFresh = true;
+  /**
+   * Active layout template reference
+   * @private
+   * @type {any}
+   */
+  #layout;
+  /**
+   * Template renderer instance
+   * @private
+   * @type {any}
+   */
+  #renderer;
+  /**
+   * Custom 404 handler reference
+   * @private
+   * @type {any}
+   */
+  #notFoundHandler;
+  /**
+   * Route matching results
+   * @private
+   * @type {any}
+   */
+  #matchResult;
+  /**
+   * Processed path information
+   * @private
+   * @type {any}
+   */
+  #path;
   constructor(req) {
     this.#rawRequest = req;
     this.method = req?.method?.toUpperCase();
@@ -1821,8 +1934,8 @@ class Context {
       headers
     });
     let clone = response.clone();
-    this.res = clone;
-    return this.res;
+    this.res = response;
+    return clone;
   }
   // get res() {
   //   return this.res;
@@ -1973,15 +2086,14 @@ class TezX extends Router {
   constructor({
     basePath = "/",
     env = {},
-    logger = void 0,
+    debugMode = false,
     allowDuplicateMw = false,
     overwriteMethod = true
   } = {}) {
     GlobalConfig.allowDuplicateMw = allowDuplicateMw;
     GlobalConfig.overwriteMethod = overwriteMethod;
-    if (logger) {
-      GlobalConfig.loggerFn = logger;
-      GlobalConfig.enableLogger = true;
+    if (debugMode) {
+      GlobalConfig.debugMode = debugMode;
     }
     super({ basePath, env });
     this.serve = this.serve.bind(this);
@@ -2041,14 +2153,14 @@ class TezX extends Router {
     }
     return null;
   }
-  #createHandler(middlewares) {
+  #createHandler(middlewares, finalCallback) {
     return async (ctx) => {
       let index = 0;
       const next = async () => {
-        await middlewares[index++](ctx, next);
-        if (ctx.res) {
-          ctx.finalized = true;
-          return ctx.res;
+        if (index < middlewares.length) {
+          return await middlewares[index++](ctx, next);
+        } else {
+          return await finalCallback(ctx);
         }
       };
       const response = await next();
@@ -2082,10 +2194,6 @@ class TezX extends Router {
     const { pathname } = urlRef;
     let middlewares = this.#findMiddleware(pathname);
     ctx.env = this.env;
-    const logger = GlobalConfig.loggerFn();
-    if (logger.request) {
-      logger.request(ctx.method, ctx.pathname);
-    }
     try {
       let callback = async (ctx2) => {
         const find = this.findRoute(ctx2.req.method, pathname);
@@ -2093,16 +2201,18 @@ class TezX extends Router {
           ctx2.params = find.params;
           const callback2 = find.callback;
           let middlewares2 = find.middlewares;
-          return await this.#createHandler([...middlewares2, callback2])(ctx2);
+          return await this.#createHandler(
+            middlewares2,
+            callback2
+          )(ctx2);
         } else {
-          if (logger.response) {
-            logger.response(ctx2.method, ctx2.pathname, 404);
-          }
-          return GlobalConfig.notFound(ctx2);
+          let res = await GlobalConfig.notFound(ctx2);
+          ctx2.setStatus = res.status;
+          return res;
         }
       };
-      let response = await this.#createHandler([...this.triMiddlewares.middlewares, ...middlewares, callback])(ctx);
-      let finalCallback = () => {
+      let response = await this.#createHandler([...this.triMiddlewares.middlewares, ...middlewares], callback)(ctx);
+      let finalResponse = () => {
         return (ctx2) => {
           if (response?.headers) {
             ctx2.headers.add(response.headers);
@@ -2110,9 +2220,6 @@ class TezX extends Router {
           const statusText = response?.statusText || httpStatusMap[response?.status] || "";
           const status = response.status || ctx2.getStatus;
           let headers = ctx2.headers.toObject();
-          if (logger.response) {
-            logger.response(ctx2.method, ctx2.pathname, status);
-          }
           return new Response(response.body, {
             status,
             statusText,
@@ -2120,21 +2227,28 @@ class TezX extends Router {
           });
         };
       };
-      return finalCallback()(ctx);
+      return finalResponse()(ctx);
     } catch (err) {
       let error = err;
       if (err instanceof Error) {
         error = err.stack;
       }
-      if (logger.error) {
-        logger.error(`${httpStatusMap[500]}: ${error} `);
-      }
-      return GlobalConfig.onError(error, ctx);
+      GlobalConfig.debugging.error(`${COLORS.bgRed}${ctx.pathname}, Method: ${ctx.method}${COLORS.reset}`, `${httpStatusMap[500]}: ${error} `);
+      let res = await GlobalConfig.onError(error, ctx);
+      ctx.setStatus = res.status;
+      return res;
     }
   }
   async serve(req) {
     return this.#handleRequest(req);
   }
+}
+
+function generateID() {
+  const timestamp = Date.now().toString(16);
+  const random = Math.floor(Math.random() * 281474976710655).toString(16).padStart(12, "0");
+  const pid = (process.pid % 65536).toString(16).padStart(4, "0");
+  return `${timestamp}-${random}-${pid}`;
 }
 
 function parseEnvFile(filePath, result) {
@@ -2198,71 +2312,6 @@ function loadEnv(basePath = "./") {
   return result;
 }
 
-const COLORS = {
-  reset: "\x1B[0m",
-  bold: "\x1B[1m",
-  gray: "\x1B[90m",
-  red: "\x1B[31m",
-  green: "\x1B[32m",
-  yellow: "\x1B[33m",
-  blue: "\x1B[34m",
-  magenta: "\x1B[35m",
-  cyan: "\x1B[36m",
-  bgBlue: "\x1B[44m",
-  bgMagenta: "\x1B[45m"};
-const loggerOutput = (level, message, ...args) => {
-  const timestamp = (/* @__PURE__ */ new Date()).toISOString();
-  const LEVEL_COLORS = {
-    info: COLORS.blue,
-    warn: COLORS.yellow,
-    error: COLORS.red,
-    debug: COLORS.cyan,
-    success: COLORS.green
-  };
-  const prefix = `${COLORS.gray}[${timestamp}]${COLORS.reset}`;
-  const levelText = `${LEVEL_COLORS[level]}[${level.toUpperCase()}]${COLORS.reset}`;
-  console.log(`${prefix} ${levelText} ${message}`, ...args?.flat());
-};
-function logger() {
-  const startTime = performance.now();
-  if (GlobalConfig.enableLogger) {
-    return {
-      request: (method, pathname) => {
-        console.log(
-          `${COLORS.bold}<-- ${COLORS.reset}${COLORS.bgMagenta} ${method} ${COLORS.reset} ${pathname}`
-        );
-      },
-      response: (method, pathname, status) => {
-        const elapsed = performance.now() - startTime;
-        console.log(
-          `${COLORS.bold}--> ${COLORS.reset}${COLORS.bgBlue} ${method} ${COLORS.reset} ${pathname} ${COLORS.yellow}${status}${COLORS.reset} ${COLORS.magenta}${elapsed.toFixed(2)}ms${COLORS.reset}`
-        );
-      },
-      info: (msg, ...args) => loggerOutput("info", msg, ...args),
-      warn: (msg, ...args) => loggerOutput("warn", msg, ...args),
-      error: (msg, ...args) => loggerOutput("error", msg, ...args),
-      debug: (msg, ...args) => loggerOutput("debug", msg, ...args),
-      success: (msg, ...args) => loggerOutput("success", msg, ...args)
-    };
-  }
-  return {
-    request: (method, pathname) => {
-    },
-    response: (method, pathname, status) => {
-    },
-    info: (msg, ...args) => {
-    },
-    warn: (msg, ...args) => {
-    },
-    error: (msg, ...args) => {
-    },
-    debug: (msg, ...args) => {
-    },
-    success: (msg, ...args) => {
-    }
-  };
-}
-
 function cors(option = {}) {
   const {
     methods,
@@ -2322,12 +2371,33 @@ function cors(option = {}) {
   };
 }
 
-exports.Router = Router;
-exports.TezX = TezX;
-exports.bunAdapter = bunAdapter;
-exports.cors = cors;
-exports.denoAdapter = denoAdapter;
-exports.loadEnv = loadEnv;
-exports.logger = logger;
-exports.nodeAdapter = nodeAdapter;
-exports.useParams = useParams;
+function logger() {
+  return async (ctx, next) => {
+    try {
+      console.log(
+        `${COLORS.bold}<-- ${COLORS.reset}${COLORS.bgMagenta} ${ctx.method} ${COLORS.reset} ${ctx.pathname}`
+      );
+      const startTime = performance.now();
+      let n = await next();
+      const elapsed = performance.now() - startTime;
+      console.log(
+        `${COLORS.bold}--> ${COLORS.reset}${COLORS.bgBlue} ${ctx.method} ${COLORS.reset} ${ctx.pathname} ${COLORS.yellow}${ctx.getStatus}${COLORS.reset} ${COLORS.magenta}${elapsed.toFixed(2)}ms${COLORS.reset}`
+      );
+      return n;
+    } catch (err) {
+      console.error(`${COLORS.red}Error:${COLORS.reset}`, err.stack);
+      throw new Error(err.stack);
+    }
+  };
+}
+
+const poweredBy = (serverName) => {
+  return (ctx, next) => {
+    ctx.header("X-Powered-By", serverName || "TezX");
+    return next();
+  };
+};
+
+let version = "1.0.7";
+
+export { Router, TezX, bunAdapter, cors, denoAdapter, generateID, loadEnv, logger, nodeAdapter, poweredBy, useParams, version };
