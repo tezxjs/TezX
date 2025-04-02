@@ -729,6 +729,22 @@ declare function logger(): Middleware;
  */
 declare const poweredBy: (serverName?: string) => Middleware;
 
+/**
+ * Request ID Middleware
+ * Assigns a unique request ID to each incoming request.
+ *
+ * @param {string} [headerName="X-Request-ID"] - Header name to use for request ID.
+ * @returns {Middleware} - A middleware function for tracking requests.
+ *
+ * @example
+ * ```ts
+ * import { requestID } from 'tezx';
+ *
+ * app.use(requestID());
+ * ```
+ */
+declare const requestID: (headerName?: string) => Middleware;
+
 declare let version: string;
 
-export { type Callback, type ctx as Context, type CorsOptions, type Middleware, type NextCallback, Router, type RouterConfig, type StaticServeOption, TezX, type TezXConfig, type UrlRef, bunAdapter, cors, denoAdapter, generateID, loadEnv, logger, nodeAdapter, poweredBy, useParams, version };
+export { type Callback, type ctx as Context, type CorsOptions, type Middleware, type NextCallback, Router, type RouterConfig, type StaticServeOption, TezX, type TezXConfig, type UrlRef, bunAdapter, cors, denoAdapter, generateID, loadEnv, logger, nodeAdapter, poweredBy, requestID, useParams, version };

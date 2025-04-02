@@ -249,7 +249,7 @@ function urlParse(url) {
           };
         }
       );
-      return paramsObj.reduce(function (total, value) {
+      return paramsObj.reduce(function(total, value) {
         return { ...total, ...value };
       }, {});
     } else {
@@ -2039,8 +2039,8 @@ function useParams({
       const paramName = patternSegment.slice(1, -1);
       const nextPattern = patternSegments[i + 1];
       if (nextPattern && !nextPattern.startsWith(":") && nextPattern !== "*" && pathIndex < pathLength && // !/test == /:user?/test
-        // বর্তমান পথ যদি পরবর্তী প্যাটার্ন মানে স্ট্যাটিক পথ এর সাথে মাইল তাহলে
-        pathSegments[pathIndex] === nextPattern) {
+      // বর্তমান পথ যদি পরবর্তী প্যাটার্ন মানে স্ট্যাটিক পথ এর সাথে মাইল তাহলে
+      pathSegments[pathIndex] === nextPattern) {
         params[paramName] = null;
         continue;
       }
@@ -2400,7 +2400,17 @@ const poweredBy = (serverName) => {
   };
 };
 
-let version = "1.0.8";
+const requestID = (headerName = "X-Request-ID") => {
+  return (ctx, next) => {
+    const existingID = ctx.headers?.get(headerName.toLowerCase()) || ctx.headers?.get(headerName);
+    const requestId = existingID || `req-${generateID()}`;
+    ctx.state.set("requestID", requestId);
+    ctx.header(headerName, requestId);
+    return next();
+  };
+};
+
+let version = "1.0.7";
 
 exports.Router = Router;
 exports.TezX = TezX;
@@ -2412,5 +2422,6 @@ exports.loadEnv = loadEnv;
 exports.logger = logger;
 exports.nodeAdapter = nodeAdapter;
 exports.poweredBy = poweredBy;
+exports.requestID = requestID;
 exports.useParams = useParams;
 exports.version = version;

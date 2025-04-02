@@ -2398,6 +2398,16 @@ const poweredBy = (serverName) => {
   };
 };
 
+const requestID = (headerName = "X-Request-ID") => {
+  return (ctx, next) => {
+    const existingID = ctx.headers?.get(headerName.toLowerCase()) || ctx.headers?.get(headerName);
+    const requestId = existingID || `req-${generateID()}`;
+    ctx.state.set("requestID", requestId);
+    ctx.header(headerName, requestId);
+    return next();
+  };
+};
+
 let version = "1.0.7";
 
-export { Router, TezX, bunAdapter, cors, denoAdapter, generateID, loadEnv, logger, nodeAdapter, poweredBy, useParams, version };
+export { Router, TezX, bunAdapter, cors, denoAdapter, generateID, loadEnv, logger, nodeAdapter, poweredBy, requestID, useParams, version };
