@@ -2,10 +2,10 @@
   "name": "tezx",
   "version": "1.0.7",
   "description": "TezX is a cutting-edge, high-performance, and lightweight JavaScript framework designed for speed, scalability, and flexibility. Built with modern web development needs in mind, TezX enables efficient routing, middleware management, and static file serving with minimal configuration. It is fully compatible with Node.js, Deno, and Bun, making it a truly cross-environment framework.",
-  "main": "index.js",
-  "module": "index.mjs",
-  "types": "index.d.ts",
-  "typings": "index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --watch src --exec ts-node src/index.ts",
@@ -20,10 +20,10 @@
   },
   "homepage": "https://github.com/tezxjs/TezX",
   "files": [
-    "index.js",
-    "iindex.mjs",
-    "index.d.ts",
-    "middleware/index.ts"
+    "dist/",
+    "dist/index.js",
+    "dist/index.mjs",
+    "dist/index.d.ts"
   ],
   "keywords": [
     "server",
