@@ -1,46 +1,60 @@
 {
   "name": "tezx",
-  "version": "1.0.19",
-  "description": "TezX is a cutting-edge, high-performance, and lightweight JavaScript framework designed for speed, scalability, and flexibility. Built with modern web development needs in mind, TezX enables efficient routing, middleware management, and static file serving with minimal configuration. It is fully compatible with Node.js, Deno, and Bun, making it a truly cross-environment framework.",
-  "main": "dist/cjs/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "typings": "dist/index.d.ts",
+  "version": "1.0.24",
+  "description": "TezX is a high-performance, lightweight JavaScript framework designed for speed, scalability, and flexibility. It enables efficient routing, middleware management, and static file serving with minimal configuration. Fully compatible with Node.js, Deno, and Bun.",
+  "main": "cjs/index.js",
+  "module": "index.js",
+  "types": "index.d.ts",
+  "typings": "index.d.ts",
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --watch src --exec ts-node src/index.ts",
-    "start": "node dist/index.js"
+    "start": "node cjs/index.js",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tezxjs/TezX"
+    "url": "https://github.com/tezxjs/TezX.git"
   },
   "bugs": {
-    "url": "https://github.com/tezxjs/TezX"
+    "url": "https://github.com/tezxjs/TezX/issues"
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts",
-      "require": "./dist/cjs/index.js"
+      "import": "./index.js",
+      "require": "./cjs/index.js",
+      "types": "./index.d.ts",
+      "default": "./index.js"
     },
     "./middleware": {
-      "import": "./dist/middleware/index.js",
-      "require": "./dist/cjs/middleware/index.js",
-      "types": "./dist/middleware/index.d.ts"
+      "import": "./middleware/index.js",
+      "require": "./cjs/middleware/index.js",
+      "types": "./middleware/index.d.ts",
+      "default": "./middleware/index.js"
+    },
+    "./adapter": {
+      "import": "./adapter/index.js",
+      "require": "./cjs/adapter/index.js",
+      "types": "./adapter/index.d.ts",
+      "default": "./adapter/index.js"
     },
     "./helper": {
-      "import": "./dist/helper/index.js",
-      "types": "./dist/helper/index.d.ts",
-      "require": "./dist/cjs/helper/index.js"
+      "import": "./helper/index.js",
+      "require": "./cjs/helper/index.js",
+      "types": "./helper/index.d.ts",
+      "default": "./helper/index.js"
     }
   },
   "homepage": "https://github.com/tezxjs/TezX",
   "files": [
-    "dist/",
-    "dist/index.js",
-    "dist/index.mjs",
-    "dist/index.d.ts"
+    "adapter/",
+    "cjs/",
+    "core/",
+    "helper/",
+    "middleware/",
+    "utils/",
+    "index.js",
+    "index.d.ts"
   ],
   "keywords": [
     "server",
@@ -51,7 +65,9 @@
     "high-performance",
     "node",
     "bun",
-    "deno"
+    "deno",
+    "typescript",
+    "web-framework"
   ],
   "author": "SRAKIB17",
   "license": "MIT"
