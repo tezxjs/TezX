@@ -23,7 +23,6 @@ const rateLimiter = (options) => {
         }
         else {
             requestCount = 1;
-            console.log(45354);
             resetTime = Date.now() + windowMs;
             memoryStore.set(key, { count: requestCount, resetTime });
         }

@@ -4,4 +4,4 @@ export { TezX } from "./server";
 export { useParams } from "./utils/params";
 // helpers
 // middlewares
-export let version = "1.0.11";
+export let version = "1.0.7";
