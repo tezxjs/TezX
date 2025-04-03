@@ -22,6 +22,4 @@ var server_1 = require("./server");
 Object.defineProperty(exports, "TezX", { enumerable: true, get: function () { return server_1.TezX; } });
 var params_1 = require("./utils/params");
 Object.defineProperty(exports, "useParams", { enumerable: true, get: function () { return params_1.useParams; } });
-// helpers
-// middlewares
 exports.version = "1.0.7";

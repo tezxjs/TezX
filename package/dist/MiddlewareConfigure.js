@@ -2,10 +2,11 @@ import { CommonHandler } from "./common";
 import { GlobalConfig } from "./config/config";
 import { sanitizePathSplit } from "./utils/url";
 export class TriMiddleware {
+    children = new Map();
+    middlewares = new Set();
+    isOptional = false;
+    pathname;
     constructor(pathname = "/") {
-        this.children = new Map();
-        this.middlewares = new Set();
-        this.isOptional = false;
         this.pathname = pathname;
         if (GlobalConfig.allowDuplicateMw) {
             this.middlewares = []; // Array (DuplicateMiddlewares)
@@ -16,9 +17,10 @@ export class TriMiddleware {
     }
 }
 export default class MiddlewareConfigure extends CommonHandler {
+    triMiddlewares = new TriMiddleware();
+    basePath;
     constructor(basePath = "/") {
         super();
-        this.triMiddlewares = new TriMiddleware();
         this.basePath = basePath;
     }
     addMiddleware(pathname, middlewares) {

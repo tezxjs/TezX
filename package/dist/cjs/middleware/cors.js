@@ -5,7 +5,6 @@ function cors(option = {}) {
     const { methods, allowedHeaders, credentials, exposedHeaders, maxAge, origin, } = option;
     return async (ctx, next) => {
         const reqOrigin = ctx.req.headers.get("origin") || "";
-        // // Handle dynamic origin
         let allowOrigin = "*";
         if (typeof origin === "string") {
             allowOrigin = origin;
@@ -27,7 +26,6 @@ function cors(option = {}) {
         else if (typeof origin === "function") {
             allowOrigin = origin(reqOrigin) ? reqOrigin : "";
         }
-        // // CORS Headers
         ctx.headers.set("Access-Control-Allow-Origin", allowOrigin);
         ctx.headers.set("Access-Control-Allow-Methods", (methods || ["GET", "POST", "PUT", "DELETE"]).join(", "));
         ctx.headers.set("Access-Control-Allow-Headers", (allowedHeaders || ["Content-Type", "Authorization"]).join(", "));
@@ -40,7 +38,6 @@ function cors(option = {}) {
         if (maxAge) {
             ctx.headers.set("Access-Control-Max-Age", maxAge.toString());
         }
-        // // Handle preflight (OPTIONS) requests
         if (ctx.req.method === "OPTIONS") {
             return new Response(null, {
                 status: 204,

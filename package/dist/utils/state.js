@@ -2,6 +2,7 @@
  * A simple key-value storage class using Map.
  */
 export class State {
+    state;
     constructor() {
         // Initialize the storage as a Map
         this.state = new Map();

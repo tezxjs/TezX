@@ -3,9 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.defaultMimeType = exports.mimeTypes = void 0;
 exports.getFiles = getFiles;
 const environment_1 = require("../environment");
-// ---------- MIME Type Mapping ----------
 exports.mimeTypes = {
-    // Text/Web Formats
     html: "text/html",
     htm: "text/html",
     css: "text/css",
@@ -19,7 +17,6 @@ exports.mimeTypes = {
     tsv: "text/tab-separated-values",
     rtf: "application/rtf",
     markdown: "text/markdown",
-    // Image Formats
     png: "image/png",
     jpg: "image/jpeg",
     jpeg: "image/jpeg",
@@ -30,7 +27,6 @@ exports.mimeTypes = {
     bmp: "image/bmp",
     tiff: "image/tiff",
     psd: "image/vnd.adobe.photoshop",
-    // Video Formats
     mp4: "video/mp4",
     webm: "video/webm",
     ogg: "video/ogg",
@@ -39,7 +35,6 @@ exports.mimeTypes = {
     wmv: "video/x-ms-wmv",
     flv: "video/x-flv",
     "3gp": "video/3gpp",
-    // Audio Formats
     mp3: "audio/mpeg",
     wav: "audio/wav",
     aac: "audio/aac",
@@ -47,13 +42,11 @@ exports.mimeTypes = {
     m4a: "audio/mp4",
     mid: "audio/midi",
     midi: "audio/midi",
-    // Font Formats
     woff: "font/woff",
     woff2: "font/woff2",
     ttf: "font/ttf",
     otf: "font/otf",
     eot: "application/vnd.ms-fontobject",
-    // Application/Document Formats
     pdf: "application/pdf",
     odp: "application/vnd.oasis.opendocument.presentation",
     zip: "application/zip",
@@ -71,47 +64,39 @@ exports.mimeTypes = {
     pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
     odt: "application/vnd.oasis.opendocument.text",
     ods: "application/vnd.oasis.opendocument.spreadsheet",
-    // Programming/Data Formats
     wasm: "application/wasm",
-    map: "application/json", // Source maps
+    map: "application/json",
     yaml: "application/yaml",
     yml: "application/yaml",
     proto: "text/plain",
     graphql: "application/graphql",
-    // Security/Config Formats
     pem: "application/x-pem-file",
     cer: "application/pkix-cert",
     crt: "application/x-x509-ca-cert",
     key: "application/x-pem-file",
     pfx: "application/x-pkcs12",
-    // 3D/Model Formats
     glb: "model/gltf-binary",
     gltf: "model/gltf+json",
     obj: "model/obj",
     stl: "model/stl",
-    // Virtual/Mixed Reality
     usdz: "model/vnd.usdz+zip",
-    // System Formats
     exe: "application/x-msdownload",
     dmg: "application/x-apple-diskimage",
     deb: "application/x-debian-package",
     rpm: "application/x-redhat-package-manager",
     apk: "application/vnd.android.package-archive",
-    // Special Web Formats
     webmanifest: "application/manifest+json",
     ics: "text/calendar",
     vcf: "text/vcard",
     warc: "application/warc",
     atom: "application/atom+xml",
     rss: "application/rss+xml",
-    // Executables and scripts
     dll: "application/x-msdownload",
     sh: "application/x-sh",
     py: "text/x-python",
     rb: "text/x-ruby",
     pl: "text/x-perl",
     php: "application/x-httpd-php",
-    // Miscellaneous
     torrent: "application/x-bittorrent",
     ipa: "application/vnd.iphone",
     eps: "application/postscript",
@@ -121,9 +106,7 @@ exports.mimeTypes = {
     jar: "application/java-archive",
     gcode: "text/x.gcode",
 };
-// Fallback for unknown types
 exports.defaultMimeType = "application/octet-stream";
-// ---------- File System Utilities ----------
 async function getFiles(dir, basePath = "/", ref, option) {
     const files = [];
     const runtime = environment_1.EnvironmentDetector.getEnvironment;

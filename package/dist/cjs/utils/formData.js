@@ -106,18 +106,15 @@ async function parseMultipartBody(req, boundary, options) {
                     const formDataFieldParts = body.split("----------------------------");
                     formDataFieldParts.forEach((part) => {
                         const match = part.match(/name="(.*)"\r\n\r\n(.*)\r\n/);
-                        // const match = part.match(/Content-Disposition: form-data; name="(.*)"\r\n\r\n(.*)\r\n/);
                         if (match && match.length === 3) {
                             const name = match[1];
                             const value = match[2];
                             formDataField[name] = value;
                         }
                     });
-                    // const files = [];
                     const parts = body.split(`--${boundary}`);
                     for (const part of parts) {
                         if (part.includes("filename")) {
-                            // Extract filename, field name, and content type
                             const filenameMatch = part.match(/filename="([^"]+)"/);
                             const fieldNameMatch = part.match(/name="([^"]+)"/);
                             const contentTypeMatch = part.match(/Content-Type: ([^\r\n]+)/);
@@ -133,7 +130,6 @@ async function parseMultipartBody(req, boundary, options) {
                                     !options.allowedTypes?.includes(contentType)) {
                                     reject(`Invalid file type: "${contentType}". Allowed types: ${options.allowedTypes.join(", ")}`);
                                 }
-                                // Extract file content
                                 const fileContentStartIndex = part.indexOf("\r\n\r\n") + 4;
                                 const fileContent = Buffer.from(part.substring(fileContentStartIndex), "binary");
                                 const arrayBuffer = fileContent.buffer.slice(fileContent.byteOffset, fileContent.byteOffset + fileContent.byteLength);
@@ -163,13 +159,6 @@ async function parseMultipartBody(req, boundary, options) {
                                 else {
                                     formDataField[fieldName] = file;
                                 }
-                                // files.push({
-                                //     field: fieldName,
-                                //     filename,
-                                //     type: contentType,
-                                //     size: fileContent.length,
-                                //     buffer: fileContent,
-                                // });
                             }
                         }
                     }
@@ -181,14 +170,8 @@ async function parseMultipartBody(req, boundary, options) {
     }
     else if (runtime === "deno" || runtime === "bun") {
         const formData = await req.formData();
-        // return (formData as FormData).keys().reduce((r, current) => {
-        //     const value = (formData as FormData).get(current);
-        //     (r as any)[current as string] = value?.length === 1 ? (value as any)[0] : value;
-        //     return r;
-        // }, {} as Record<string, any>);
         const result = {};
         for (const [key, value] of formData.entries()) {
-            // Handle arrays (multiple values for the same key)
             let val = value;
             if (val instanceof File && typeof options == "object") {
                 let filename = val.name;

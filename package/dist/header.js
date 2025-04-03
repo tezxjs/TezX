@@ -1,6 +1,6 @@
 export class HeadersParser {
+    headers = new Map(); // Lowercase keys for case-insensitivity
     constructor(init) {
-        this.headers = new Map(); // Lowercase keys for case-insensitivity
         if (init) {
             this.add(init);
         }

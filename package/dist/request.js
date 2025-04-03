@@ -4,44 +4,57 @@ import { parseJsonBody, parseMultipartBody, parseTextBody, parseUrlEncodedBody, 
 import { urlParse } from "./utils/url";
 // type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD" | "ALL";
 export class Request {
+    headers = new HeadersParser();
+    /**
+     * Full request URL including protocol and query string
+     * @type {string}
+     */
+    url;
+    /**
+     * HTTP request method (GET, POST, PUT, DELETE, etc.)
+     * @type {HTTPMethod}
+     */
+    method;
+    /** Parsed URL reference containing components like query parameters, pathname, etc. */
+    urlRef = {
+        hash: undefined,
+        protocol: undefined,
+        origin: undefined,
+        username: undefined,
+        password: undefined,
+        hostname: undefined,
+        port: undefined,
+        href: undefined,
+        query: {},
+        pathname: "/",
+    };
+    /** Query parameters extracted from the URL */
+    query;
+    rawRequest;
+    /**
+     * Retrieve a parameter by name.
+     * @param name - The parameter name.
+     * @returns The parameter value if found, or undefined.
+     */
+    params = {};
+    /**
+     * Represents the remote address details of a connected client.
+     *
+     * @property {TransportType} [transport] - The transport protocol used (e.g., `"tcp"`, `"udp"`).
+     * @property {"IPv4" | "IPv6" | "Unix"} [family] - The address family, indicating whether the connection is over IPv4, IPv6, or a Unix socket.
+     * @property {string} [hostname] - The hostname or IP address of the remote client.
+     * @property {number} [port] - The remote client's port number.
+     * @default {{}}
+     *
+     * @example
+     * ```typescript
+     * ctx.req.remoteAddress
+     * ```
+     */
+    remoteAddress = {};
     // static statusText: string;
     // static bodyUsed: boolean;
     constructor(req, params, remoteAddress) {
-        this.headers = new HeadersParser();
-        /** Parsed URL reference containing components like query parameters, pathname, etc. */
-        this.urlRef = {
-            hash: undefined,
-            protocol: undefined,
-            origin: undefined,
-            username: undefined,
-            password: undefined,
-            hostname: undefined,
-            port: undefined,
-            href: undefined,
-            query: {},
-            pathname: "/",
-        };
-        /**
-         * Retrieve a parameter by name.
-         * @param name - The parameter name.
-         * @returns The parameter value if found, or undefined.
-         */
-        this.params = {};
-        /**
-         * Represents the remote address details of a connected client.
-         *
-         * @property {TransportType} [transport] - The transport protocol used (e.g., `"tcp"`, `"udp"`).
-         * @property {"IPv4" | "IPv6" | "Unix"} [family] - The address family, indicating whether the connection is over IPv4, IPv6, or a Unix socket.
-         * @property {string} [hostname] - The hostname or IP address of the remote client.
-         * @property {number} [port] - The remote client's port number.
-         * @default {{}}
-         *
-         * @example
-         * ```typescript
-         * ctx.req.remoteAddress
-         * ```
-         */
-        this.remoteAddress = {};
         this.remoteAddress = remoteAddress;
         this.headers = new HeadersParser(req?.headers);
         this.method = req?.method?.toUpperCase();

@@ -1,16 +1,4 @@
 "use strict";
-var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
-    if (kind === "m") throw new TypeError("Private method is not writable");
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-};
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
-var _Context_instances, _Context_rawRequest, _Context_status, _Context_params, _Context_localAddress, _Context_remoteAddress, _Context_handleResponse;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Context = exports.httpStatusMap = void 0;
 const environment_1 = require("./environment");
@@ -83,93 +71,27 @@ exports.httpStatusMap = {
     510: "Not Extended",
     511: "Network Authentication Required",
 };
-// export type ResponseOption = {
-//     statusText?: string; // Optional status text (e.g., "OK", "Not Found")
-//     headers?: ResponseHeaders;
-// } | ResponseHeaders
-// Action
-// Simple Name
-// Descriptive Name
-// Set a value
-// store()
-// setItem(), add()
-// Get a value
-// fetch()
-// retrieve(), getItem()
-// Delete a value
-// remove()
-// discard(), deleteItem()
-// Get all values
-// list()
-// getAll(), dump()
-// Clear everything
-// clear()
-// wipe(), reset()
 class Context {
+    #rawRequest;
+    env = {};
+    headers = new header_1.HeadersParser();
+    res;
+    pathname;
+    url;
+    method;
+    #status = 200;
+    state = new state_1.State();
+    #params = {};
+    #localAddress = {};
+    #remoteAddress = {};
     constructor(req, connInfo) {
-        _Context_instances.add(this);
-        _Context_rawRequest.set(this, void 0);
-        /**
-         * Environment variables and configuration
-         * @type {object}
-         */
-        this.env = {};
-        /**
-         * Parser for handling and manipulating HTTP headers
-         * @type {HeadersParser}
-         */
-        this.headers = new header_1.HeadersParser();
-        _Context_status.set(this, 200);
-        /**
-         * Public state container for application data
-         * state storage for middleware and plugins
-         * @type {State}
-         */
-        this.state = new state_1.State();
-        /**
-         * URL parameters extracted from route
-         * @private
-         * @type {Record<string, any>}
-         */
-        _Context_params.set(this, {});
-        // /**
-        //  * WebSocket connection instance (null until upgraded)
-        //  * @type {WebSocket | null}
-        //  */
-        // ws: WebSocket | null = null;
-        _Context_localAddress.set(this, {});
-        _Context_remoteAddress.set(this, {});
-        /**
-         * HTTP status code..
-         * @param status - number.
-         * @returns Response object with context all method.
-         */
-        this.status = (status) => {
-            __classPrivateFieldSet(this, _Context_status, status, "f");
-            return this;
-        };
-        // this.status = this.status.bind(this);
-        __classPrivateFieldSet(this, _Context_rawRequest, req, "f");
-        __classPrivateFieldSet(this, _Context_remoteAddress, connInfo.remoteAddr, "f");
-        __classPrivateFieldSet(this, _Context_localAddress, connInfo.localAddr, "f");
+        this.#rawRequest = req;
+        this.#remoteAddress = connInfo.remoteAddr;
+        this.#localAddress = connInfo.localAddr;
         this.method = req?.method?.toUpperCase();
         this.pathname = this.req.urlRef.pathname;
         this.url = this.req.url;
     }
-    /**
-     * Cookie handling utility with get/set/delete operations
-     * @returns {{
-     *  get: (name: string) => string | undefined,
-     *  all: () => Record<string, string>,
-     *  delete: (name: string, options?: CookieOptions) => void,
-     *  set: (name: string, value: string, options?: CookieOptions) => void
-     * }} Cookie handling interface
-     */
-    /**
-     * Sets a header value.
-     * @param key - Header name.
-     * @param value - Header value(s).
-     */
     header(key, value) {
         this.headers.set(key, value);
         return this;
@@ -192,41 +114,21 @@ class Context {
             }
         }
         return {
-            /**
-             * Get a specific cookie by name.
-             * @param {string} cookie - The name of the cookie to retrieve.
-             * @returns {string | undefined} - The cookie value or undefined if not found.
-             */
             get: (cookie) => {
                 return cookies?.[cookie];
             },
-            /**
-             * Get all cookies as an object.
-             * @returns {Record<string, string>} - An object containing all cookies.
-             */
             all: () => {
                 return cookies;
             },
-            /**
-             * Delete a cookie by setting its expiration to the past.
-             * @param {string} name - The name of the cookie to delete.
-             * @param {CookieOptions} [options] - Additional cookie options.
-             */
             delete: (name, options) => {
                 const value = "";
                 const cookieOptions = {
                     ...options,
-                    expires: new Date(0), // Set expiration time to the past
+                    expires: new Date(0),
                 };
                 const cookieHeader = `${name}=${value};${serializeOptions(cookieOptions)}`;
                 this.headers.set("Set-Cookie", cookieHeader);
             },
-            /**
-             * Set a new cookie with the given name, value, and options.
-             * @param {string} name - The name of the cookie.
-             * @param {string} value - The value of the cookie.
-             * @param {CookieOptions} [options] - Additional options like expiration.
-             */
             set: (name, value, options) => {
                 const cookieHeader = `${name}=${value};${serializeOptions(options || {})}`;
                 this.headers.set("Set-Cookie", cookieHeader);
@@ -234,7 +136,7 @@ class Context {
         };
     }
     json(body, ...args) {
-        let status = __classPrivateFieldGet(this, _Context_status, "f");
+        let status = this.#status;
         let headers = {
             "Content-Type": "application/json; charset=utf-8",
         };
@@ -247,13 +149,13 @@ class Context {
         else if (typeof args[0] === "object") {
             headers = { ...headers, ...args[0] };
         }
-        return __classPrivateFieldGet(this, _Context_instances, "m", _Context_handleResponse).call(this, JSON.stringify(body), {
+        return this.#handleResponse(JSON.stringify(body), {
             status: status,
             headers: headers,
         });
     }
     send(body, ...args) {
-        let status = __classPrivateFieldGet(this, _Context_status, "f");
+        let status = this.#status;
         let headers = {};
         if (typeof args[0] === "number") {
             status = args[0];
@@ -276,13 +178,13 @@ class Context {
                 headers["Content-Type"] = "application/octet-stream";
             }
         }
-        return __classPrivateFieldGet(this, _Context_instances, "m", _Context_handleResponse).call(this, body, {
+        return this.#handleResponse(body, {
             status: status,
             headers,
         });
     }
     html(data, ...args) {
-        let status = __classPrivateFieldGet(this, _Context_status, "f");
+        let status = this.#status;
         let headers = {
             "Content-Type": "text/html; charset=utf-8",
         };
@@ -295,13 +197,13 @@ class Context {
         else if (typeof args[0] === "object") {
             headers = { ...headers, ...args[0] };
         }
-        return __classPrivateFieldGet(this, _Context_instances, "m", _Context_handleResponse).call(this, data, {
+        return this.#handleResponse(data, {
             status: status,
             headers: headers,
         });
     }
     text(data, ...args) {
-        let status = __classPrivateFieldGet(this, _Context_status, "f");
+        let status = this.#status;
         let headers = {
             "Content-Type": "text/plain; charset=utf-8",
         };
@@ -314,13 +216,13 @@ class Context {
         else if (typeof args[0] === "object") {
             headers = { ...headers, ...args[0] };
         }
-        return __classPrivateFieldGet(this, _Context_instances, "m", _Context_handleResponse).call(this, data, {
+        return this.#handleResponse(data, {
             status: status,
             headers: headers,
         });
     }
     xml(data, ...args) {
-        let status = __classPrivateFieldGet(this, _Context_status, "f");
+        let status = this.#status;
         let headers = {
             "Content-Type": "application/xml; charset=utf-8",
         };
@@ -333,38 +235,29 @@ class Context {
         else if (typeof args[0] === "object") {
             headers = { ...headers, ...args[0] };
         }
-        return __classPrivateFieldGet(this, _Context_instances, "m", _Context_handleResponse).call(this, data, {
+        return this.#handleResponse(data, {
             status: status,
             headers: headers,
         });
     }
+    status = (status) => {
+        this.#status = status;
+        return this;
+    };
     set setStatus(status) {
-        __classPrivateFieldSet(this, _Context_status, status, "f");
+        this.#status = status;
     }
     get getStatus() {
-        return __classPrivateFieldGet(this, _Context_status, "f");
+        return this.#status;
     }
-    /**
-     * Redirects to a given URL.
-     * @param url - The target URL.
-     * @param status - (Optional) HTTP status code (default: 302).
-     * @returns Response object with redirect.
-     */
     redirect(url, status = 302) {
         return new Response(null, {
             status: status,
             headers: { Location: url },
         });
     }
-    /**
-     * Handles file downloads.
-     * @param filePath - The path to the file.
-     * @param fileName - The name of the downloaded file.
-     * @returns Response object for file download.
-     */
     async download(filePath, fileName) {
         try {
-            // Ensure the file exists
             let fileExists = false;
             const runtime = environment_1.EnvironmentDetector.getEnvironment;
             if (runtime === "node") {
@@ -386,7 +279,6 @@ class Context {
             if (!fileExists) {
                 throw Error("File not found");
             }
-            // Read the file content based on the runtime
             let fileBuffer;
             if (runtime === "node") {
                 const { readFileSync } = await Promise.resolve().then(() => require("fs"));
@@ -400,8 +292,7 @@ class Context {
             else if (runtime === "deno") {
                 fileBuffer = await Deno.readFile(filePath);
             }
-            // Return the file as a downloadable response
-            return __classPrivateFieldGet(this, _Context_instances, "m", _Context_handleResponse).call(this, fileBuffer, {
+            return this.#handleResponse(fileBuffer, {
                 status: 200,
                 headers: {
                     "Content-Disposition": `attachment; filename="${fileName}"`,
@@ -417,11 +308,7 @@ class Context {
     async sendFile(filePath, ...args) {
         try {
             const runtime = environment_1.EnvironmentDetector.getEnvironment;
-            // Resolve the absolute path to the file
             const resolvedPath = filePath;
-            // const resolvedPath =
-            //     runtime === "node" ? join(process.cwd(), filePath) : filePath;
-            // Check if the file exists
             let fileExists = false;
             if (runtime === "node") {
                 const { existsSync } = await Promise.resolve().then(() => require("fs"));
@@ -442,7 +329,6 @@ class Context {
             if (!fileExists) {
                 throw Error("File not found");
             }
-            // Read file stats (size)
             let fileSize = 0;
             if (runtime === "node") {
                 const { statSync } = await Promise.resolve().then(() => require("fs"));
@@ -457,7 +343,6 @@ class Context {
             }
             const ext = filePath.split(".").pop()?.toLowerCase() || "";
             const mimeType = staticFile_1.mimeTypes[ext] || staticFile_1.defaultMimeType;
-            // Create a readable stream for the file
             let fileStream;
             if (runtime === "node") {
                 const { createReadStream } = await Promise.resolve().then(() => require("fs"));
@@ -470,7 +355,6 @@ class Context {
                 const file = await Deno.open(resolvedPath, { read: true });
                 fileStream = file.readable;
             }
-            // Build headers
             let headers = {
                 "Content-Type": mimeType,
                 "Content-Length": fileSize.toString(),
@@ -485,12 +369,10 @@ class Context {
             else if (typeof args[0] === "object") {
                 headers = { ...headers, ...args[0] };
             }
-            // Add Content-Disposition header if fileName is provided
             if (fileName) {
                 headers["Content-Disposition"] = `attachment; filename="${fileName}"`;
             }
-            // Return the file as a Response object
-            return __classPrivateFieldGet(this, _Context_instances, "m", _Context_handleResponse).call(this, fileStream, {
+            return this.#handleResponse(fileStream, {
                 status: 200,
                 headers,
             });
@@ -499,49 +381,26 @@ class Context {
             throw Error("Internal Server Error" + error?.message);
         }
     }
-    // get res() {
-    //   return this.res;
-    // }
-    // set res(res: Response) {
-    //   this.res = res;
-    // }
-    /**
-     * Getter that creates a standardized Request object from internal state
-     * @returns {Request} - Normalized request object combining:
-     * - Raw platform-specific request
-     * - Parsed headers
-     * - Route parameters
-     *
-     * @example
-     * // Get standardized request
-     * const request = ctx.req;
-     * // Access route params
-     * const id = request.params.get('id');
-     */
-    get req() {
-        return new request_1.Request(__classPrivateFieldGet(this, _Context_rawRequest, "f"), this.params, __classPrivateFieldGet(this, _Context_remoteAddress, "f"));
+    #handleResponse(body, { headers, status }) {
+        let response = new Response(body, {
+            status: status,
+            headers,
+        });
+        let clone = response.clone();
+        this.res = response;
+        return clone;
     }
-    // attachWebSocket(ws) {
-    //     this.ws = ws;
-    // }
+    get req() {
+        return new request_1.Request(this.#rawRequest, this.params, this.#remoteAddress);
+    }
     set params(params) {
-        __classPrivateFieldSet(this, _Context_params, params, "f");
+        this.#params = params;
     }
     get params() {
-        return __classPrivateFieldGet(this, _Context_params, "f");
+        return this.#params;
     }
 }
 exports.Context = Context;
-_Context_rawRequest = new WeakMap(), _Context_status = new WeakMap(), _Context_params = new WeakMap(), _Context_localAddress = new WeakMap(), _Context_remoteAddress = new WeakMap(), _Context_instances = new WeakSet(), _Context_handleResponse = function _Context_handleResponse(body, { headers, status }) {
-    let response = new Response(body, {
-        status: status,
-        headers,
-    });
-    let clone = response.clone();
-    this.res = response;
-    // console.log(this.res)
-    return clone;
-};
 function serializeOptions(options) {
     const parts = [];
     if (options.maxAge) {
