@@ -59,7 +59,7 @@ export default function MarkdownRenderer({ markdown }: { markdown: string }) {
       return `
         <div class="relative">
           <button 
-            class="absolute right-2 rounded top-2 btn btn-xs btn-outline hover:text-[white!important] copy-btn btn-primary"
+            class="absolute right-2 rounded top-2 btn btn-xs btn-outline text-[white!important] copy-btn btn-primary"
             data-clipboard-text="${codeContent.trim()}"
           >
             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="18px" width="18px" xmlns="http://www.w3.org/2000/svg">
