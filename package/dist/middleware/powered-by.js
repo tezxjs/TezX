@@ -14,7 +14,7 @@
  */
 export const poweredBy = (serverName) => {
     return (ctx, next) => {
-        ctx.header('X-Powered-By', serverName || "TezX"); // Set the header with a default value
+        ctx.header("X-Powered-By", serverName || "TezX"); // Set the header with a default value
         return next(); // Proceed to next middleware
     };
 };

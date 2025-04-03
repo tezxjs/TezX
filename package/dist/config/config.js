@@ -6,19 +6,21 @@ var _a;
 import { loggerOutput } from "../utils/debugging";
 export let GlobalConfig = (_a = class {
         static get debugging() {
-            return this.debugMode ? {
-                info: (msg, ...args) => loggerOutput("info", msg, ...args),
-                warn: (msg, ...args) => loggerOutput("warn", msg, ...args),
-                error: (msg, ...args) => loggerOutput("error", msg, ...args),
-                debug: (msg, ...args) => loggerOutput("debug", msg, ...args),
-                success: (msg, ...args) => loggerOutput("success", msg, ...args),
-            } : {
-                info: (msg, ...args) => { },
-                warn: (msg, ...args) => { },
-                error: (msg, ...args) => { },
-                debug: (msg, ...args) => { },
-                success: (msg, ...args) => { }
-            };
+            return this.debugMode
+                ? {
+                    info: (msg, ...args) => loggerOutput("info", msg, ...args),
+                    warn: (msg, ...args) => loggerOutput("warn", msg, ...args),
+                    error: (msg, ...args) => loggerOutput("error", msg, ...args),
+                    debug: (msg, ...args) => loggerOutput("debug", msg, ...args),
+                    success: (msg, ...args) => loggerOutput("success", msg, ...args),
+                }
+                : {
+                    info: (msg, ...args) => { },
+                    warn: (msg, ...args) => { },
+                    error: (msg, ...args) => { },
+                    debug: (msg, ...args) => { },
+                    success: (msg, ...args) => { },
+                };
         }
     },
     __setFunctionName(_a, "GlobalConfig"),

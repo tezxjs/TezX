@@ -1,17 +1,18 @@
 export declare class HeadersParser {
     private headers;
-    constructor(init?: [string, string][] | Record<string, string>);
+    constructor(init?: [string, string | string[]][] | Record<string, string>);
     /**
      * Adds multiple headers to the parser.
      * @param headers - Headers as an array of tuples or a record object.
      */
-    add(headers: [string, string][] | Record<string, string>): this;
+    add(headers: [string, string | string[]][] | Record<string, string>): this;
     /**
      * Sets a header value.
      * @param key - Header name.
      * @param value - Header value(s).
      */
     set(key: string, value: string | string[]): this;
+    clear(): this;
     /**
      * Retrieves the first value of a header.
      * @param key - Header name.

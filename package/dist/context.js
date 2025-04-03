@@ -9,7 +9,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Context_instances, _Context_rawRequest, _Context_status, _Context_params, _Context_var, _Context_executionCtx, _Context_headers, _Context_preparedHeaders, _Context_isFresh, _Context_layout, _Context_renderer, _Context_notFoundHandler, _Context_matchResult, _Context_path, _Context_handleResponse;
+var _Context_instances, _Context_rawRequest, _Context_status, _Context_params, _Context_localAddress, _Context_remoteAddress, _Context_handleResponse;
 import { EnvironmentDetector } from "./environment";
 import { HeadersParser } from "./header";
 import { Request } from "./request";
@@ -103,7 +103,7 @@ export const httpStatusMap = {
 // clear()
 // wipe(), reset()
 export class Context {
-    constructor(req) {
+    constructor(req, connInfo) {
         _Context_instances.add(this);
         _Context_rawRequest.set(this, void 0);
         /**
@@ -134,82 +134,8 @@ export class Context {
         //  * @type {WebSocket | null}
         //  */
         // ws: WebSocket | null = null;
-        /**
-         * Generic variable storage for internal framework use
-         * @private
-         * @type {any}
-         */
-        _Context_var.set(this, void 0);
-        /**
-         * Flag indicating if the request processing is complete
-         * @type {boolean}
-         */
-        this.finalized = false;
-        /**
-         * HTTP response status code
-         * @private
-         * @type {number}
-         */
-        /**
-         * Execution context reference
-         * @private
-         * @type {any}
-         */
-        _Context_executionCtx.set(this, void 0);
-        /**
-         * Internal headers storage
-         * @private
-         * @type {any}
-         */
-        _Context_headers.set(this, void 0);
-        /**
-         * Processed headers ready for sending
-         * @private
-         * @type {any}
-         */
-        _Context_preparedHeaders.set(this, void 0);
-        // /**
-        //  * Native response object reference
-        //  * @private
-        //  * @type {any}
-        //  */
-        // res: any;
-        /**
-         * Flag indicating if the response is fresh/unmodified
-         * @private
-         * @type {boolean}
-         */
-        _Context_isFresh.set(this, true);
-        /**
-         * Active layout template reference
-         * @private
-         * @type {any}
-         */
-        _Context_layout.set(this, void 0);
-        /**
-         * Template renderer instance
-         * @private
-         * @type {any}
-         */
-        _Context_renderer.set(this, void 0);
-        /**
-         * Custom 404 handler reference
-         * @private
-         * @type {any}
-         */
-        _Context_notFoundHandler.set(this, void 0);
-        /**
-         * Route matching results
-         * @private
-         * @type {any}
-         */
-        _Context_matchResult.set(this, void 0);
-        /**
-         * Processed path information
-         * @private
-         * @type {any}
-         */
-        _Context_path.set(this, void 0);
+        _Context_localAddress.set(this, {});
+        _Context_remoteAddress.set(this, {});
         /**
          * HTTP status code..
          * @param status - number.
@@ -221,6 +147,8 @@ export class Context {
         };
         // this.status = this.status.bind(this);
         __classPrivateFieldSet(this, _Context_rawRequest, req, "f");
+        __classPrivateFieldSet(this, _Context_remoteAddress, connInfo.remoteAddr, "f");
+        __classPrivateFieldSet(this, _Context_localAddress, connInfo.localAddr, "f");
         this.method = req?.method?.toUpperCase();
         this.pathname = this.req.urlRef.pathname;
         this.url = this.req.url;
@@ -235,10 +163,10 @@ export class Context {
      * }} Cookie handling interface
      */
     /**
-    * Sets a header value.
-    * @param key - Header name.
-    * @param value - Header value(s).
-    */
+     * Sets a header value.
+     * @param key - Header name.
+     * @param value - Header value(s).
+     */
     header(key, value) {
         this.headers.set(key, value);
         return this;
@@ -588,7 +516,7 @@ export class Context {
      * const id = request.params.get('id');
      */
     get req() {
-        return new Request(__classPrivateFieldGet(this, _Context_rawRequest, "f"), this.params);
+        return new Request(__classPrivateFieldGet(this, _Context_rawRequest, "f"), this.params, __classPrivateFieldGet(this, _Context_remoteAddress, "f"));
     }
     // attachWebSocket(ws) {
     //     this.ws = ws;
@@ -600,7 +528,7 @@ export class Context {
         return __classPrivateFieldGet(this, _Context_params, "f");
     }
 }
-_Context_rawRequest = new WeakMap(), _Context_status = new WeakMap(), _Context_params = new WeakMap(), _Context_var = new WeakMap(), _Context_executionCtx = new WeakMap(), _Context_headers = new WeakMap(), _Context_preparedHeaders = new WeakMap(), _Context_isFresh = new WeakMap(), _Context_layout = new WeakMap(), _Context_renderer = new WeakMap(), _Context_notFoundHandler = new WeakMap(), _Context_matchResult = new WeakMap(), _Context_path = new WeakMap(), _Context_instances = new WeakSet(), _Context_handleResponse = function _Context_handleResponse(body, { headers, status }) {
+_Context_rawRequest = new WeakMap(), _Context_status = new WeakMap(), _Context_params = new WeakMap(), _Context_localAddress = new WeakMap(), _Context_remoteAddress = new WeakMap(), _Context_instances = new WeakSet(), _Context_handleResponse = function _Context_handleResponse(body, { headers, status }) {
     let response = new Response(body, {
         status: status,
         headers,

@@ -24,4 +24,4 @@ var params_1 = require("./utils/params");
 Object.defineProperty(exports, "useParams", { enumerable: true, get: function () { return params_1.useParams; } });
 // helpers
 // middlewares
-exports.version = '1.0.7';
+exports.version = "1.0.7";

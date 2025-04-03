@@ -32,8 +32,8 @@ export class TezX extends Router {
         }
         return null;
     }
-    async serve(req) {
-        return __classPrivateFieldGet(this, _TezX_instances, "m", _TezX_handleRequest).call(this, req);
+    async serve(req, connInfo) {
+        return __classPrivateFieldGet(this, _TezX_instances, "m", _TezX_handleRequest).call(this, req, connInfo);
     }
 }
 _TezX_instances = new WeakSet(), _TezX_hashRouter = function _TezX_hashRouter(method, pathname) {
@@ -89,7 +89,6 @@ _TezX_instances = new WeakSet(), _TezX_hashRouter = function _TezX_hashRouter(me
         const next = async () => {
             if (index < middlewares.length) {
                 return await middlewares[index++](ctx, next);
-                ;
             }
             else {
                 return await finalCallback(ctx);
@@ -121,8 +120,8 @@ _TezX_instances = new WeakSet(), _TezX_hashRouter = function _TezX_hashRouter(me
         middlewares.push(...node.middlewares);
     }
     return middlewares;
-}, _TezX_handleRequest = async function _TezX_handleRequest(req) {
-    let ctx = new Context(req);
+}, _TezX_handleRequest = async function _TezX_handleRequest(req, connInfo) {
+    let ctx = new Context(req, connInfo);
     const urlRef = ctx.req.urlRef;
     const { pathname } = urlRef;
     let middlewares = __classPrivateFieldGet(this, _TezX_instances, "m", _TezX_findMiddleware).call(this, pathname);

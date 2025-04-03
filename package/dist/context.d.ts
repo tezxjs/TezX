@@ -1,5 +1,5 @@
 import { HeadersParser } from "./header";
-import { HTTPMethod, Request } from "./request";
+import { ConnAddress, HTTPMethod, Request } from "./request";
 import { State } from "./utils/state";
 export interface CookieOptions {
     expires?: Date;
@@ -51,12 +51,7 @@ export declare class Context<T extends Record<string, any> = {}> {
      * @type {State}
      */
     state: State;
-    /**
-     * Flag indicating if the request processing is complete
-     * @type {boolean}
-     */
-    finalized: boolean;
-    constructor(req: any);
+    constructor(req: any, connInfo: ConnAddress);
     /**
      * Cookie handling utility with get/set/delete operations
      * @returns {{
@@ -67,10 +62,10 @@ export declare class Context<T extends Record<string, any> = {}> {
      * }} Cookie handling interface
      */
     /**
-    * Sets a header value.
-    * @param key - Header name.
-    * @param value - Header value(s).
-    */
+     * Sets a header value.
+     * @param key - Header name.
+     * @param value - Header value(s).
+     */
     header(key: string, value: string | string[]): this;
     get cookies(): {
         /**

@@ -16,11 +16,12 @@ import { generateID } from "../helper";
 export const requestID = (headerName = "X-Request-ID") => {
     return (ctx, next) => {
         // Get request ID from headers (case-insensitive check)
-        const existingID = ctx.headers?.get(headerName.toLowerCase()) || ctx.headers?.get(headerName);
+        const existingID = ctx.headers?.get(headerName.toLowerCase()) ||
+            ctx.headers?.get(headerName);
         // Generate new request ID if not present
         const requestId = existingID || `req-${generateID()}`;
         // Store request ID in context (for logging/tracking)
-        ctx.state.set('requestID', requestId);
+        ctx.state.set("requestID", requestId);
         // Set request ID header in response
         ctx.header(headerName, requestId);
         return next();

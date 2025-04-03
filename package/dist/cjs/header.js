@@ -41,6 +41,10 @@ class HeadersParser {
         this.headers.set(key.toLowerCase(), Array.isArray(value) ? value : [value]);
         return this;
     }
+    clear() {
+        this.headers.clear();
+        return this;
+    }
     /**
      * Retrieves the first value of a header.
      * @param key - Header name.

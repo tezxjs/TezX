@@ -6,9 +6,19 @@ export type FormDataOptions = {
     sanitized?: boolean;
     maxFiles?: number;
 };
+type TransportType = "tcp" | "udp" | "unix" | "pipe";
+export type AddressType = {
+    transport?: TransportType;
+    family?: "IPv4" | "IPv6" | "Unix";
+    address?: string;
+    port?: number;
+};
+export type ConnAddress = {
+    remoteAddr: AddressType;
+    localAddr: AddressType;
+};
 export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "OPTIONS" | "PATCH" | "HEAD" | "ALL" | "TRACE" | "CONNECT" | string;
 export declare class Request {
-    #private;
     headers: HeadersParser;
     /**
      * Full request URL including protocol and query string
@@ -24,13 +34,29 @@ export declare class Request {
     readonly urlRef: UrlRef;
     /** Query parameters extracted from the URL */
     readonly query: Record<string, any>;
+    protected rawRequest: any;
     /**
      * Retrieve a parameter by name.
      * @param name - The parameter name.
      * @returns The parameter value if found, or undefined.
      */
     readonly params: Record<string, any>;
-    constructor(req: any, params: Record<string, any>);
+    /**
+     * Represents the remote address details of a connected client.
+     *
+     * @property {TransportType} [transport] - The transport protocol used (e.g., `"tcp"`, `"udp"`).
+     * @property {"IPv4" | "IPv6" | "Unix"} [family] - The address family, indicating whether the connection is over IPv4, IPv6, or a Unix socket.
+     * @property {string} [hostname] - The hostname or IP address of the remote client.
+     * @property {number} [port] - The remote client's port number.
+     * @default {{}}
+     *
+     * @example
+     * ```typescript
+     * ctx.req.remoteAddress
+     * ```
+     */
+    remoteAddress: AddressType;
+    constructor(req: any, params: Record<string, any>, remoteAddress: AddressType);
     /**
      * Parses the request body as plain text.
      * @returns {Promise<string>} The text content of the request body.
@@ -53,3 +79,4 @@ export declare class Request {
      */
     formData(options?: FormDataOptions): Promise<Record<string, any>>;
 }
+export {};

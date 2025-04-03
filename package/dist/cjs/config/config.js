@@ -9,19 +9,21 @@ exports.GlobalConfig = void 0;
 const debugging_1 = require("../utils/debugging");
 exports.GlobalConfig = (_a = class {
         static get debugging() {
-            return this.debugMode ? {
-                info: (msg, ...args) => (0, debugging_1.loggerOutput)("info", msg, ...args),
-                warn: (msg, ...args) => (0, debugging_1.loggerOutput)("warn", msg, ...args),
-                error: (msg, ...args) => (0, debugging_1.loggerOutput)("error", msg, ...args),
-                debug: (msg, ...args) => (0, debugging_1.loggerOutput)("debug", msg, ...args),
-                success: (msg, ...args) => (0, debugging_1.loggerOutput)("success", msg, ...args),
-            } : {
-                info: (msg, ...args) => { },
-                warn: (msg, ...args) => { },
-                error: (msg, ...args) => { },
-                debug: (msg, ...args) => { },
-                success: (msg, ...args) => { }
-            };
+            return this.debugMode
+                ? {
+                    info: (msg, ...args) => (0, debugging_1.loggerOutput)("info", msg, ...args),
+                    warn: (msg, ...args) => (0, debugging_1.loggerOutput)("warn", msg, ...args),
+                    error: (msg, ...args) => (0, debugging_1.loggerOutput)("error", msg, ...args),
+                    debug: (msg, ...args) => (0, debugging_1.loggerOutput)("debug", msg, ...args),
+                    success: (msg, ...args) => (0, debugging_1.loggerOutput)("success", msg, ...args),
+                }
+                : {
+                    info: (msg, ...args) => { },
+                    warn: (msg, ...args) => { },
+                    error: (msg, ...args) => { },
+                    debug: (msg, ...args) => { },
+                    success: (msg, ...args) => { },
+                };
         }
     },
     __setFunctionName(_a, "GlobalConfig"),

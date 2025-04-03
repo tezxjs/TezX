@@ -6,6 +6,7 @@ export declare let GlobalConfig: {
     allowDuplicateMw?: boolean;
     overwriteMethod?: boolean;
     debugMode?: boolean;
+    serverInfo: any;
     readonly debugging: {
         info: (msg: string, ...args: unknown[]) => void;
         warn: (msg: string, ...args: unknown[]) => void;

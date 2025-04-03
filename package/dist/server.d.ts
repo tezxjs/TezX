@@ -49,6 +49,6 @@ export declare class TezX<T extends Record<string, any> = {}> extends Router<T> 
         middlewares: Middleware<T>[];
         params: Record<string, string>;
     } | null;
-    serve(req: Request): Promise<ServeResponse | any>;
+    serve(req: Request, connInfo: any): Promise<ServeResponse | any>;
 }
 export {};

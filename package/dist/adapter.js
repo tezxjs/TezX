@@ -1,23 +1,40 @@
 //src/adapter.ts
 import { GlobalConfig } from "./config/config";
 export function denoAdapter(TezX) {
-    async function handleRequest(req, x) {
-        const response = await TezX.serve(req);
-        if (response instanceof Response) {
-            return response;
-        }
-        else {
-            return new Response(response.body, {
-                status: response.status,
-                statusText: response.statusText || "",
-                headers: new Headers(response.headers),
-            });
-        }
-    }
     function listen(port, callback) {
         const isDeno = typeof Deno !== "undefined";
         try {
+            async function handleRequest(req, connInfo) {
+                let remoteAddr = connInfo.remoteAddr;
+                let localAddr = { ...server.addr };
+                let address = {
+                    remoteAddr: {
+                        port: remoteAddr?.port,
+                        address: remoteAddr?.hostname,
+                        transport: remoteAddr?.transport,
+                        family: remoteAddr?.family,
+                    },
+                    localAddr: {
+                        port: localAddr?.port,
+                        address: localAddr?.hostname,
+                        transport: localAddr?.transport,
+                        family: localAddr?.family,
+                    },
+                };
+                const response = await TezX.serve(req, address);
+                if (response instanceof Response) {
+                    return response;
+                }
+                else {
+                    return new Response(response.body, {
+                        status: response.status,
+                        statusText: response.statusText || "",
+                        headers: new Headers(response.headers),
+                    });
+                }
+            }
             const server = isDeno ? Deno.serve({ port }, handleRequest) : null;
+            GlobalConfig.serverInfo = server;
             if (!server) {
                 throw new Error("Deno is not find");
             }
@@ -52,8 +69,10 @@ export function bunAdapter(TezX) {
             const server = serve({
                 port: port,
                 async fetch(req) {
-                    // console.log(server.requestIP(req))
-                    const response = await TezX.serve(req);
+                    const response = await TezX.serve(req, {
+                        remoteAddr: server.requestIP(req),
+                        localAddr: server.address,
+                    });
                     if (response instanceof Response) {
                         return response;
                     }
@@ -66,6 +85,7 @@ export function bunAdapter(TezX) {
                     }
                 },
             });
+            GlobalConfig.serverInfo = server;
             // Determine protocol based on SSL configuration
             const protocol = "\x1b[1;34mhttp\x1b[0m";
             // const protocol = "\x1b[1;35mhttps\x1b[0m" : "\x1b[1;34mhttp\x1b[0m";
@@ -93,7 +113,22 @@ export function nodeAdapter(TezX) {
         import("http")
             .then((r) => {
             let server = r.createServer(async (req, res) => {
-                const response = await TezX.serve(req);
+                let address = {};
+                if (req.socket) {
+                    address = {
+                        remoteAddr: {
+                            family: req.socket.remoteFamily,
+                            address: req.socket.remoteAddress, // Client IP
+                            port: req.socket.remotePort, // Client Port
+                        },
+                        localAddr: {
+                            address: req.socket.localAddress, // Server IP
+                            port: req.socket.localPort, // Server Port
+                            family: req.socket.localFamily,
+                        },
+                    };
+                }
+                const response = await TezX.serve(req, address);
                 // console.log((req as any).socket.remoteAddress)
                 const statusText = response?.statusText;
                 if (!(response instanceof Response)) {
@@ -123,6 +158,7 @@ export function nodeAdapter(TezX) {
                 // Constructing the colorful message with emojis
                 const message = `\x1b[1m NodeJS TezX Server running at ${protocol}://localhost:${port}/\x1b[0m`;
                 // Logging the message to the console
+                GlobalConfig.serverInfo = server;
                 if (typeof callback == "function") {
                     callback(message);
                 }

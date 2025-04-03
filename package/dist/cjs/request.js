@@ -1,16 +1,4 @@
 "use strict";
-var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
-    if (kind === "m") throw new TypeError("Private method is not writable");
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-};
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
-var _Request_request;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Request = void 0;
 const environment_1 = require("./environment");
@@ -21,7 +9,7 @@ const url_1 = require("./utils/url");
 class Request {
     // static statusText: string;
     // static bodyUsed: boolean;
-    constructor(req, params) {
+    constructor(req, params, remoteAddress) {
         this.headers = new header_1.HeadersParser();
         /** Parsed URL reference containing components like query parameters, pathname, etc. */
         this.urlRef = {
@@ -36,17 +24,32 @@ class Request {
             query: {},
             pathname: "/",
         };
-        _Request_request.set(this, void 0);
         /**
          * Retrieve a parameter by name.
          * @param name - The parameter name.
          * @returns The parameter value if found, or undefined.
          */
         this.params = {};
+        /**
+         * Represents the remote address details of a connected client.
+         *
+         * @property {TransportType} [transport] - The transport protocol used (e.g., `"tcp"`, `"udp"`).
+         * @property {"IPv4" | "IPv6" | "Unix"} [family] - The address family, indicating whether the connection is over IPv4, IPv6, or a Unix socket.
+         * @property {string} [hostname] - The hostname or IP address of the remote client.
+         * @property {number} [port] - The remote client's port number.
+         * @default {{}}
+         *
+         * @example
+         * ```typescript
+         * ctx.req.remoteAddress
+         * ```
+         */
+        this.remoteAddress = {};
+        this.remoteAddress = remoteAddress;
         this.headers = new header_1.HeadersParser(req?.headers);
         this.method = req?.method?.toUpperCase();
         this.params = params;
-        __classPrivateFieldSet(this, _Request_request, req, "f");
+        this.rawRequest = req;
         if (environment_1.EnvironmentDetector.getEnvironment == "node") {
             const protocol = environment_1.EnvironmentDetector.detectProtocol(req);
             const host = environment_1.EnvironmentDetector.getHost(this.headers);
@@ -63,7 +66,7 @@ class Request {
      * @returns {Promise<string>} The text content of the request body.
      */
     async text() {
-        return await (0, formData_1.parseTextBody)(__classPrivateFieldGet(this, _Request_request, "f"));
+        return await (0, formData_1.parseTextBody)(this.rawRequest);
     }
     /**
      * Parses the request body as JSON.
@@ -73,7 +76,7 @@ class Request {
     async json() {
         const contentType = this.headers.get("content-type") || "";
         if (contentType.includes("application/json")) {
-            return await (0, formData_1.parseJsonBody)(__classPrivateFieldGet(this, _Request_request, "f"));
+            return await (0, formData_1.parseJsonBody)(this.rawRequest);
         }
         else {
             return {};
@@ -94,17 +97,17 @@ class Request {
             throw Error("Invalid Content-Type");
         }
         if (contentType.includes("application/json")) {
-            return await (0, formData_1.parseJsonBody)(__classPrivateFieldGet(this, _Request_request, "f"));
+            return await (0, formData_1.parseJsonBody)(this.rawRequest);
         }
         else if (contentType.includes("application/x-www-form-urlencoded")) {
-            return (0, formData_1.parseUrlEncodedBody)(__classPrivateFieldGet(this, _Request_request, "f"));
+            return (0, formData_1.parseUrlEncodedBody)(this.rawRequest);
         }
         else if (contentType.includes("multipart/form-data")) {
             const boundary = contentType?.split("; ")?.[1]?.split("=")?.[1];
             if (!boundary) {
                 throw Error("Boundary not found");
             }
-            return await (0, formData_1.parseMultipartBody)(__classPrivateFieldGet(this, _Request_request, "f"), boundary, options);
+            return await (0, formData_1.parseMultipartBody)(this.rawRequest, boundary, options);
         }
         else {
             return {};
@@ -112,4 +115,3 @@ class Request {
     }
 }
 exports.Request = Request;
-_Request_request = new WeakMap();

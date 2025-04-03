@@ -32,15 +32,15 @@ const secureHeaders = (options = {}) => {
             return typeof value === "function" ? value(ctx) : value;
         };
         // Resolve all options with defaults
-        const contentSecurityPolicy = resolveValue(options.contentSecurityPolicy)
-            || "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';";
+        const contentSecurityPolicy = resolveValue(options.contentSecurityPolicy) ||
+            "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';";
         const frameGuard = resolveValue(options.frameGuard) ?? true;
         const hsts = resolveValue(options.hsts) ?? true;
         const xssProtection = resolveValue(options.xssProtection) ?? true;
         const noSniff = resolveValue(options.noSniff) ?? true;
-        const referrerPolicy = resolveValue(options.referrerPolicy) || 'no-referrer';
-        const permissionsPolicy = resolveValue(options.permissionsPolicy)
-            || "geolocation=(), microphone=(), camera=()";
+        const referrerPolicy = resolveValue(options.referrerPolicy) || "no-referrer";
+        const permissionsPolicy = resolveValue(options.permissionsPolicy) ||
+            "geolocation=(), microphone=(), camera=()";
         // 🚦 Set headers based on resolved values
         if (contentSecurityPolicy) {
             ctx.headers.set("Content-Security-Policy", contentSecurityPolicy);

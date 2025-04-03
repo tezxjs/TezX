@@ -10,7 +10,7 @@ import DocsViewerSearch from "./DocsViewerSearch";
 import { version } from "../../package/package.json";
 type Props = {};
 
-export default function Header({ }: Props) {
+export default function Header({}: Props) {
   const [theme, setTheme] = useState<"dark" | "light">("light");
   // const params: ParamsType = useParams();
   // const { content, name, type } = params;
@@ -76,7 +76,9 @@ export default function Header({ }: Props) {
     <>
       <header className="bg-base-100 border-b-2 p-4 sticky top-0 h-16 z-50 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link href='/'><img src="/favicon.ico" className="h-8" alt={SiteTitle} /></Link>
+          <Link href="/">
+            <img src="/favicon.ico" className="h-8" alt={SiteTitle} />
+          </Link>
           <h1 className="text-xl font-bold capitalize flex flex-col">
             <span>{SiteTitle}</span>
             <span className="text-xs text-primary font-extrabold">
