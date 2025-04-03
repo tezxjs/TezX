@@ -44,8 +44,9 @@ bun add tezx
 Create a simple TezX server:
 
 ```javascript
-import { nodeAdapter, TezX } from "tezx";
+import { TezX } from "tezx";
 import { logger } from "tezx/middleware";
+import {nodeAdapter} from "tezx/adapter";
 
 const app = new TezX();
 app.use(logger())
@@ -175,6 +176,7 @@ Add the following scripts to **`package.json`**:
 **`src/index.ts`**
 
 ```typescript
+import {bunAdapter} from "tezx/adapter";
 bunAdapter(server).listen(3000, (message) => {
   console.log(message);
 });
@@ -191,6 +193,7 @@ bunAdapter(server).listen(3000, (message) => {
 **`src/index.ts`**
 
 ```typescript
+import {denoAdapter} from "tezx/adapter";
 denoAdapter(server).listen(3000, (message) => {
   console.log(message);
 });
