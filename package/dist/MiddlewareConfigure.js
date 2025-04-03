@@ -9,10 +9,10 @@ export class TriMiddleware {
     constructor(pathname = "/") {
         this.pathname = pathname;
         if (GlobalConfig.allowDuplicateMw) {
-            this.middlewares = []; // Array (DuplicateMiddlewares)
+            this.middlewares = [];
         }
         else {
-            this.middlewares = new Set(); // Set (UniqueMiddlewares)
+            this.middlewares = new Set();
         }
     }
 }
@@ -24,20 +24,7 @@ export default class MiddlewareConfigure extends CommonHandler {
         this.basePath = basePath;
     }
     addMiddleware(pathname, middlewares) {
-        // console.log(this.basePath)
-        // console.log(pathname);
         const parts = sanitizePathSplit(this.basePath, pathname);
-        // console.log(parts, this.basePath)
-        // if (/(\/\*|\?)/.test(pathname)) {
-        //     let path = parts.join("/");
-        //     let handler = this.routeMiddlewares.get(path);
-        //     if (!handler) {
-        //         // handler.set(method, { callback: callback, middlewares });
-        //         return this.routeMiddlewares.set(path, middlewares);
-        //     }
-        //     // console.log(this.routeMiddlewares, 35345)
-        //     return handler.push(...middlewares);
-        // }
         let node = this.triMiddlewares;
         for (const part of parts) {
             if (part.startsWith("*")) {
@@ -47,7 +34,6 @@ export default class MiddlewareConfigure extends CommonHandler {
                 node = node.children.get("*");
             }
             else if (part.startsWith(":")) {
-                // Dynamic parameter (e.g., :id)
                 const isOptional = part?.endsWith("?");
                 if (isOptional) {
                     node.isOptional = isOptional;
@@ -59,13 +45,11 @@ export default class MiddlewareConfigure extends CommonHandler {
                 node = node.children.get(":");
             }
             else {
-                // Static path segment
                 if (!node.children.has(part)) {
                     node.children.set(part, new TriMiddleware());
                 }
                 node = node.children.get(part);
             }
-            // Optionally, you could store the parameter name in the node if needed
         }
         if (GlobalConfig.allowDuplicateMw) {
             node.middlewares.push(...middlewares);
@@ -75,7 +59,5 @@ export default class MiddlewareConfigure extends CommonHandler {
                 node.middlewares.add(middleware);
             }
         }
-        // this.triMiddleware = new TriMiddleware(pathname);
-        // this.triMiddleware.middlewares = middlewares;
     }
 }

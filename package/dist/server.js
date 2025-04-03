@@ -1,4 +1,3 @@
-//src/server.ts
 import { GlobalConfig } from "./config/config";
 import { Context, httpStatusMap } from "./context";
 import { Router } from "./router";
@@ -33,7 +32,6 @@ export class TezX extends Router {
         return null;
     }
     #triRouter(method, pathname) {
-        // const compositeRequest = `${method} ${pathname}`;
         const parts = pathname.split("/").filter(Boolean);
         const params = {};
         let node = this.triRouter;
@@ -64,7 +62,6 @@ export class TezX extends Router {
         return null;
     }
     findRoute(method, pathname) {
-        // ! Priority * -> :
         const route = this.#triRouter(method, pathname) || this.#hashRouter(method, pathname);
         if (route) {
             return {

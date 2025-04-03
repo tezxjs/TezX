@@ -1,14 +1,11 @@
-//src/router.ts
 import { GlobalConfig } from "./config/config";
 import MiddlewareConfigure, { TriMiddleware, } from "./MiddlewareConfigure";
 import { getFiles } from "./utils/staticFile";
 import { sanitizePathSplit } from "./utils/url";
 class TrieRouter {
     children = new Map();
-    // handlers: Map<HTTPMethod, Callback<any>> = new Map();
     handlers = new Map();
     pathname;
-    // isWildcard: boolean = false;
     paramName;
     isParam = false;
     constructor(pathname = "/") {
@@ -23,7 +20,6 @@ export class Router extends MiddlewareConfigure {
     constructor({ basePath = "/", env = {} } = {}) {
         super(basePath);
         this.basePath = basePath;
-        // GlobalConfig.env = { ...GlobalConfig.env, ...env };
         this.env = { ...env };
         this.triRouter = new TrieRouter(basePath);
         this.get.bind(this);
@@ -96,76 +92,45 @@ export class Router extends MiddlewareConfigure {
         this.#registerRoute(method, path, ...args);
         return this;
     }
-    /**
-     * Mount a sub-router at specific path prefix
-     * @param path - Base path for the sub-router
-     * @param router - Router instance to mount
-     * @returns Current instance for chaining
-     *
-     * @example
-     * const apiRouter = new Router();
-     * apiRouter.get('/users', () => { ... });
-     * server.addRouter('/api', apiRouter);
-     */
     addRouter(path, router) {
         return this.#routeAddTriNode(path, router);
     }
-    /**
-     * Create route group with shared path prefix
-     * @param prefix - Path prefix for the group
-     * @param callback - Function that receives group-specific router
-     * @returns Current router instance for chaining
-     *
-     * @example
-     * app.group('/v1', (group) => {
-     *   group.get('/users', v1UserHandler);
-     * });
-     */
     group(prefix, callback) {
         const router = new Router({
             basePath: prefix,
-            // env: this.env
         });
         callback(router);
         this.#routeAddTriNode("/", router);
         return this;
     }
     use(...args) {
-        let path = "/"; // Default path
+        let path = "/";
         let middlewares = [];
         let router;
         if (typeof args[0] === "string") {
-            // First argument is a path
             path = args[0];
             if (Array.isArray(args[1])) {
-                // Second argument is an array of middlewares
                 middlewares = args[1];
-                router = args[2]; // Third argument is the callback or Router
+                router = args[2];
             }
             else if (typeof args[1] === "function") {
-                // Second argument is a single middleware
                 middlewares = [args[1]];
-                router = args[2]; // Third argument is the callback or Router
+                router = args[2];
             }
             else {
-                // Only path is provided
                 router = args[1];
             }
         }
         else if (typeof args[0] === "function") {
-            // First argument is a middleware or callback
             if (args.length === 1) {
-                // Only a callback is provided
                 middlewares = [args[0]];
             }
             else {
-                // First argument is middleware, second is callback or Router
                 middlewares = [args[0]];
                 router = args[1];
             }
         }
         else if (Array.isArray(args[0])) {
-            // First argument is an array of middlewares
             middlewares = args[0];
             router = args[1];
         }
@@ -178,39 +143,30 @@ export class Router extends MiddlewareConfigure {
         }
         return this;
     }
-    // Other HTTP methods (PUT, DELETE, etc.) can be added similarly
     #registerRoute(method, path, ...args) {
-        // Determine middlewares and callback from the arguments
-        // Ensure at least one argument is provided
         if (args.length === 0) {
             throw new Error("At least one handler is required.");
         }
-        // Extract middlewares and callback
         let middlewares = [];
         let callback;
         if (args.length > 1) {
-            // If there are multiple arguments, the first argument may be middleware
             if (Array.isArray(args[0])) {
-                middlewares = args[0]; // Middleware as an array
+                middlewares = args[0];
             }
             else if (typeof args[0] === "function") {
-                middlewares = [args[0]]; // Middleware as a single function
+                middlewares = [args[0]];
             }
-            callback = args[args.length - 1]; // Callback is the last argument
+            callback = args[args.length - 1];
         }
         else {
-            // If there is only one argument, it must be the callback
             callback = args[0];
         }
-        // Validate callback
         if (typeof callback !== "function") {
             throw new Error("Route callback function is missing or invalid.");
         }
-        // Validate middlewares
         if (!middlewares.every((middleware) => typeof middleware === "function")) {
             throw new Error("Middleware must be a function or an array of functions.");
         }
-        // const handler = this.#createHandler(middlewares, callback);
         this.#addRoute(method, path, callback, middlewares);
     }
     #addRoute(method, path, callback, middlewares) {
@@ -237,7 +193,6 @@ export class Router extends MiddlewareConfigure {
         let node = this.triRouter;
         for (const part of parts) {
             if (part.startsWith(":")) {
-                // Dynamic parameter (e.g., :id)
                 if (!node.children.has(":")) {
                     node.children.set(":", new TrieRouter());
                 }
@@ -246,16 +201,13 @@ export class Router extends MiddlewareConfigure {
                 if (!node.paramName) {
                     node.paramName = part.slice(1);
                 }
-                // node.paramName = part.slice(1); // Extract parameter name
             }
             else {
-                // Static path segment
                 if (!node.children.has(part)) {
                     node.children.set(part, new TrieRouter());
                 }
                 node = node.children.get(part);
             }
-            // Optionally, you could store the parameter name in the node if needed
         }
         if (!GlobalConfig.overwriteMethod && node.handlers.has(method))
             return;
@@ -263,9 +215,7 @@ export class Router extends MiddlewareConfigure {
             callback: callback,
             middlewares: finalMiddleware,
         });
-        // node.middlewares = middlewares;
-        node.pathname = path; // Save the original route for later param extraction
-        // node.method = method;
+        node.pathname = path;
     }
     #addRouteMiddleware(path, middlewareFunctions) {
         this.addMiddleware(path, middlewareFunctions);
@@ -276,8 +226,6 @@ export class Router extends MiddlewareConfigure {
             throw new Error("Router instance is required.");
         }
         const parts = sanitizePathSplit(this.basePath, path);
-        // this.env = {...this.env, }
-        // ! ❤️‍🔥handle for routers DONE; with ids
         if (router.routers.size) {
             for (const [segment, handlers] of router.routers) {
                 let path = parts.length ? parts.join("/") + "/" + segment : segment;
@@ -290,24 +238,16 @@ export class Router extends MiddlewareConfigure {
                     }
                 }
                 else {
-                    this.routers.set(path, new Map(handlers)); // Ensure a new map is stored
+                    this.routers.set(path, new Map(handlers));
                 }
             }
         }
         let rootNode = this.triRouter;
         let rootMiddlewares = this.triMiddlewares;
-        // !❤️‍🔥DONE
         if (parts.length == 0) {
             this.#addMiddlewareHandlerIDsTriNode(rootNode, rootMiddlewares, router);
         }
         else {
-            // Summary:
-            // 1. This loop processes both routing and middleware assignment in a single pass.
-            // 2. Wildcard segments ('*') create a middleware node and move to it.
-            // 3. Dynamic route parameters (':param') store the parameter name and handle optional parameters.
-            // 4. Static paths are mapped directly in the trie structure.
-            // 5. Middleware nodes mirror the route nodes to apply middlewares at the correct path levels.
-            // 6. The approach ensures O(N) time complexity, making it efficient for large-scale routing.
             for (const part of parts) {
                 if (part.startsWith(":")) {
                     if (!rootNode.children.has(":")) {
@@ -325,9 +265,7 @@ export class Router extends MiddlewareConfigure {
                     }
                     rootNode = rootNode.children.get(part);
                 }
-                // Optionally, you could store the parameter name in the node if needed
             }
-            // ! FOR MIDDLEWARE
             for (const part of parts) {
                 if (part.startsWith("*")) {
                     if (!rootMiddlewares.children.has("*")) {
@@ -336,7 +274,6 @@ export class Router extends MiddlewareConfigure {
                     rootMiddlewares = rootMiddlewares.children.get("*");
                 }
                 else if (part.startsWith(":")) {
-                    // Dynamic parameter (e.g., :id)
                     const isOptional = part?.endsWith("?");
                     if (isOptional) {
                         rootMiddlewares.isOptional = isOptional;
@@ -348,7 +285,6 @@ export class Router extends MiddlewareConfigure {
                     rootMiddlewares = rootMiddlewares.children.get(":");
                 }
                 else {
-                    // Static path segment
                     if (!rootMiddlewares.children.has(part)) {
                         rootMiddlewares.children.set(part, new TriMiddleware());
                     }
@@ -360,38 +296,25 @@ export class Router extends MiddlewareConfigure {
     }
     #addMiddlewareHandlerIDsTriNode(rootNode, rootMiddlewares, router) {
         function addSubRouter(children, node) {
-            let rtN = node; // Root node ke current node hisebe set kora
-            // Looping through all child routers
+            let rtN = node;
             for (const element of children) {
-                const pathSegment = element[0]; // Current path segment
-                const subRouter = element[1]; // TrieRouter object
-                // Check kortechi je current node er children e ei segment ache kina
+                const pathSegment = element[0];
+                const subRouter = element[1];
                 if (rtN.children.has(pathSegment)) {
-                    // Jodi thake, tahole existing node ta retrieve kori
                     let findNode = rtN.children.get(pathSegment);
-                    // Sub-router er shob method handlers (GET, POST, etc.) ke existing node e merge kori
                     for (const [method, handlers] of subRouter.handlers) {
                         if (!GlobalConfig.overwriteMethod && node.handlers.has(method))
                             return;
-                        findNode.handlers.set(method, handlers); // Existing node e new handlers add kora
+                        findNode.handlers.set(method, handlers);
                     }
-                    // // Merge method handlers (GET, POST, etc.)
-                    // for (const [method, handlers] of subRouter.handlers) {
-                    // }
-                    // subRouter.handlers.clear(); // Original sub-router er handlers clear kore dei
-                    // Jodi sub-router er children thake, tahole recursively abar function call kore merge kori
                     if (subRouter.children.size) {
                         addSubRouter(subRouter.children, findNode);
                     }
                 }
                 else {
-                    // Jodi parent e ei segment na thake, tahole direct add kore dei
                     rtN.children.set(pathSegment, subRouter);
-                    // Jodi kono sub-router e children thake, ta clear kore dei, karon eta alrady merge hoyeche
-                    // subRouter.children.clear();
                 }
             }
-            // console.log(rtN.children)
         }
         let routerNode = router.triRouter;
         const routerMiddlewares = router.triMiddlewares;
@@ -407,18 +330,13 @@ export class Router extends MiddlewareConfigure {
         if (routerNode.children.size > 0) {
             addSubRouter(routerNode.children, rootNode);
         }
-        //  ! FOR MIDDLEWARE
         function addMiddleware(children, node) {
-            let n = node; // Root node ke current node hisebe set kora
-            // Looping through all middleware children
+            let n = node;
             for (const [path, middlewareNode] of children) {
-                // Jodi already path ta parent node e thake
                 if (n.children.has(path)) {
-                    let findNode = n.children.get(path); // Existing node ta retrieve kori
-                    // **Middleware Merge:** New middlewares ke existing node er sathe add kori
+                    let findNode = n.children.get(path);
                     if (GlobalConfig.allowDuplicateMw) {
                         findNode.middlewares.push(...middlewareNode.middlewares);
-                        // (middlewareNode.middlewares as DuplicateMiddlewares).length = 0;
                     }
                     else {
                         for (const mw of middlewareNode.middlewares) {
@@ -427,30 +345,18 @@ export class Router extends MiddlewareConfigure {
                             }
                             findNode.middlewares.add(mw);
                         }
-                        // (middlewareNode.middlewares as UniqueMiddlewares).clear();
                     }
-                    // **Recursive Merge:** Jodi nested middleware children thake, tahole abar call kori
                     if (middlewareNode.children.size) {
                         addMiddleware(middlewareNode.children, findNode);
                     }
                 }
                 else {
-                    // Jodi path root e na thake, tahole direct add kori
                     n.children.set(path, middlewareNode);
-                    // **Clearing Middlewares & Children:** Jeno extra memory na use hoy
-                    // if (GlobalConfig.allowDuplicateMw) {
-                    //     (middlewareNode.middlewares as DuplicateMiddlewares).length = 0;
-                    // }
-                    // else {
-                    //     (middlewareNode.middlewares as UniqueMiddlewares).clear();
-                    // }
-                    // middlewareNode.children.clear();
                 }
             }
         }
         if (GlobalConfig.allowDuplicateMw) {
             rootMiddlewares.middlewares.push(...routerMiddlewares.middlewares);
-            // (routerMiddlewares.middlewares as DuplicateMiddlewares).length = 0;
         }
         else {
             for (const mw of routerMiddlewares.middlewares) {
@@ -459,7 +365,6 @@ export class Router extends MiddlewareConfigure {
                 }
                 rootMiddlewares.middlewares.add(mw);
             }
-            // (routerMiddlewares.middlewares as UniqueMiddlewares).clear();
         }
         if (routerMiddlewares.children.size > 0) {
             addMiddleware(routerMiddlewares.children, rootMiddlewares);

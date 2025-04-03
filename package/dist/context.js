@@ -68,82 +68,20 @@ export const httpStatusMap = {
     510: "Not Extended",
     511: "Network Authentication Required",
 };
-// export type ResponseOption = {
-//     statusText?: string; // Optional status text (e.g., "OK", "Not Found")
-//     headers?: ResponseHeaders;
-// } | ResponseHeaders
-// Action
-// Simple Name
-// Descriptive Name
-// Set a value
-// store()
-// setItem(), add()
-// Get a value
-// fetch()
-// retrieve(), getItem()
-// Delete a value
-// remove()
-// discard(), deleteItem()
-// Get all values
-// list()
-// getAll(), dump()
-// Clear everything
-// clear()
-// wipe(), reset()
 export class Context {
     #rawRequest;
-    /**
-     * Environment variables and configuration
-     * @type {object}
-     */
     env = {};
-    /**
-     * Parser for handling and manipulating HTTP headers
-     * @type {HeadersParser}
-     */
     headers = new HeadersParser();
-    /**
-     * Parser for handling and manipulating HTTP response(Read Only)
-     * @type {Response}
-     */
     res;
-    /**
-     * Request path without query parameters
-     * @type {string}
-     */
     pathname;
-    /**
-     * Full request URL including protocol and query string
-     * @type {string}
-     */
     url;
-    /**
-     * HTTP request method (GET, POST, PUT, DELETE, etc.)
-     * @type {HTTPMethod}
-     */
     method;
     #status = 200;
-    /**
-     * Public state container for application data
-     * state storage for middleware and plugins
-     * @type {State}
-     */
     state = new State();
-    /**
-     * URL parameters extracted from route
-     * @private
-     * @type {Record<string, any>}
-     */
     #params = {};
-    // /**
-    //  * WebSocket connection instance (null until upgraded)
-    //  * @type {WebSocket | null}
-    //  */
-    // ws: WebSocket | null = null;
     #localAddress = {};
     #remoteAddress = {};
     constructor(req, connInfo) {
-        // this.status = this.status.bind(this);
         this.#rawRequest = req;
         this.#remoteAddress = connInfo.remoteAddr;
         this.#localAddress = connInfo.localAddr;
@@ -151,20 +89,6 @@ export class Context {
         this.pathname = this.req.urlRef.pathname;
         this.url = this.req.url;
     }
-    /**
-     * Cookie handling utility with get/set/delete operations
-     * @returns {{
-     *  get: (name: string) => string | undefined,
-     *  all: () => Record<string, string>,
-     *  delete: (name: string, options?: CookieOptions) => void,
-     *  set: (name: string, value: string, options?: CookieOptions) => void
-     * }} Cookie handling interface
-     */
-    /**
-     * Sets a header value.
-     * @param key - Header name.
-     * @param value - Header value(s).
-     */
     header(key, value) {
         this.headers.set(key, value);
         return this;
@@ -187,41 +111,21 @@ export class Context {
             }
         }
         return {
-            /**
-             * Get a specific cookie by name.
-             * @param {string} cookie - The name of the cookie to retrieve.
-             * @returns {string | undefined} - The cookie value or undefined if not found.
-             */
             get: (cookie) => {
                 return cookies?.[cookie];
             },
-            /**
-             * Get all cookies as an object.
-             * @returns {Record<string, string>} - An object containing all cookies.
-             */
             all: () => {
                 return cookies;
             },
-            /**
-             * Delete a cookie by setting its expiration to the past.
-             * @param {string} name - The name of the cookie to delete.
-             * @param {CookieOptions} [options] - Additional cookie options.
-             */
             delete: (name, options) => {
                 const value = "";
                 const cookieOptions = {
                     ...options,
-                    expires: new Date(0), // Set expiration time to the past
+                    expires: new Date(0),
                 };
                 const cookieHeader = `${name}=${value};${serializeOptions(cookieOptions)}`;
                 this.headers.set("Set-Cookie", cookieHeader);
             },
-            /**
-             * Set a new cookie with the given name, value, and options.
-             * @param {string} name - The name of the cookie.
-             * @param {string} value - The value of the cookie.
-             * @param {CookieOptions} [options] - Additional options like expiration.
-             */
             set: (name, value, options) => {
                 const cookieHeader = `${name}=${value};${serializeOptions(options || {})}`;
                 this.headers.set("Set-Cookie", cookieHeader);
@@ -333,11 +237,6 @@ export class Context {
             headers: headers,
         });
     }
-    /**
-     * HTTP status code..
-     * @param status - number.
-     * @returns Response object with context all method.
-     */
     status = (status) => {
         this.#status = status;
         return this;
@@ -348,27 +247,14 @@ export class Context {
     get getStatus() {
         return this.#status;
     }
-    /**
-     * Redirects to a given URL.
-     * @param url - The target URL.
-     * @param status - (Optional) HTTP status code (default: 302).
-     * @returns Response object with redirect.
-     */
     redirect(url, status = 302) {
         return new Response(null, {
             status: status,
             headers: { Location: url },
         });
     }
-    /**
-     * Handles file downloads.
-     * @param filePath - The path to the file.
-     * @param fileName - The name of the downloaded file.
-     * @returns Response object for file download.
-     */
     async download(filePath, fileName) {
         try {
-            // Ensure the file exists
             let fileExists = false;
             const runtime = EnvironmentDetector.getEnvironment;
             if (runtime === "node") {
@@ -390,7 +276,6 @@ export class Context {
             if (!fileExists) {
                 throw Error("File not found");
             }
-            // Read the file content based on the runtime
             let fileBuffer;
             if (runtime === "node") {
                 const { readFileSync } = await import("fs");
@@ -404,7 +289,6 @@ export class Context {
             else if (runtime === "deno") {
                 fileBuffer = await Deno.readFile(filePath);
             }
-            // Return the file as a downloadable response
             return this.#handleResponse(fileBuffer, {
                 status: 200,
                 headers: {
@@ -421,11 +305,7 @@ export class Context {
     async sendFile(filePath, ...args) {
         try {
             const runtime = EnvironmentDetector.getEnvironment;
-            // Resolve the absolute path to the file
             const resolvedPath = filePath;
-            // const resolvedPath =
-            //     runtime === "node" ? join(process.cwd(), filePath) : filePath;
-            // Check if the file exists
             let fileExists = false;
             if (runtime === "node") {
                 const { existsSync } = await import("fs");
@@ -446,7 +326,6 @@ export class Context {
             if (!fileExists) {
                 throw Error("File not found");
             }
-            // Read file stats (size)
             let fileSize = 0;
             if (runtime === "node") {
                 const { statSync } = await import("fs");
@@ -461,7 +340,6 @@ export class Context {
             }
             const ext = filePath.split(".").pop()?.toLowerCase() || "";
             const mimeType = mimeTypes[ext] || defaultMimeType;
-            // Create a readable stream for the file
             let fileStream;
             if (runtime === "node") {
                 const { createReadStream } = await import("fs");
@@ -474,7 +352,6 @@ export class Context {
                 const file = await Deno.open(resolvedPath, { read: true });
                 fileStream = file.readable;
             }
-            // Build headers
             let headers = {
                 "Content-Type": mimeType,
                 "Content-Length": fileSize.toString(),
@@ -489,11 +366,9 @@ export class Context {
             else if (typeof args[0] === "object") {
                 headers = { ...headers, ...args[0] };
             }
-            // Add Content-Disposition header if fileName is provided
             if (fileName) {
                 headers["Content-Disposition"] = `attachment; filename="${fileName}"`;
             }
-            // Return the file as a Response object
             return this.#handleResponse(fileStream, {
                 status: 200,
                 headers,
@@ -510,34 +385,11 @@ export class Context {
         });
         let clone = response.clone();
         this.res = response;
-        // console.log(this.res)
         return clone;
     }
-    // get res() {
-    //   return this.res;
-    // }
-    // set res(res: Response) {
-    //   this.res = res;
-    // }
-    /**
-     * Getter that creates a standardized Request object from internal state
-     * @returns {Request} - Normalized request object combining:
-     * - Raw platform-specific request
-     * - Parsed headers
-     * - Route parameters
-     *
-     * @example
-     * // Get standardized request
-     * const request = ctx.req;
-     * // Access route params
-     * const id = request.params.get('id');
-     */
     get req() {
         return new Request(this.#rawRequest, this.params, this.#remoteAddress);
     }
-    // attachWebSocket(ws) {
-    //     this.ws = ws;
-    // }
     set params(params) {
         this.#params = params;
     }

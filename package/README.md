@@ -47,7 +47,8 @@ Create a simple TezX server:
 import { nodeAdapter, TezX } from "tezx";
 import { logger } from "tezx/middleware";
 
-const app = new TezX({ logger });
+const app = new TezX();
+app.use(logger())
 
 app.static("/", "./static");
 
@@ -96,7 +97,7 @@ Enhance your application with middleware:
 
 ```javascript
 app.use((ctx, next) => {
-  console.log(`Incoming request: ${ctx.request.url}`);
+  console.log(`Incoming request: ${ctx.req.url}`);
   return next();
 });
 ```
@@ -152,7 +153,11 @@ Add the following scripts to **`package.json`**:
 
 ```json
 "scripts": {
-    "build": "npx pkgroll --clean-dist",
+    "clean": "rm -rf dist",
+    "build:cjs": "tsc --module CommonJS --outDir dist/cjs --removeComments",
+    "build:esm": "tsc --module ESNext --outDir dist/mjs --removeComments",
+    "build:dts": "tsc --module ESNext --outDir dist/types --declaration --emitDeclarationOnly",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:dts",
     "start": "node dist/index.js",
     "nodemon": "nodemon src/index.ts",
     "dev": "tsx watch src/index.ts"

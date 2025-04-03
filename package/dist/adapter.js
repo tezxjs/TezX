@@ -1,4 +1,3 @@
-//src/adapter.ts
 import { GlobalConfig } from "./config/config";
 export function denoAdapter(TezX) {
     function listen(port, callback) {
@@ -38,11 +37,8 @@ export function denoAdapter(TezX) {
             if (!server) {
                 throw new Error("Deno is not find");
             }
-            // Determine protocol based on SSL configuration
             const protocol = "\x1b[1;34mhttp\x1b[0m";
-            // Constructing the colorful message with emojis
             const message = `\x1b[1m🚀 Deno TezX Server running at ${protocol}://localhost:${port}/\x1b[0m`;
-            // Logging the message to the console
             if (typeof callback === "function") {
                 callback(message);
             }
@@ -86,12 +82,8 @@ export function bunAdapter(TezX) {
                 },
             });
             GlobalConfig.serverInfo = server;
-            // Determine protocol based on SSL configuration
             const protocol = "\x1b[1;34mhttp\x1b[0m";
-            // const protocol = "\x1b[1;35mhttps\x1b[0m" : "\x1b[1;34mhttp\x1b[0m";
-            // Constructing the colorful message with emojis
             const message = `\x1b[1m Bun TezX Server running at ${protocol}://localhost:${port}/\x1b[0m`;
-            // Logging the message to the console
             if (typeof callback == "function") {
                 callback(message);
             }
@@ -118,46 +110,38 @@ export function nodeAdapter(TezX) {
                     address = {
                         remoteAddr: {
                             family: req.socket.remoteFamily,
-                            address: req.socket.remoteAddress, // Client IP
-                            port: req.socket.remotePort, // Client Port
+                            address: req.socket.remoteAddress,
+                            port: req.socket.remotePort,
                         },
                         localAddr: {
-                            address: req.socket.localAddress, // Server IP
-                            port: req.socket.localPort, // Server Port
+                            address: req.socket.localAddress,
+                            port: req.socket.localPort,
                             family: req.socket.localFamily,
                         },
                     };
                 }
                 const response = await TezX.serve(req, address);
-                // console.log((req as any).socket.remoteAddress)
                 const statusText = response?.statusText;
                 if (!(response instanceof Response)) {
                     throw new Error("Invalid response from TezX.serve");
                 }
                 const headers = Object.fromEntries(await response.headers.entries());
-                // const body = await response.text(); // Ensure it's a string
                 if (statusText) {
                     res.statusMessage = statusText;
                 }
                 res.writeHead(response.status, headers);
                 const { Readable } = await import("stream");
                 if (response.body instanceof Readable) {
-                    // Stream the body (e.g., for large files or binary data)
                     response.body.pipe(res);
                 }
                 else {
-                    // Convert body to text or buffer
                     const body = await response.arrayBuffer();
                     res.end(Buffer.from(body));
                 }
             });
             server.listen(port, () => {
-                // Determine protocol based on SSL configuration
                 const protocol = "\x1b[1;34mhttp\x1b[0m";
-                // const protocol = "\x1b[1;35mhttps\x1b[0m" : "\x1b[1;34mhttp\x1b[0m";
-                // Constructing the colorful message with emojis
                 const message = `\x1b[1m NodeJS TezX Server running at ${protocol}://localhost:${port}/\x1b[0m`;
-                // Logging the message to the console
                 GlobalConfig.serverInfo = server;
                 if (typeof callback == "function") {
                     callback(message);
