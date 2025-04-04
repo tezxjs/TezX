@@ -122,27 +122,27 @@ export async function parseMultipartBody(req, boundary, options) {
                                 }
                                 if (Array.isArray(options?.allowedTypes) &&
                                     !options.allowedTypes?.includes(contentType)) {
-                                    reject(`Invalid file type: "${contentType}". Allowed types: ${options.allowedTypes.join(", ")}`);
+                                    reject(new Error(`Invalid file type: "${contentType}". Allowed types: ${options.allowedTypes.join(", ")}`));
                                 }
                                 const fileContentStartIndex = part.indexOf("\r\n\r\n") + 4;
                                 const fileContent = Buffer.from(part.substring(fileContentStartIndex), "binary");
                                 const arrayBuffer = fileContent.buffer.slice(fileContent.byteOffset, fileContent.byteOffset + fileContent.byteLength);
                                 if (typeof options?.maxSize !== "undefined" &&
                                     fileContent.byteLength > options.maxSize) {
-                                    reject(`File size exceeds the limit: ${fileContent.byteLength} bytes (Max: ${options.maxSize} bytes)`);
+                                    reject(new Error(`File size exceeds the limit: ${fileContent.byteLength} bytes (Max: ${options.maxSize} bytes)`));
                                 }
                                 const file = new File([arrayBuffer], filename, {
                                     type: contentType,
                                 });
                                 if (typeof options?.maxFiles != "undefined" &&
                                     options.maxFiles == 0) {
-                                    reject(`Field "${fieldName}" exceeds the maximum allowed file count of ${options.maxFiles}.`);
+                                    reject(new Error(`Field "${fieldName}" exceeds the maximum allowed file count of ${options.maxFiles}.`));
                                 }
                                 if (formDataField[fieldName]) {
                                     if (Array.isArray(formDataField[fieldName])) {
                                         if (typeof options?.maxFiles != "undefined" &&
                                             formDataField[fieldName]?.length >= options.maxFiles) {
-                                            reject(`Field "${fieldName}" exceeds the maximum allowed file count of ${options.maxFiles}.`);
+                                            reject(new Error(`Field "${fieldName}" exceeds the maximum allowed file count of ${options.maxFiles}.`));
                                         }
                                         formDataField[fieldName].push(file);
                                     }
