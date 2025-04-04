@@ -63,6 +63,7 @@ Add **`package.json`**
 **`src/index.ts`**
 
 ```ts
+import {bunAdapter} from "tezx/adapter";
 bunAdapter(app).listen(3001, (message) => {
     console.log(message)
 })
@@ -81,6 +82,7 @@ Add **`package.json`**
 **`src/index.ts`**
 
 ```ts
+import {denoAdapter} from "tezx/adapter";
 denoAdapter(app).listen(3001, (message) => {
     console.log(message)
 })
