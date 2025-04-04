@@ -140,7 +140,10 @@ function nodeAdapter(TezX) {
                 }
                 else {
                     const body = await response.arrayBuffer();
-                    res.end(Buffer.from(body));
+                    if (body.byteLength > 0) {
+                        return res.end(Buffer.from(body));
+                    }
+                    res.end();
                 }
             });
             server.listen(port, () => {
