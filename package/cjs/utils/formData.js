@@ -93,7 +93,6 @@ async function parseUrlEncodedBody(req) {
 }
 async function parseMultipartBody(req, boundary, options) {
     const runtime = environment_1.EnvironmentDetector.getEnvironment;
-    const x = options?.sanitized;
     if (runtime === "node") {
         return new Promise((resolve, reject) => {
             let body = "";
@@ -153,6 +152,10 @@ async function parseMultipartBody(req, boundary, options) {
                                         formDataField[fieldName].push(file);
                                     }
                                     else {
+                                        if (typeof options?.maxFiles != "undefined" &&
+                                            options.maxFiles == 1) {
+                                            reject(new Error(`Field "${fieldName}" exceeds the maximum allowed file count of ${options.maxFiles}.`));
+                                        }
                                         formDataField[fieldName] = [formDataField[fieldName], file];
                                     }
                                 }
@@ -204,6 +207,10 @@ async function parseMultipartBody(req, boundary, options) {
                     result[key].push(val);
                 }
                 else {
+                    if (val instanceof File &&
+                        typeof options?.maxFiles != "undefined" && options.maxFiles == 1) {
+                        throw new Error(`Field "${key}" exceeds the maximum allowed file count of ${options.maxFiles}.`);
+                    }
                     result[key] = [result[key], val];
                 }
             }
