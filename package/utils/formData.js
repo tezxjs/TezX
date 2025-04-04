@@ -102,7 +102,17 @@ export async function parseMultipartBody(req, boundary, options) {
                         if (match && match.length === 3) {
                             const name = match[1];
                             const value = match[2];
-                            formDataField[name] = value;
+                            if (formDataField[name]) {
+                                if (Array.isArray(formDataField[name])) {
+                                    formDataField[name].push(value);
+                                }
+                                else {
+                                    formDataField[name] = [formDataField[name], value];
+                                }
+                            }
+                            else {
+                                formDataField[name] = value;
+                            }
                         }
                     });
                     const parts = body.split(`--${boundary}`);
