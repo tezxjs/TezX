@@ -149,15 +149,15 @@ export async function parseMultipartBody(req, boundary, options) {
                                 }
                                 if (formDataField[fieldName]) {
                                     if (Array.isArray(formDataField[fieldName])) {
+                                        const existingFiles = formDataField[fieldName].filter(f => f instanceof File);
                                         if (typeof options?.maxFiles != "undefined" &&
-                                            formDataField[fieldName]?.length >= options.maxFiles) {
+                                            existingFiles.length >= options.maxFiles) {
                                             reject(new Error(`Field "${fieldName}" exceeds the maximum allowed file count of ${options.maxFiles}.`));
                                         }
                                         formDataField[fieldName].push(file);
                                     }
                                     else {
-                                        if (typeof options?.maxFiles != "undefined" &&
-                                            options.maxFiles == 1) {
+                                        if (formDataField[fieldName] instanceof File && typeof options?.maxFiles != "undefined" && options.maxFiles == 1) {
                                             reject(new Error(`Field "${fieldName}" exceeds the maximum allowed file count of ${options.maxFiles}.`));
                                         }
                                         formDataField[fieldName] = [formDataField[fieldName], file];
