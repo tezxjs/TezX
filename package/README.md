@@ -46,10 +46,10 @@ Create a simple TezX server:
 ```javascript
 import { TezX } from "tezx";
 import { logger } from "tezx/middleware";
-import {nodeAdapter} from "tezx/adapter";
+import { nodeAdapter } from "tezx/adapter";
 
 const app = new TezX();
-app.use(logger())
+app.use(logger());
 
 app.static("/", "./static");
 
@@ -176,7 +176,7 @@ Add the following scripts to **`package.json`**:
 **`src/index.ts`**
 
 ```ts
-import {bunAdapter} from "tezx/adapter";
+import { bunAdapter } from "tezx/adapter";
 bunAdapter(server).listen(3000, (message) => {
   console.log(message);
 });
@@ -193,7 +193,7 @@ bunAdapter(server).listen(3000, (message) => {
 **`src/index.ts`**
 
 ```ts
-import {denoAdapter} from "tezx/adapter";
+import { denoAdapter } from "tezx/adapter";
 denoAdapter(server).listen(3000, (message) => {
   console.log(message);
 });
