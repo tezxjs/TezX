@@ -29,7 +29,7 @@ yarn add tezx
 
 <!-- ### Deno
 
-```typescript
+```ts
 import { TezX } from "https://deno.land/x/tezx/mod.ts";
 ``` -->
 
@@ -175,7 +175,7 @@ Add the following scripts to **`package.json`**:
 
 **`src/index.ts`**
 
-```typescript
+```ts
 import {bunAdapter} from "tezx/adapter";
 bunAdapter(server).listen(3000, (message) => {
   console.log(message);
@@ -192,7 +192,7 @@ bunAdapter(server).listen(3000, (message) => {
 
 **`src/index.ts`**
 
-```typescript
+```ts
 import {denoAdapter} from "tezx/adapter";
 denoAdapter(server).listen(3000, (message) => {
   console.log(message);

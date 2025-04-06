@@ -51,7 +51,7 @@ export declare class Request {
      * @default {{}}
      *
      * @example
-     * ```typescript
+     * ```ts
      * ctx.req.remoteAddress
      * ```
      */
