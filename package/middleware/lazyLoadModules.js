@@ -37,9 +37,6 @@ export const lazyLoadModules = (options) => {
                 throw new Error(`Module validation failed for: ${moduleName}`);
             }
             ctx.dependencies = dependencies;
-            if (module.init && typeof module.init === "function") {
-                module.init(dependencies, ctx);
-            }
             if (enableCache) {
                 cacheStorage.set(moduleName, {
                     module,
@@ -50,6 +47,12 @@ export const lazyLoadModules = (options) => {
             ctx[moduleContextKey] = module;
             lifecycleHooks.onComplete?.(moduleName, module, ctx);
             GlobalConfig.debugging.success(`Successfully loaded module: ${moduleName}`);
+            if (module.init && typeof module.init === "function") {
+                const initResult = await module.init(dependencies, ctx);
+                if (initResult instanceof Response) {
+                    return initResult;
+                }
+            }
         }
         catch (error) {
             GlobalConfig.debugging.error(`Error loading module: ${moduleName}`, error);
