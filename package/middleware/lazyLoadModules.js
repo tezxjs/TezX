@@ -45,14 +45,14 @@ export const lazyLoadModules = (options) => {
                 lifecycleHooks.onCacheSet?.(moduleName, module, ctx);
             }
             ctx[moduleContextKey] = module;
-            lifecycleHooks.onComplete?.(moduleName, module, ctx);
-            GlobalConfig.debugging.success(`Successfully loaded module: ${moduleName}`);
             if (module.init && typeof module.init === "function") {
                 const initResult = await module.init(dependencies, ctx);
                 if (initResult instanceof Response) {
                     return initResult;
                 }
             }
+            lifecycleHooks.onComplete?.(moduleName, module, ctx);
+            GlobalConfig.debugging.success(`Successfully loaded module: ${moduleName}`);
         }
         catch (error) {
             GlobalConfig.debugging.error(`Error loading module: ${moduleName}`, error);
