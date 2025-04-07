@@ -24,3 +24,6 @@ __exportStar(require("./secureHeaders"), exports);
 __exportStar(require("./xssProtection"), exports);
 __exportStar(require("./sanitizeHeader"), exports);
 __exportStar(require("./rateLimiter"), exports);
+__exportStar(require("./pagination"), exports);
+__exportStar(require("./i18nMiddleware"), exports);
+__exportStar(require("./lazyLoadModules"), exports);
