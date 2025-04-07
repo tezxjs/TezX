@@ -1,11 +1,11 @@
+import { GlobalConfig } from "../core/config";
 ;
 export const lazyLoadModules = (options) => {
     const { moduleKey = (ctx) => ctx.req.params[queryKeyModule] || ctx.req.query[queryKeyModule], getModuleLoader, queryKeyModule = "module", moduleContextKey = "module", cacheTTL = 3600000, dependencies = {}, enableCache = true, cacheStorage = new Map(), lifecycleHooks = {}, validateModule } = options;
     return async (ctx, next) => {
-        console.log(ctx.pathname?.split("/"));
         let moduleName = moduleKey(ctx) || ctx.req.params[queryKeyModule] || ctx.req.query[queryKeyModule];
         if (!moduleName) {
-            console.warn("No module specified for lazy loading.");
+            GlobalConfig.debugging.warn("No module specified for lazy loading.");
             return await next();
         }
         try {
@@ -16,7 +16,7 @@ export const lazyLoadModules = (options) => {
                         cacheStorage.delete(moduleName);
                     }
                     else {
-                        console.log(`Using cached module: ${moduleName}`);
+                        GlobalConfig.debugging.info(`Using cached module: ${moduleName}`);
                         ctx[moduleContextKey] = cached?.module;
                         lifecycleHooks.onCacheHit?.(moduleName, ctx[moduleContextKey], ctx);
                         lifecycleHooks.onComplete?.(moduleName, ctx[moduleContextKey], ctx);
@@ -49,14 +49,13 @@ export const lazyLoadModules = (options) => {
             }
             ctx[moduleContextKey] = module;
             lifecycleHooks.onComplete?.(moduleName, module, ctx);
-            console.log(`Successfully loaded module: ${moduleName}`);
+            GlobalConfig.debugging.success(`Successfully loaded module: ${moduleName}`);
         }
         catch (error) {
-            console.error(`Error loading module: ${moduleName}`, error);
+            GlobalConfig.debugging.error(`Error loading module: ${moduleName}`, error);
             lifecycleHooks.onError?.(moduleName, error, ctx);
             ctx.setStatus = 500;
-            ctx.body = { error: `Failed to load module: ${moduleName}` };
-            return;
+            throw error;
         }
         return await next();
     };
