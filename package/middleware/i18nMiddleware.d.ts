@@ -8,10 +8,10 @@ export type loadTranslations = (language: string) => Promise<{
 }>;
 export type I18nOptions = {
     /**
-      * 🌐 Function to load translations dynamically
-      * @param language - Language code to load (e.g., "en-US")
-      * @returns Promise with translations map and optional expiration
-      */
+     * 🌐 Function to load translations dynamically
+     * @param language - Language code to load (e.g., "en-US")
+     * @returns Promise with translations map and optional expiration
+     */
     loadTranslations: (language: string) => Promise<{
         translations: TranslationMap;
         expiresAt?: Date | number;

@@ -11,7 +11,7 @@ export const xssProtection = (options = {}) => {
         ctx.headers.set("X-XSS-Protection", xssHeaderValue);
         GlobalConfig.debugging.warn(`🟢 X-XSS-Protection set to: ${xssHeaderValue}`);
         if (fallbackCSP) {
-            const existingCSP = ctx.headers.get("Content-Security-Policy");
+            const existingCSP = ctx.req.headers.get("Content-Security-Policy");
             if (!existingCSP) {
                 ctx.headers.set("Content-Security-Policy", fallbackCSP);
                 GlobalConfig.debugging.warn(`🟣 Fallback CSP set to: ${fallbackCSP}`);

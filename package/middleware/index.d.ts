@@ -9,4 +9,4 @@ export * from "./sanitizeHeader";
 export * from "./rateLimiter";
 export * from "./pagination";
 export * from "./i18nMiddleware";
-export * from './lazyLoadModules';
+export * from "./lazyLoadModules";

@@ -133,7 +133,7 @@ class TezX extends router_1.Router {
                     return (await this.#createHandler(middlewares, callback)(ctx));
                 }
                 else {
-                    let res = await config_1.GlobalConfig.notFound(ctx);
+                    let res = (await config_1.GlobalConfig.notFound(ctx));
                     ctx.setStatus = res.status;
                     return res;
                 }

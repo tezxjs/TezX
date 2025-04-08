@@ -4,12 +4,12 @@ exports.i18nMiddleware = void 0;
 const config_1 = require("../core/config");
 const i18nMiddleware = (options) => {
     const { loadTranslations, defaultCacheDuration = 3600000, isCacheValid = (cached) => cached.expiresAt > Date.now(), detectLanguage = (ctx) => ctx.req.query.lang ||
-        ctx.cookies?.get('lang') ||
-        ctx.headers.get('accept-language')?.split(',')[0] ||
+        ctx.cookies?.get("lang") ||
+        ctx.req.headers.get("accept-language")?.split(",")[0] ||
         options.defaultLanguage ||
-        'en', defaultLanguage = 'en', fallbackChain = [], translationFunctionKey = 't', formatMessage = (message, options = {}) => {
-        return Object.entries(options).reduce((msg, [key, value]) => msg.replace(new RegExp(`{{${key}}}`, 'g'), String(value)), message);
-    }, cacheTranslations = true } = options;
+        "en", defaultLanguage = "en", fallbackChain = [], translationFunctionKey = "t", formatMessage = (message, options = {}) => {
+        return Object.entries(options).reduce((msg, [key, value]) => msg.replace(new RegExp(`{{${key}}}`, "g"), String(value)), message);
+    }, cacheTranslations = true, } = options;
     const translationCache = {};
     return async (ctx, next) => {
         try {
@@ -17,12 +17,12 @@ const i18nMiddleware = (options) => {
             const languageChain = [
                 detectedLanguage,
                 ...fallbackChain,
-                defaultLanguage
+                defaultLanguage,
             ].filter(Boolean);
             let translations = null;
             let selectedLanguage = defaultLanguage;
             for (const lang of languageChain) {
-                const normalizedLang = lang.split('-')[0].toLowerCase();
+                const normalizedLang = lang.split("-")[0].toLowerCase();
                 if (cacheTranslations && translationCache[normalizedLang]) {
                     const cached = translationCache[normalizedLang];
                     if (isCacheValid(cached, normalizedLang)) {
@@ -38,7 +38,7 @@ const i18nMiddleware = (options) => {
                     if (expiresAt instanceof Date) {
                         expirationTime = expiresAt.getTime();
                     }
-                    else if (typeof expiresAt === 'number') {
+                    else if (typeof expiresAt === "number") {
                         expirationTime = expiresAt;
                     }
                     translations = loadedTranslations;
@@ -56,13 +56,13 @@ const i18nMiddleware = (options) => {
                 }
             }
             if (!translations) {
-                throw new Error('No translations available');
+                throw new Error("No translations available");
             }
             ctx[translationFunctionKey] = (key, options) => {
-                const value = key.split('.').reduce((acc, k) => {
-                    return (acc && typeof acc === 'object') ? acc[k] : undefined;
+                const value = key.split(".").reduce((acc, k) => {
+                    return acc && typeof acc === "object" ? acc[k] : undefined;
                 }, translations);
-                const message = typeof value === 'string' ? value : key;
+                const message = typeof value === "string" ? value : key;
                 return formatMessage(message, options);
             };
             ctx.language = selectedLanguage;
@@ -70,7 +70,7 @@ const i18nMiddleware = (options) => {
             return await next();
         }
         catch (error) {
-            config_1.GlobalConfig.debugging.error('i18n processing error:', error);
+            config_1.GlobalConfig.debugging.error("i18n processing error:", error);
             ctx.setStatus = 500;
             throw error;
         }

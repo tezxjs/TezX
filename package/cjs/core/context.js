@@ -98,7 +98,7 @@ class Context {
         return this;
     }
     get cookies() {
-        const c = this.headers.getAll("cookie");
+        const c = this.req.headers.getAll("cookie");
         let cookies = {};
         if (Array.isArray(c) && c.length != 0) {
             const cookieHeader = c.join("; ").split(";");
@@ -167,8 +167,8 @@ class Context {
         else if (typeof args[0] === "object") {
             headers = args[0];
         }
-        if ((!headers["Content-Type"] && !headers['content-type'])) {
-            if (typeof body === "string" || typeof body == 'number') {
+        if (!headers["Content-Type"] && !headers["content-type"]) {
+            if (typeof body === "string" || typeof body == "number") {
                 headers["Content-Type"] = "text/plain;";
             }
             else if (typeof body === "object" && body !== null) {

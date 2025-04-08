@@ -17,7 +17,11 @@ const paginationHandler = (options = {}) => {
             queryKeyLimit,
         };
         if (getDataSource) {
-            const dataSourceResponse = await getDataSource(ctx, { page, limit, offset });
+            const dataSourceResponse = await getDataSource(ctx, {
+                page,
+                limit,
+                offset,
+            });
             const total = dataSourceResponse?.[countKey];
             const data = dataSourceResponse?.[dataKey];
             const pagination = {

@@ -1,9 +1,10 @@
 import { GlobalConfig } from "../core/config";
-;
 export const lazyLoadModules = (options) => {
-    const { moduleKey = (ctx) => ctx.req.params[queryKeyModule] || ctx.req.query[queryKeyModule], getModuleLoader, queryKeyModule = "module", moduleContextKey = "module", cacheTTL = 3600000, dependencies = {}, enableCache = true, cacheStorage = new Map(), lifecycleHooks = {}, validateModule } = options;
+    const { moduleKey = (ctx) => ctx.req.params[queryKeyModule] || ctx.req.query[queryKeyModule], getModuleLoader, queryKeyModule = "module", moduleContextKey = "module", cacheTTL = 3600000, dependencies = {}, enableCache = true, cacheStorage = new Map(), lifecycleHooks = {}, validateModule, } = options;
     return async (ctx, next) => {
-        let moduleName = moduleKey(ctx) || ctx.req.params[queryKeyModule] || ctx.req.query[queryKeyModule];
+        let moduleName = moduleKey(ctx) ||
+            ctx.req.params[queryKeyModule] ||
+            ctx.req.query[queryKeyModule];
         if (!moduleName) {
             GlobalConfig.debugging.warn("No module specified for lazy loading.");
             return await next();
@@ -40,7 +41,7 @@ export const lazyLoadModules = (options) => {
             if (enableCache) {
                 cacheStorage.set(moduleName, {
                     module,
-                    expiresAt: Date.now() + cacheTTL
+                    expiresAt: Date.now() + cacheTTL,
                 });
                 lifecycleHooks.onCacheSet?.(moduleName, module, ctx);
             }

@@ -1,4 +1,3 @@
-import { HeadersParser } from "./header";
 import { UrlRef } from "../utils/url";
 export type FormDataOptions = {
     maxSize?: number;
@@ -19,7 +18,7 @@ export type ConnAddress = {
 };
 export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "OPTIONS" | "PATCH" | "HEAD" | "ALL" | "TRACE" | "CONNECT" | string;
 export declare class Request {
-    headers: HeadersParser;
+    #private;
     /**
      * Full request URL including protocol and query string
      * @type {string}
@@ -57,6 +56,81 @@ export declare class Request {
      */
     remoteAddress: AddressType;
     constructor(req: any, params: Record<string, any>, remoteAddress: AddressType);
+    get headers(): {
+        /**
+         * Retrieves the first value of a specific header.
+         * @param key - Header name to search for.
+         * @returns The first header value or undefined if not found.
+         * @example
+         * get('content-type') // returns 'application/json'
+         */
+        get: (key: string) => string | undefined;
+        /**
+         * Retrieves all values of a specific header.
+         * If multiple values exist for a header, all will be returned as an array.
+         * @param key - Header name to search for.
+         * @returns An array of all header values associated with the key.
+         * @example
+         * getAll('accept-language') // returns ['en-US', 'fr-CA']
+         */
+        getAll: (key: string) => string | never[];
+        /**
+         * Checks if a header exists in the request.
+         * @param key - Header name to check for existence.
+         * @returns True if the header exists, false otherwise.
+         * @example
+         * has('Authorization') // returns true if 'Authorization' header exists
+         */
+        has: (key: string) => boolean;
+        /**
+         * Returns an iterator over all header entries.
+         * Each entry is a [key, value] pair where the value can be an array of strings.
+         * @returns IterableIterator for iterating over header key-value pairs.
+         * @example
+         * for (let [key, value] of headers.entries()) {
+         *   console.log(key, value);
+         * }
+         */
+        entries: () => IterableIterator<[string, string[]]>;
+        /**
+         * Returns an iterator over all header keys.
+         * This allows iteration over the names of all headers in the request.
+         * @returns IterableIterator of header names.
+         * @example
+         * for (let key of headers.keys()) {
+         *   console.log(key);
+         * }
+         */
+        keys: () => IterableIterator<string>;
+        /**
+         * Returns an iterator over all header values.
+         * This allows iteration over the values of all headers, with each value being an array of strings.
+         * @returns IterableIterator of header values.
+         * @example
+         * for (let value of headers.values()) {
+         *   console.log(value);
+         * }
+         */
+        values: () => IterableIterator<string[]>;
+        /**
+         * Iterates over each header and executes a callback for every header found.
+         * @param callback - Function to execute for each header. Receives the value array and key.
+         * @example
+         * headers.forEach((value, key) => {
+         *   console.log(key, value);
+         * });
+         */
+        forEach: (callback: (value: string[], key: string) => void) => void;
+        /**
+         * Converts all headers into a plain JavaScript object.
+         * Single-value headers are represented as a string, and multi-value headers as an array.
+         * @returns A plain object with header names as keys and their values as strings or arrays.
+         * @example
+         * const headersObject = headers.toObject();
+         * console.log(headersObject);
+         */
+        toObject: () => Record<string, string | string[]>;
+    };
     /**
      * Parses the request body as plain text.
      * @returns {Promise<string>} The text content of the request body.
