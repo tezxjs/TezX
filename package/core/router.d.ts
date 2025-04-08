@@ -3,9 +3,8 @@ import MiddlewareConfigure, { DuplicateMiddlewares, UniqueMiddlewares } from "./
 import { HTTPMethod } from "./request";
 export type NextCallback = () => Promise<any>;
 export type ctx<T extends Record<string, any> = {}> = Context<T> & T;
-export type CallbackReturnType = Promise<Response> | Response | string | Record<string, any>;
-export type Callback<T extends Record<string, any> = {}> = (ctx: ctx<T>) => CallbackReturnType;
-export type Middleware<T extends Record<string, any> = {}> = (ctx: ctx<T>, next: NextCallback) => NextCallback | Promise<NextCallback | Response> | Response | string | Record<string, any>;
+export type Callback<T extends Record<string, any> = {}> = (ctx: ctx<T>) => Promise<Response> | Response | string | Record<string, any> | void;
+export type Middleware<T extends Record<string, any> = {}> = (ctx: ctx<T>, next: NextCallback) => NextCallback | Promise<NextCallback | Response> | Response | string | Record<string, any> | void;
 export type RouterConfig = {
     /**
      * `env` allows you to define environment variables for the router.
