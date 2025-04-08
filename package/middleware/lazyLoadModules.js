@@ -9,12 +9,16 @@ export const lazyLoadModules = (options) => {
             GlobalConfig.debugging.warn("No module specified for lazy loading.");
             return await next();
         }
+        let storage = cacheStorage;
+        if (enableCache && !cacheStorage) {
+            storage = new Map();
+        }
         try {
             if (enableCache) {
-                const cached = cacheStorage.get(moduleName);
+                const cached = storage.get(moduleName);
                 if (cached) {
                     if (cached.expiresAt > Date.now()) {
-                        cacheStorage.delete(moduleName);
+                        storage.delete(moduleName);
                     }
                     else {
                         GlobalConfig.debugging.info(`Using cached module: ${moduleName}`);
@@ -39,7 +43,7 @@ export const lazyLoadModules = (options) => {
             }
             ctx.dependencies = dependencies;
             if (enableCache) {
-                cacheStorage.set(moduleName, {
+                storage.set(moduleName, {
                     module,
                     expiresAt: Date.now() + cacheTTL,
                 });

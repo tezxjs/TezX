@@ -28,7 +28,7 @@ export type RateLimiterOptions = {
      * 🔄 Custom cache storage implementation (e.g., using `Map`, `Redis`, etc.).
      * By default, it uses a `Map<string, { count: number; resetTime: number }>`.
      */
-    cacheStorage?: {
+    storage?: {
         get: (key: string) => {
             count: number;
             resetTime: number;
@@ -38,13 +38,7 @@ export type RateLimiterOptions = {
             resetTime: number;
         }) => void;
         delete: (key: string) => void;
-        entries: () => IterableIterator<[
-            string,
-            {
-                count: number;
-                resetTime: number;
-            }
-        ]>;
+        clearExpired: () => void;
     };
     /**
      * 🛑 Custom rate limit exceeded handler
