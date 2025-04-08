@@ -1,4 +1,5 @@
-import { Context, Middleware } from "..";
+import { Context } from "..";
+import { Middleware } from "../core/router";
 export type PaginationOptions = {
     /**
      * 🔢 Default page number when not specified
@@ -52,13 +53,26 @@ export type PaginationOptions = {
      *   return db.find().skip((page-1)*limit).limit(limit);
      * }
      */
-    getDataSource?: (ctx: Context, pagination: {
+    getDataSource?: <T extends Record<string, any> = {}>(ctx: Context<T>, pagination: {
         page: number;
         limit: number;
         offset: number;
     }) => Promise<{
         [key: string]: any;
     }>;
+};
+export type PaginationBodyType = {
+    [x: string]: any;
+    pagination: {
+        page: number;
+        limit: number;
+        totalItems: any;
+        totalPages: number;
+        hasNextPage: boolean;
+        hasPrevPage: boolean;
+        nextPage: number | null;
+        prevPage: number | null;
+    };
 };
 /**
  * 🗂️ Advanced pagination middleware with dynamic data fetching
@@ -69,12 +83,12 @@ export type PaginationOptions = {
  * - Comprehensive pagination metadata
  * - Built-in error handling
  *
- * @param {PaginationOptions} [options={}] - Configuration options
- * @returns {Middleware} Configured middleware
+ * @param {PaginationOptions} [options={}] - Configuration options for pagination behavior
+ * @returns {Callback} Middleware function that processes pagination and sets response
  *
  * @example
  * // Basic usage
- * app.get('/users', paginationHandler(), getUsers);
+ * app.get('/users', paginationHandler());
  *
  * // With dynamic data source
  * app.get('/products', paginationHandler({

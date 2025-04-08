@@ -79,7 +79,7 @@ export class Context {
     #status = 200;
     state = new State();
     #params = {};
-    body = {};
+    #resBody;
     #localAddress = {};
     #remoteAddress = {};
     constructor(req, connInfo) {
@@ -164,8 +164,8 @@ export class Context {
         else if (typeof args[0] === "object") {
             headers = args[0];
         }
-        if (!headers["Content-Type"]) {
-            if (typeof body === "string") {
+        if ((!headers["Content-Type"] && !headers['content-type'])) {
+            if (typeof body === "string" || typeof body == 'number') {
                 headers["Content-Type"] = "text/plain;";
             }
             else if (typeof body === "object" && body !== null) {
@@ -385,6 +385,7 @@ export class Context {
             headers,
         });
         let clone = response.clone();
+        this.body = body;
         this.res = response;
         return clone;
     }
@@ -393,6 +394,12 @@ export class Context {
     }
     set params(params) {
         this.#params = params;
+    }
+    set body(body) {
+        this.#resBody = body;
+    }
+    get body() {
+        return this.#resBody;
     }
     get params() {
         return this.#params;

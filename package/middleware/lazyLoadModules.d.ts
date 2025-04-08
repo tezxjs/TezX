@@ -42,7 +42,6 @@ interface LazyLoadOptions<T> {
         get: (key: string) => CacheItem<T> | undefined;
         set: (key: string, value: CacheItem<T>) => void;
         delete: (key: string) => void;
-        clear?: () => void;
     };
     /**
      * ⏳ Cache Time-To-Live (TTL) in milliseconds. This determines how long cached modules are valid.

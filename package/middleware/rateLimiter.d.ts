@@ -25,12 +25,31 @@ export type RateLimiterOptions = {
       //  * @todo Implement Redis storage
       //  */
     /**
+       * 🔄 Custom cache storage implementation (e.g., using `Map`, `Redis`, etc.).
+       * By default, it uses a `Map<string, { count: number; resetTime: number }>`.
+       */
+    cacheStorage?: {
+        get: (key: string) => {
+            count: number;
+            resetTime: number;
+        } | undefined;
+        set: (key: string, value: {
+            count: number;
+            resetTime: number;
+        }) => void;
+        delete: (key: string) => void;
+        entries: () => IterableIterator<[string, {
+            count: number;
+            resetTime: number;
+        }]>;
+    };
+    /**
      * 🛑 Custom rate limit exceeded handler
      * @default Sends 429 status with Retry-After header
      * @example
      * onError: (ctx, retryAfter) => {
      *   ctx.status = 429;
-     *   ctx.body = { error: `Try again in ${retryAfter} seconds` };
+     *   throw new Error( `Rate limit exceeded. Try again in ${retryAfter} seconds.`);
      * }
      */
     onError?: (ctx: Context, retryAfter: number, error: Error) => void;

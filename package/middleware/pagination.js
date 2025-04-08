@@ -9,39 +9,35 @@ export const paginationHandler = (options = {}) => {
         ctx.pagination = {
             page,
             limit,
-            offset: offset,
+            offset,
             queryKeyPage,
-            queryKeyLimit
+            queryKeyLimit,
         };
         if (getDataSource) {
-            try {
-                const dataSourceResponse = await getDataSource(ctx, { page, limit, offset });
-                const total = dataSourceResponse?.[countKey];
-                const data = dataSourceResponse?.[dataKey];
-                if (typeof total !== "number" || !Array.isArray(data)) {
-                    throw new Error("Invalid data structure returned by getDataSource.");
-                }
-                ctx.body = {
-                    [dataKey]: data,
-                    [countKey]: total,
-                    pagination: {
-                        page,
-                        limit,
-                        totalItems: total,
-                        totalPages: Math.ceil(total / limit),
-                        hasNextPage: page < Math.ceil(total / limit),
-                        hasPrevPage: page > 1,
-                        nextPage: page < Math.ceil(total / limit) ? page + 1 : null,
-                        prevPage: page > 1 ? page - 1 : null,
-                    },
-                };
+            const dataSourceResponse = await getDataSource(ctx, { page, limit, offset });
+            const total = dataSourceResponse?.[countKey];
+            const data = dataSourceResponse?.[dataKey];
+            const pagination = {
+                page,
+                limit,
+                totalItems: total,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: page < Math.ceil(total / limit),
+                hasPrevPage: page > 1,
+                nextPage: page < Math.ceil(total / limit) ? page + 1 : null,
+                prevPage: page > 1 ? page - 1 : null,
+            };
+            ctx.pagination = pagination;
+            const body = {
+                [dataKey]: data,
+                [countKey]: total,
+                pagination,
+            };
+            if (next) {
+                ctx.body = body;
+                return await next();
             }
-            catch (error) {
-                ctx.setStatus = 500;
-                ctx.body = { error: "Internal Server Error", };
-                throw new Error("Error fetching or processing data:", error?.message);
-            }
+            return (ctx.body = body);
         }
-        return await next();
     };
 };

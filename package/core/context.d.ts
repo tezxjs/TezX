@@ -51,7 +51,6 @@ export declare class Context<T extends Record<string, any> = {}> {
      * @type {State}
      */
     state: State;
-    body: Record<string, any>;
     constructor(req: any, connInfo: ConnAddress);
     /**
      * Cookie handling utility with get/set/delete operations
@@ -192,5 +191,17 @@ export declare class Context<T extends Record<string, any> = {}> {
      */
     get req(): Request;
     protected set params(params: Record<string, any>);
+    /**
+     * Sets the HTTP response body to be returned to the client.
+     * This can be a string, object, or any serializable data.
+     * @param body - The response payload to be stored internally.
+     */
+    set body(body: any | undefined);
+    /**
+     * Retrieves the current response body set for the outgoing HTTP response.
+     * This value will be used when sending the final response.
+     * @returns The internally stored response payload.
+     */
+    get body(): any | undefined;
     protected get params(): Record<string, any>;
 }

@@ -3,8 +3,9 @@ import MiddlewareConfigure, { DuplicateMiddlewares, UniqueMiddlewares } from "./
 import { HTTPMethod } from "./request";
 export type NextCallback = () => Promise<any>;
 export type ctx<T extends Record<string, any> = {}> = Context<T> & T;
-export type Callback<T extends Record<string, any> = {}> = (ctx: ctx<T>) => Promise<Response> | Response;
-export type Middleware<T extends Record<string, any> = {}> = (ctx: ctx<T>, next: NextCallback) => NextCallback | Promise<NextCallback | Response> | Response;
+export type CallbackReturnType = Promise<Response> | Response | string | Record<string, any>;
+export type Callback<T extends Record<string, any> = {}> = (ctx: ctx<T>) => CallbackReturnType;
+export type Middleware<T extends Record<string, any> = {}> = (ctx: ctx<T>, next: NextCallback) => NextCallback | Promise<NextCallback | Response> | Response | string | Record<string, any>;
 export type RouterConfig = {
     /**
      * `env` allows you to define environment variables for the router.
@@ -75,64 +76,72 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * app.get('/admin', [authMiddleware, adminMiddleware], (ctx) => { ... });
      */
     get(path: string, callback: Callback<T>): this;
+    get(path: string, middleware: Middleware<T>): this;
+    get(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     get(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
-    get(path: string, middlewares: Middleware<T>, callback: Callback<T>): this;
     /**
      * Registers a POST route with optional middleware(s)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
     post(path: string, callback: Callback<T>): this;
+    post(path: string, middleware: Middleware<T>): this;
+    post(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     post(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
-    post(path: string, middlewares: Middleware<T>, callback: Callback<T>): this;
     /**
      * Registers a PUT route with optional middleware(s)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
     put(path: string, callback: Callback<T>): this;
+    put(path: string, middleware: Middleware<T>): this;
+    put(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     put(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
-    put(path: string, middlewares: Middleware<T>, callback: Callback<T>): this;
     /**
      * Registers a PATCH route with optional middleware(s)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
     patch(path: string, callback: Callback<T>): this;
+    patch(path: string, middleware: Middleware<T>): this;
+    patch(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     patch(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
-    patch(path: string, middlewares: Middleware<T>, callback: Callback<T>): this;
     /**
      * Registers a DELETE route with optional middleware(s)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
     delete(path: string, callback: Callback<T>): this;
+    delete(path: string, middleware: Middleware<T>): this;
+    delete(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     delete(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
-    delete(path: string, middlewares: Middleware<T>, callback: Callback<T>): this;
     /**
      * Registers an OPTIONS route (primarily for CORS preflight requests)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
     options(path: string, callback: Callback<T>): this;
+    options(path: string, middleware: Middleware<T>): this;
+    options(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     options(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
-    options(path: string, middlewares: Middleware<T>, callback: Callback<T>): this;
     /**
      * Registers a HEAD route (returns headers only)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
     head(path: string, callback: Callback<T>): this;
+    head(path: string, middleware: Middleware<T>): this;
+    head(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     head(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
-    head(path: string, middlewares: Middleware<T>, callback: Callback<T>): this;
     /**
      * Registers a route that responds to all HTTP methods
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
     all(path: string, callback: Callback<T>): this;
+    all(path: string, middleware: Middleware<T>): this;
+    all(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     all(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
-    all(path: string, middlewares: Middleware<T>, callback: Callback<T>): this;
     /**
      * Generic method registration for custom HTTP methods
      * @param method - HTTP method name (e.g., 'PURGE')
@@ -144,8 +153,9 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * server.addRoute('PURGE', '/cache', purgeHandler);
      */
     addRoute(method: HTTPMethod, path: string, callback: Callback<T>): this;
+    addRoute(method: HTTPMethod, path: string, middleware: Middleware<T>): this;
+    addRoute(method: HTTPMethod, path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     addRoute(method: HTTPMethod, path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
-    addRoute(method: HTTPMethod, path: string, middlewares: Middleware<T>, callback: Callback<T>): this;
     /**
      * Mount a sub-router at specific path prefix
      * @param path - Base path for the sub-router

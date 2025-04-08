@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TezX = void 0;
+const colors_1 = require("../utils/colors");
 const config_1 = require("./config");
 const context_1 = require("./context");
 const router_1 = require("./router");
-const colors_1 = require("../utils/colors");
 const params_1 = require("../utils/params");
 class TezX extends router_1.Router {
     constructor({ basePath = "/", env = {}, debugMode = false, allowDuplicateMw = false, overwriteMethod = true, } = {}) {
@@ -86,10 +86,14 @@ class TezX extends router_1.Router {
                 }
             };
             const response = await next();
-            if (!response) {
+            if (response instanceof Response) {
+                return response;
+            }
+            if (!response && !ctx.body) {
                 throw new Error(`Handler did not return a response or next() was not called. Path: ${ctx.pathname}, Method: ${ctx.method}`);
             }
-            return response;
+            const resBody = response || ctx.body;
+            return ctx.send(resBody, ctx.headers.toObject());
         };
     }
     #findMiddleware(pathname) {

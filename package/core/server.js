@@ -1,7 +1,7 @@
+import { COLORS } from "../utils/colors";
 import { GlobalConfig } from "./config";
 import { Context, httpStatusMap } from "./context";
 import { Router } from "./router";
-import { COLORS } from "../utils/colors";
 import { useParams } from "../utils/params";
 export class TezX extends Router {
     constructor({ basePath = "/", env = {}, debugMode = false, allowDuplicateMw = false, overwriteMethod = true, } = {}) {
@@ -83,10 +83,14 @@ export class TezX extends Router {
                 }
             };
             const response = await next();
-            if (!response) {
+            if (response instanceof Response) {
+                return response;
+            }
+            if (!response && !ctx.body) {
                 throw new Error(`Handler did not return a response or next() was not called. Path: ${ctx.pathname}, Method: ${ctx.method}`);
             }
-            return response;
+            const resBody = response || ctx.body;
+            return ctx.send(resBody, ctx.headers.toObject());
         };
     }
     #findMiddleware(pathname) {

@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Router = void 0;
-const config_1 = require("./config");
-const MiddlewareConfigure_1 = require("./MiddlewareConfigure");
 const staticFile_1 = require("../utils/staticFile");
 const url_1 = require("../utils/url");
+const config_1 = require("./config");
+const MiddlewareConfigure_1 = require("./MiddlewareConfigure");
+;
 class TrieRouter {
     children = new Map();
     handlers = new Map();
