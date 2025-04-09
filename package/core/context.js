@@ -72,7 +72,6 @@ export class Context {
     #rawRequest;
     env = {};
     headers = new HeadersParser();
-    res;
     pathname;
     url;
     method;
@@ -90,8 +89,14 @@ export class Context {
         this.pathname = this.req.urlRef.pathname;
         this.url = this.req.url;
     }
-    header(key, value) {
-        this.headers.set(key, value);
+    header(key, value, options) {
+        let append = options?.append;
+        if (append) {
+            this.headers.append(key, value);
+        }
+        else {
+            this.headers.set(key, value);
+        }
         return this;
     }
     get cookies() {
@@ -384,10 +389,7 @@ export class Context {
             status: status,
             headers,
         });
-        let clone = response.clone();
-        this.body = body;
-        this.res = response;
-        return clone;
+        return response;
     }
     get req() {
         return new Request(this.#rawRequest, this.params, this.#remoteAddress);

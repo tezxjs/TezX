@@ -26,11 +26,6 @@ export declare class Context<T extends Record<string, any> = {}> {
      */
     headers: HeadersParser;
     /**
-     * Parser for handling and manipulating HTTP response(Read Only)
-     * @type {Response}
-     */
-    readonly res: Response | undefined;
-    /**
      * Request path without query parameters
      * @type {string}
      */
@@ -53,20 +48,26 @@ export declare class Context<T extends Record<string, any> = {}> {
     state: State;
     constructor(req: any, connInfo: ConnAddress);
     /**
-     * Cookie handling utility with get/set/delete operations
-     * @returns {{
-     *  get: (name: string) => string | undefined,
-     *  all: () => Record<string, string>,
-     *  delete: (name: string, options?: CookieOptions) => void,
-     *  set: (name: string, value: string, options?: CookieOptions) => void
-     * }} Cookie handling interface
-     */
-    /**
-     * Sets a header value.
+     * Appends or set a value to an existing header or creates a new one.
      * @param key - Header name.
-     * @param value - Header value(s).
+     * @param value - Value to append.
+     * @default {append:false}
      */
-    header(key: string, value: string | string[]): this;
+    header(key: string, value: string, options?: {
+        append?: true;
+    }): this;
+    header(key: string, value: string | string[], options?: {
+        append?: false;
+    }): this;
+    /**
+    * Cookie handling utility with get/set/delete operations
+    * @returns {{
+    *  get: (name: string) => string | undefined,
+    *  all: () => Record<string, string>,
+    *  delete: (name: string, options?: CookieOptions) => void,
+    *  set: (name: string, value: string, options?: CookieOptions) => void
+    * }} Cookie handling interface
+    */
     get cookies(): {
         /**
          * Get a specific cookie by name.
