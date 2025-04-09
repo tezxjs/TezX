@@ -2,7 +2,7 @@ import { GlobalConfig } from "../core/config";
 export const detectBot = (options = {}) => {
     const { botUserAgents = ["bot", "spider", "crawl", "slurp"], maxRequests = 30, windowMs = 60000, isBlacklisted = async () => false, queryKeyBot = "bot", onBotDetected = "block", enableRateLimiting = false, customBotDetector = async () => false, customBlockedResponse = (ctx, { reason }) => {
         ctx.setStatus = 403;
-        ctx.body = { error: `Bot detected: ${reason}` };
+        return ctx.json({ error: `Bot detected: ${reason}` });
     }, storage, confidenceThreshold = 0.5, } = options;
     let store = storage;
     if (enableRateLimiting) {

@@ -1,6 +1,6 @@
+import { State } from "../utils/state";
 import { HeadersParser } from "./header";
 import { ConnAddress, HTTPMethod, Request } from "./request";
-import { State } from "../utils/state";
 export interface CookieOptions {
     expires?: Date;
     path?: string;
@@ -46,6 +46,7 @@ export declare class Context<T extends Record<string, any> = {}> {
      * @type {State}
      */
     state: State;
+    protected readonly resBody?: BodyInit | null;
     constructor(req: any, connInfo: ConnAddress);
     /**
      * Appends or set a value to an existing header or creates a new one.
@@ -101,9 +102,9 @@ export declare class Context<T extends Record<string, any> = {}> {
      * @param headers - (Optional) Additional response headers.
      * @returns Response object with JSON data.
      */
-    json(body: any, status?: number, headers?: ResponseHeaders): Response;
-    json(body: any, headers?: ResponseHeaders): Response;
-    json(body: any, status?: number): Response;
+    json(body: object, status?: number, headers?: ResponseHeaders): Response;
+    json(body: object, headers?: ResponseHeaders): Response;
+    json(body: object, status?: number): Response;
     /**
      * Sends a response with any content type.
      * Automatically determines content type if not provided.
@@ -193,16 +194,30 @@ export declare class Context<T extends Record<string, any> = {}> {
     get req(): Request;
     protected set params(params: Record<string, any>);
     /**
-     * Sets the HTTP response body to be returned to the client.
-     * This can be a string, object, or any serializable data.
-     * @param body - The response payload to be stored internally.
-     */
-    set body(body: any | undefined);
+    * Set response body to be passed between middlewares or returned as final output.
+    *
+    * 🔄 Use-case:
+    * - Middleware or route handlers can set this value to share data.
+    * - If no explicit Response is returned (e.g., `ctx.json()` or `new Response()`),
+    *   then this body will be auto-wrapped into a `Response` by the framework.
+    *
+    * ⚠️ Note:
+    * Always use `return next()` or an explicit return like `return ctx.json(...)`
+    * to ensure proper flow control and response resolution.
+    *
+    * @param body - The response content (string, object, etc).
+    */
+    set body(body: any);
     /**
-     * Retrieves the current response body set for the outgoing HTTP response.
-     * This value will be used when sending the final response.
-     * @returns The internally stored response payload.
+     * Get the current response body.
+     *
+     * 🧠 Use-case:
+     * - Allows middleware or route handler to access any pre-set data
+     *   from earlier in the middleware chain.
+     * - Common for situations where response is deferred or centrally handled.
+     *
+     * @returns The currently stored response body.
      */
-    get body(): any | undefined;
+    get body(): any;
     protected get params(): Record<string, any>;
 }

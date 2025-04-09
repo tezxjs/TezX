@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Context = exports.httpStatusMap = void 0;
+const state_1 = require("../utils/state");
+const staticFile_1 = require("../utils/staticFile");
 const environment_1 = require("./environment");
 const header_1 = require("./header");
 const request_1 = require("./request");
-const state_1 = require("../utils/state");
-const staticFile_1 = require("../utils/staticFile");
 exports.httpStatusMap = {
     100: "Continue",
     101: "Switching Protocols",
@@ -81,7 +81,8 @@ class Context {
     #status = 200;
     state = new state_1.State();
     #params = {};
-    #resBody;
+    resBody;
+    #body;
     #localAddress = {};
     #remoteAddress = {};
     constructor(req, connInfo) {
@@ -392,6 +393,7 @@ class Context {
             status: status,
             headers,
         });
+        this.resBody = body;
         return response;
     }
     get req() {
@@ -401,10 +403,10 @@ class Context {
         this.#params = params;
     }
     set body(body) {
-        this.#resBody = body;
+        this.#body = body;
     }
     get body() {
-        return this.#resBody;
+        return this.#body;
     }
     get params() {
         return this.#params;

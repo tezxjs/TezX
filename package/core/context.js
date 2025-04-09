@@ -1,8 +1,8 @@
+import { State } from "../utils/state";
+import { defaultMimeType, mimeTypes } from "../utils/staticFile";
 import { EnvironmentDetector } from "./environment";
 import { HeadersParser } from "./header";
 import { Request } from "./request";
-import { State } from "../utils/state";
-import { defaultMimeType, mimeTypes } from "../utils/staticFile";
 export const httpStatusMap = {
     100: "Continue",
     101: "Switching Protocols",
@@ -78,7 +78,8 @@ export class Context {
     #status = 200;
     state = new State();
     #params = {};
-    #resBody;
+    resBody;
+    #body;
     #localAddress = {};
     #remoteAddress = {};
     constructor(req, connInfo) {
@@ -389,6 +390,7 @@ export class Context {
             status: status,
             headers,
         });
+        this.resBody = body;
         return response;
     }
     get req() {
@@ -398,10 +400,10 @@ export class Context {
         this.#params = params;
     }
     set body(body) {
-        this.#resBody = body;
+        this.#body = body;
     }
     get body() {
-        return this.#resBody;
+        return this.#body;
     }
     get params() {
         return this.#params;

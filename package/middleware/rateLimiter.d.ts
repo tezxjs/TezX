@@ -1,5 +1,5 @@
 import { Context } from "../core/context";
-import { Middleware } from "../core/router";
+import { CallbackReturn, Middleware } from "../core/router";
 export type RateLimiterOptions = {
     /**
      * 🔴 Maximum allowed requests in the time window
@@ -49,7 +49,7 @@ export type RateLimiterOptions = {
      *   throw new Error( `Rate limit exceeded. Try again in ${retryAfter} seconds.`);
      * }
      */
-    onError?: (ctx: Context, retryAfter: number, error: Error) => void;
+    onError?: (ctx: Context, retryAfter: number, error: Error) => CallbackReturn;
 };
 /**
  * 🚦 Rate limiting middleware for request throttling

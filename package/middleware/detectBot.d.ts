@@ -1,4 +1,5 @@
 import { Context, Middleware } from "..";
+import { CallbackReturn } from "../core/router";
 export type DetectBotReason = "User-Agent" | "Blacklisted IP" | "Query Parameter" | "Rate Limiting" | "Custom Detector" | "Multiple Indicators";
 type BotDetectionResult = {
     isBot: boolean;
@@ -35,7 +36,7 @@ type DetectBotOptions = {
      * 🛡️ Action to take when bot is detected
      * @default "block"
      */
-    onBotDetected?: "block" | ((ctx: Context, result: BotDetectionResult) => void);
+    onBotDetected?: "block" | ((ctx: Context, result: BotDetectionResult) => CallbackReturn);
     /**
      * ⚖️ Enable rate-limiting based detection
      * @default false
@@ -49,7 +50,7 @@ type DetectBotOptions = {
     /**
      * ✉️ Custom response for blocked requests
      */
-    customBlockedResponse?: (ctx: Context, result: BotDetectionResult) => void;
+    customBlockedResponse?: (ctx: Context, result: BotDetectionResult) => CallbackReturn;
     /**
      * 🔄 Custom cache storage implementation (e.g., using `Map`, `Redis`, etc.).
      * By default, it uses a `Map<string, { count: number; resetTime: number }>`.
@@ -96,7 +97,7 @@ type DetectBotOptions = {
  *   isBlacklistedIP: async (ip) => await checkIPReputation(ip),
  *   onBotDetected: (ctx, { reason }) => {
  *     ctx.status = 403;
- *     ctx.body = { error: `Bot detected (${reason})` };
+ *     return ctx.json({ error: `Bot detected (${reason})` });
  *   }
  * }));
  */

@@ -40,12 +40,13 @@ const paginationHandler = (options = {}) => {
                 [countKey]: total,
                 pagination,
             };
+            ctx.body = body;
             if (next) {
-                ctx.body = body;
                 return await next();
             }
-            return (ctx.body = body);
+            return ctx.json(body);
         }
+        return await next();
     };
 };
 exports.paginationHandler = paginationHandler;
