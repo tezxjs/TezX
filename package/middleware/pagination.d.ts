@@ -67,6 +67,7 @@ export type PaginationBodyType = {
         page: number;
         limit: number;
         totalItems: any;
+        offset: number;
         totalPages: number;
         hasNextPage: boolean;
         hasPrevPage: boolean;

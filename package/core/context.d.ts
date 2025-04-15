@@ -61,14 +61,14 @@ export declare class Context<T extends Record<string, any> = {}> {
         append?: false;
     }): this;
     /**
-    * Cookie handling utility with get/set/delete operations
-    * @returns {{
-    *  get: (name: string) => string | undefined,
-    *  all: () => Record<string, string>,
-    *  delete: (name: string, options?: CookieOptions) => void,
-    *  set: (name: string, value: string, options?: CookieOptions) => void
-    * }} Cookie handling interface
-    */
+     * Cookie handling utility with get/set/delete operations
+     * @returns {{
+     *  get: (name: string) => string | undefined,
+     *  all: () => Record<string, string>,
+     *  delete: (name: string, options?: CookieOptions) => void,
+     *  set: (name: string, value: string, options?: CookieOptions) => void
+     * }} Cookie handling interface
+     */
     get cookies(): {
         /**
          * Get a specific cookie by name.
@@ -194,19 +194,19 @@ export declare class Context<T extends Record<string, any> = {}> {
     get req(): Request;
     protected set params(params: Record<string, any>);
     /**
-    * Set response body to be passed between middlewares or returned as final output.
-    *
-    * 🔄 Use-case:
-    * - Middleware or route handlers can set this value to share data.
-    * - If no explicit Response is returned (e.g., `ctx.json()` or `new Response()`),
-    *   then this body will be auto-wrapped into a `Response` by the framework.
-    *
-    * ⚠️ Note:
-    * Always use `return next()` or an explicit return like `return ctx.json(...)`
-    * to ensure proper flow control and response resolution.
-    *
-    * @param body - The response content (string, object, etc).
-    */
+     * Set response body to be passed between middlewares or returned as final output.
+     *
+     * 🔄 Use-case:
+     * - Middleware or route handlers can set this value to share data.
+     * - If no explicit Response is returned (e.g., `ctx.json()` or `new Response()`),
+     *   then this body will be auto-wrapped into a `Response` by the framework.
+     *
+     * ⚠️ Note:
+     * Always use `return next()` or an explicit return like `return ctx.json(...)`
+     * to ensure proper flow control and response resolution.
+     *
+     * @param body - The response content (string, object, etc).
+     */
     set body(body: any);
     /**
      * Get the current response body.

@@ -24,6 +24,7 @@ export const paginationHandler = (options = {}) => {
             const pagination = {
                 page,
                 limit,
+                offset,
                 totalItems: total,
                 totalPages: Math.ceil(total / limit),
                 hasNextPage: page < Math.ceil(total / limit),
