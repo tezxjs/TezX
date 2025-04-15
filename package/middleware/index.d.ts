@@ -12,3 +12,4 @@ export * from "./request-id";
 export * from "./sanitizeHeader";
 export * from "./secureHeaders";
 export * from "./xssProtection";
+export * from "./basicAuth";

@@ -29,3 +29,4 @@ __exportStar(require("./request-id"), exports);
 __exportStar(require("./sanitizeHeader"), exports);
 __exportStar(require("./secureHeaders"), exports);
 __exportStar(require("./xssProtection"), exports);
+__exportStar(require("./basicAuth"), exports);
