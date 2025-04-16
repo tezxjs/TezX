@@ -30,3 +30,4 @@ __exportStar(require("./sanitizeHeader"), exports);
 __exportStar(require("./secureHeaders"), exports);
 __exportStar(require("./xssProtection"), exports);
 __exportStar(require("./basicAuth"), exports);
+__exportStar(require("./detectLocale"), exports);
