@@ -33,6 +33,25 @@ export type TezXConfig = {
      */
     overwriteMethod?: boolean;
     /**
+     * 🔄 Hook to transform or normalize the incoming request pathname before routing.
+     *
+     * This function allows you to customize how incoming paths are handled.
+     * You can use it to:
+     * - Remove trailing slashes
+     * - Normalize casing
+     * - Rewrite certain paths dynamically
+     * - Add localization or versioning prefixes
+     *
+     * @example
+     * ```ts
+     * onPathResolve: (pathname) => pathname.replace(/\/+$/, "").toLowerCase()
+     * ```
+     *
+     * @param pathname - The raw incoming request path (e.g., `/Api/Users/`)
+     * @returns The transformed or resolved path used for routing (e.g., `/api/users`)
+     */
+    onPathResolve?: (pathname: string) => string;
+    /**
      * Enables or disables debugging for the middleware.
      * When set to `true`, detailed debug logs will be output,
      * useful for tracking the flow of requests and identifying issues.
@@ -43,7 +62,7 @@ export type TezXConfig = {
 } & RouterConfig;
 export declare class TezX<T extends Record<string, any> = {}> extends Router<T> {
     #private;
-    constructor({ basePath, env, debugMode, allowDuplicateMw, overwriteMethod, }?: TezXConfig);
+    constructor({ basePath, env, debugMode, onPathResolve, allowDuplicateMw, overwriteMethod, }?: TezXConfig);
     protected findRoute(method: HTTPMethod, pathname: string): {
         callback: any;
         middlewares: Middleware<T>[];

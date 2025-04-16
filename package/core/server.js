@@ -4,13 +4,15 @@ import { Context, httpStatusMap } from "./context";
 import { Router } from "./router";
 import { useParams } from "../utils/params";
 export class TezX extends Router {
-    constructor({ basePath = "/", env = {}, debugMode = false, allowDuplicateMw = false, overwriteMethod = true, } = {}) {
+    #onPathResolve;
+    constructor({ basePath = "/", env = {}, debugMode = false, onPathResolve, allowDuplicateMw = false, overwriteMethod = true, } = {}) {
         GlobalConfig.allowDuplicateMw = allowDuplicateMw;
         GlobalConfig.overwriteMethod = overwriteMethod;
         if (debugMode) {
             GlobalConfig.debugMode = debugMode;
         }
         super({ basePath, env });
+        this.#onPathResolve = onPathResolve;
         this.serve = this.serve.bind(this);
     }
     #hashRouter(method, pathname) {
@@ -118,11 +120,19 @@ export class TezX extends Router {
         let ctx = new Context(req, connInfo);
         const urlRef = ctx.req.urlRef;
         const { pathname } = urlRef;
-        let middlewares = this.#findMiddleware(pathname);
+        let resolvePath = pathname;
+        if (this.#onPathResolve) {
+            resolvePath = this.#onPathResolve(pathname);
+            GlobalConfig.debugging.warn(`${COLORS.white} PATH RESOLVE ${COLORS.reset} ${COLORS.red}${pathname}${COLORS.reset} ➞ ${COLORS.cyan}${resolvePath}${COLORS.reset}`);
+        }
+        if (typeof resolvePath !== 'string') {
+            throw new Error(`Path resolution failed: expected a string, got ${typeof resolvePath}`);
+        }
+        let middlewares = this.#findMiddleware(resolvePath);
         ctx.env = this.env;
         try {
             let callback = async (ctx) => {
-                const find = this.findRoute(ctx.req.method, pathname);
+                const find = this.findRoute(ctx.req.method, resolvePath);
                 if (find?.callback) {
                     ctx.params = find.params;
                     const callback = find.callback;

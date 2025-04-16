@@ -7,13 +7,15 @@ const context_1 = require("./context");
 const router_1 = require("./router");
 const params_1 = require("../utils/params");
 class TezX extends router_1.Router {
-    constructor({ basePath = "/", env = {}, debugMode = false, allowDuplicateMw = false, overwriteMethod = true, } = {}) {
+    #onPathResolve;
+    constructor({ basePath = "/", env = {}, debugMode = false, onPathResolve, allowDuplicateMw = false, overwriteMethod = true, } = {}) {
         config_1.GlobalConfig.allowDuplicateMw = allowDuplicateMw;
         config_1.GlobalConfig.overwriteMethod = overwriteMethod;
         if (debugMode) {
             config_1.GlobalConfig.debugMode = debugMode;
         }
         super({ basePath, env });
+        this.#onPathResolve = onPathResolve;
         this.serve = this.serve.bind(this);
     }
     #hashRouter(method, pathname) {
@@ -121,11 +123,19 @@ class TezX extends router_1.Router {
         let ctx = new context_1.Context(req, connInfo);
         const urlRef = ctx.req.urlRef;
         const { pathname } = urlRef;
-        let middlewares = this.#findMiddleware(pathname);
+        let resolvePath = pathname;
+        if (this.#onPathResolve) {
+            resolvePath = this.#onPathResolve(pathname);
+            config_1.GlobalConfig.debugging.warn(`${colors_1.COLORS.white} PATH RESOLVE ${colors_1.COLORS.reset} ${colors_1.COLORS.red}${pathname}${colors_1.COLORS.reset} ➞ ${colors_1.COLORS.cyan}${resolvePath}${colors_1.COLORS.reset}`);
+        }
+        if (typeof resolvePath !== 'string') {
+            throw new Error(`Path resolution failed: expected a string, got ${typeof resolvePath}`);
+        }
+        let middlewares = this.#findMiddleware(resolvePath);
         ctx.env = this.env;
         try {
             let callback = async (ctx) => {
-                const find = this.findRoute(ctx.req.method, pathname);
+                const find = this.findRoute(ctx.req.method, resolvePath);
                 if (find?.callback) {
                     ctx.params = find.params;
                     const callback = find.callback;

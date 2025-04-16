@@ -4,7 +4,13 @@ import { CallbackReturn } from "../core/router";
 /**
  * Supported authentication method types.
  */
-type AuthMethod = "basic" | "api-key" | "bearer-token";
+export type AuthMethod = "basic" | "api-key" | "bearer-token";
+export type AuthCredential = {
+    username?: any;
+    password?: any;
+    token?: any;
+    apiKey?: any;
+};
 /**
  * Configuration options for dynamic basic authentication.
  */
@@ -16,7 +22,7 @@ type DynamicBasicAuthOptions = {
      * @param ctx - The current request context.
      * @returns A boolean or Promise resolving to whether the credentials are valid.
      */
-    validateCredentials: (method: AuthMethod, credentials: Record<string, any>, ctx: Context) => boolean | Promise<boolean>;
+    validateCredentials: (method: AuthMethod, credentials: AuthCredential, ctx: Context) => boolean | Promise<boolean>;
     /**
      * 🔒 Function to dynamically determine the realm for authentication prompt.
      * @param ctx - The current request context.
@@ -65,7 +71,7 @@ type DynamicBasicAuthOptions = {
      * @param credentials - The validated credentials.
      * @returns Whether access is allowed.
      */
-    checkAccess?: (ctx: Context, credentials: Record<string, any>) => boolean | Promise<boolean>;
+    checkAccess?: (ctx: Context, credentials: AuthCredential) => boolean | Promise<boolean>;
 };
 /**
  * 🔐 Middleware for flexible authentication using Basic, API Key, or Bearer Token.
