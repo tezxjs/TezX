@@ -179,7 +179,7 @@ class Router extends MiddlewareConfigure_1.default {
             finalMiddleware = new Set(middlewares);
         }
         let p = parts.join("/");
-        if (/(\/\*|\?)/.test(p)) {
+        if (/(\/\*|\?)/.test(`/${p}`)) {
             let handler = this.routers.get(p);
             if (!handler) {
                 handler = new Map();

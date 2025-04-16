@@ -176,7 +176,7 @@ export class Router extends MiddlewareConfigure {
             finalMiddleware = new Set(middlewares);
         }
         let p = parts.join("/");
-        if (/(\/\*|\?)/.test(p)) {
+        if (/(\/\*|\?)/.test(`/${p}`)) {
             let handler = this.routers.get(p);
             if (!handler) {
                 handler = new Map();
