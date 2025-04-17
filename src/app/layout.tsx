@@ -36,10 +36,10 @@ export default function PackageLayout({ children }: Props) {
                 role="content-sidebar"
                 className="sticky bg-base-100 top-16 h-[calc(100vh-64px)] overflow-y-auto max-h-screen w-72 md:w-full xl:w-72 border-r-2 hidden md:flex flex-col justify-between z-[100]"
               >
-                <div className="sticky top-0 flex justify-end md:hidden">
+                <div className="sticky top-0 flex justify-end md:hidden z-[100]">
                   <label
                     htmlFor="content-sidebar"
-                    className="sticky w-fit top-0 right-0 rounded-none btn btn-sm btn-error text-white z-50"
+                    className="sticky w-fit top-0 right-0 rounded-none btn btn-sm btn-error text-white"
                   >
                     <IoMdClose size={20} />
                   </label>

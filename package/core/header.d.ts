@@ -62,7 +62,7 @@ export declare class HeadersParser {
      * Iterates over headers and executes a callback function.
      * @param callback - Function to execute for each header.
      */
-    forEach(callback: (value: string[], key: string) => void): void;
+    forEach(callback: (key: string, value: string[]) => void): void;
     /**
      * Converts headers into a plain object.
      * @returns A record of headers where single-value headers are returned as a string.

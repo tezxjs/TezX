@@ -70,7 +70,7 @@ class HeadersParser {
     }
     forEach(callback) {
         for (const [key, value] of this.headers) {
-            callback(value, key);
+            callback(key, value);
         }
     }
     toObject() {
