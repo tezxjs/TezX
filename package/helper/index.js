@@ -1,2 +1,2 @@
-export * from "./common";
-export { loadEnv } from "./env-parser";
+export * from "./common.js";
+export { loadEnv } from "./env-parser.js";

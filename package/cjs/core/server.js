@@ -5,7 +5,7 @@ const colors_js_1 = require("../utils/colors.js");
 const config_js_1 = require("./config.js");
 const context_js_1 = require("./context.js");
 const router_js_1 = require("./router.js");
-const params_1 = require("../utils/params");
+const params_js_1 = require("../utils/params.js");
 class TezX extends router_js_1.Router {
     #onPathResolve;
     constructor({ basePath = "/", env = {}, debugMode = false, onPathResolve, allowDuplicateMw = false, overwriteMethod = true, } = {}) {
@@ -21,7 +21,7 @@ class TezX extends router_js_1.Router {
     #hashRouter(method, pathname) {
         const routers = this.routers;
         for (let pattern of this.routers.keys()) {
-            const { success, params } = (0, params_1.useParams)({
+            const { success, params } = (0, params_js_1.useParams)({
                 path: pathname,
                 urlPattern: pattern,
             });

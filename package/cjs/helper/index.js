@@ -15,6 +15,6 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loadEnv = void 0;
-__exportStar(require("./common"), exports);
-var env_parser_1 = require("./env-parser");
-Object.defineProperty(exports, "loadEnv", { enumerable: true, get: function () { return env_parser_1.loadEnv; } });
+__exportStar(require("./common.js"), exports);
+var env_parser_js_1 = require("./env-parser.js");
+Object.defineProperty(exports, "loadEnv", { enumerable: true, get: function () { return env_parser_js_1.loadEnv; } });

@@ -2,7 +2,7 @@ import { COLORS } from "../utils/colors.js";
 import { GlobalConfig } from "./config.js";
 import { Context, httpStatusMap } from "./context.js";
 import { Router } from "./router.js";
-import { useParams } from "../utils/params";
+import { useParams } from "../utils/params.js";
 export class TezX extends Router {
     #onPathResolve;
     constructor({ basePath = "/", env = {}, debugMode = false, onPathResolve, allowDuplicateMw = false, overwriteMethod = true, } = {}) {
