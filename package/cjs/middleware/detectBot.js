@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.detectBot = void 0;
 exports.createRateLimitDefaultStorage = createRateLimitDefaultStorage;
 exports.isRateLimit = isRateLimit;
-const config_1 = require("../core/config");
+const config_js_1 = require("../core/config.js");
 const detectBot = (options = {}) => {
     const { botUserAgents = ["bot", "spider", "crawl", "slurp"], maxRequests = 30, windowMs = 60000, isBlacklisted = async () => false, queryKeyBot = "bot", onBotDetected = "block", enableRateLimiting = false, customBotDetector = async () => false, customBlockedResponse = (ctx, { reason }) => {
         ctx.setStatus = 403;
@@ -49,7 +49,7 @@ const detectBot = (options = {}) => {
             detectionResult.reason = detectionResult.indicators[0];
         }
         if (detectionResult.isBot) {
-            config_1.GlobalConfig.debugging.warn(`Bot detected: ${detectionResult.reason}`, {
+            config_js_1.GlobalConfig.debugging.warn(`Bot detected: ${detectionResult.reason}`, {
                 ip: remoteAddress,
                 userAgent,
                 indicators: detectionResult.indicators,

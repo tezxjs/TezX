@@ -1,4 +1,4 @@
-import { createRateLimitDefaultStorage, isRateLimit } from "./detectBot";
+import { createRateLimitDefaultStorage, isRateLimit } from "./detectBot.js";
 export const rateLimiter = (options) => {
     const { maxRequests, windowMs, keyGenerator = (ctx) => `${ctx.req.remoteAddress.address}:${ctx.req.remoteAddress.port}`, storage = createRateLimitDefaultStorage(), onError = (ctx, retryAfter, error) => {
         ctx.setStatus = 429;

@@ -1,4 +1,4 @@
-import { GlobalConfig } from "./config";
+import { GlobalConfig } from "./config.js";
 export class CommonHandler {
     notFound(callback) {
         GlobalConfig.notFound = callback;

@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Context = exports.httpStatusMap = void 0;
-const state_1 = require("../utils/state");
-const staticFile_1 = require("../utils/staticFile");
-const environment_1 = require("./environment");
-const header_1 = require("./header");
-const request_1 = require("./request");
+const state_js_1 = require("../utils/state.js");
+const staticFile_js_1 = require("../utils/staticFile.js");
+const environment_js_1 = require("./environment.js");
+const header_js_1 = require("./header.js");
+const request_js_1 = require("./request.js");
 exports.httpStatusMap = {
     100: "Continue",
     101: "Switching Protocols",
@@ -74,21 +74,19 @@ exports.httpStatusMap = {
 class Context {
     #rawRequest;
     env = {};
-    headers = new header_1.HeadersParser();
+    headers = new header_js_1.HeadersParser();
     pathname;
     url;
     method;
     #status = 200;
-    state = new state_1.State();
+    state = new state_js_1.State();
     #params = {};
     resBody;
     #body;
-    #localAddress = {};
-    #remoteAddress = {};
-    constructor(req, connInfo) {
+    #options;
+    constructor(req, options) {
+        this.#options = options;
         this.#rawRequest = req;
-        this.#remoteAddress = connInfo.remoteAddr;
-        this.#localAddress = connInfo.localAddr;
         this.method = req?.method?.toUpperCase();
         this.pathname = this.req.urlRef.pathname;
         this.url = this.req.url;
@@ -266,7 +264,7 @@ class Context {
     async download(filePath, fileName) {
         try {
             let fileExists = false;
-            const runtime = environment_1.EnvironmentDetector.getEnvironment;
+            const runtime = environment_js_1.EnvironmentDetector.getEnvironment;
             if (runtime === "node") {
                 const { existsSync } = await Promise.resolve().then(() => require("fs"));
                 fileExists = existsSync(filePath);
@@ -314,7 +312,7 @@ class Context {
     }
     async sendFile(filePath, ...args) {
         try {
-            const runtime = environment_1.EnvironmentDetector.getEnvironment;
+            const runtime = environment_js_1.EnvironmentDetector.getEnvironment;
             const resolvedPath = filePath;
             let fileExists = false;
             if (runtime === "node") {
@@ -349,7 +347,7 @@ class Context {
                 fileSize = fileInfo.size;
             }
             const ext = filePath.split(".").pop()?.toLowerCase() || "";
-            const mimeType = staticFile_1.mimeTypes[ext] || staticFile_1.defaultMimeType;
+            const mimeType = staticFile_js_1.mimeTypes[ext] || staticFile_js_1.defaultMimeType;
             let fileStream;
             if (runtime === "node") {
                 const { createReadStream } = await Promise.resolve().then(() => require("fs"));
@@ -397,7 +395,7 @@ class Context {
         return response;
     }
     get req() {
-        return new request_1.Request(this.#rawRequest, this.params, this.#remoteAddress);
+        return new request_js_1.Request(this.#rawRequest, this.params, this.#options);
     }
     set params(params) {
         this.#params = params;

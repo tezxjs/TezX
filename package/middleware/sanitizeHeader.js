@@ -1,4 +1,4 @@
-import { GlobalConfig } from "../core/config";
+import { GlobalConfig } from "../core/config.js";
 export const sanitizeHeaders = (options = {}) => {
     const { whitelist = [], blacklist = [], normalizeKeys = true, allowUnsafeCharacters = false, } = options;
     return async (ctx, next) => {

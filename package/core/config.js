@@ -1,4 +1,4 @@
-import { loggerOutput } from "../utils/debugging";
+import { loggerOutput } from "../utils/debugging.js";
 export let GlobalConfig = class {
     static notFound = (ctx) => {
         const { method, urlRef: { pathname }, } = ctx.req;
@@ -10,7 +10,8 @@ export let GlobalConfig = class {
     static allowDuplicateMw = false;
     static overwriteMethod = true;
     static debugMode = false;
-    static serverInfo;
+    static server;
+    static adapter;
     static get debugging() {
         return this.debugMode
             ? {

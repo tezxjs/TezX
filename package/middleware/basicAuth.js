@@ -1,6 +1,6 @@
-import { GlobalConfig } from "../core/config";
-import { COLORS } from "../utils/colors";
-import { createRateLimitDefaultStorage, isRateLimit } from "./detectBot";
+import { GlobalConfig } from "../core/config.js";
+import { COLORS } from "../utils/colors.js";
+import { createRateLimitDefaultStorage, isRateLimit } from "./detectBot.js";
 export const basicAuth = (options) => {
     const { validateCredentials, getRealm = () => "Restricted Area", onUnauthorized = (ctx, error) => {
         const realm = getRealm(ctx);

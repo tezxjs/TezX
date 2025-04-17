@@ -1,7 +1,7 @@
-import { getFiles } from "../utils/staticFile";
-import { sanitizePathSplit } from "../utils/url";
-import { GlobalConfig } from "./config";
-import MiddlewareConfigure, { TriMiddleware, } from "./MiddlewareConfigure";
+import { getFiles } from "../utils/staticFile.js";
+import { sanitizePathSplit } from "../utils/url.js";
+import { GlobalConfig } from "./config.js";
+import MiddlewareConfigure, { TriMiddleware, } from "./MiddlewareConfigure.js";
 class TrieRouter {
     children = new Map();
     handlers = new Map();

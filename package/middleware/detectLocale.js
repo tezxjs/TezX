@@ -1,4 +1,4 @@
-import { GlobalConfig } from "../core/config";
+import { GlobalConfig } from "../core/config.js";
 export const detectLocale = (options) => {
     const { supportedLocales, defaultLocale = "en", queryKeyLocale = "lang", cookieKeyLocale = "locale", localeContextKey = "locale", customLocaleDetector, } = options;
     return async (ctx, next) => {

@@ -1,7 +1,7 @@
-import { COLORS } from "../utils/colors";
-import { GlobalConfig } from "./config";
-import { Context, httpStatusMap } from "./context";
-import { Router } from "./router";
+import { COLORS } from "../utils/colors.js";
+import { GlobalConfig } from "./config.js";
+import { Context, httpStatusMap } from "./context.js";
+import { Router } from "./router.js";
 import { useParams } from "../utils/params";
 export class TezX extends Router {
     #onPathResolve;
@@ -116,8 +116,8 @@ export class TezX extends Router {
         }
         return middlewares;
     }
-    async #handleRequest(req, connInfo) {
-        let ctx = new Context(req, connInfo);
+    async #handleRequest(req, options) {
+        let ctx = new Context(req, options);
         const urlRef = ctx.req.urlRef;
         const { pathname } = urlRef;
         let resolvePath = pathname;
@@ -125,7 +125,7 @@ export class TezX extends Router {
             resolvePath = this.#onPathResolve(pathname);
             GlobalConfig.debugging.warn(`${COLORS.white} PATH RESOLVE ${COLORS.reset} ${COLORS.red}${pathname}${COLORS.reset} ➞ ${COLORS.cyan}${resolvePath}${COLORS.reset}`);
         }
-        if (typeof resolvePath !== 'string') {
+        if (typeof resolvePath !== "string") {
             throw new Error(`Path resolution failed: expected a string, got ${typeof resolvePath}`);
         }
         let middlewares = this.#findMiddleware(resolvePath);
@@ -174,7 +174,7 @@ export class TezX extends Router {
             return res;
         }
     }
-    async serve(req, connInfo) {
-        return this.#handleRequest(req, connInfo);
+    async serve(req, options) {
+        return this.#handleRequest(req, options);
     }
 }

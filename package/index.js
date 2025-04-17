@@ -1,4 +1,4 @@
 export { Router } from "./core/router";
-export { TezX } from "./core/server";
-export { useParams } from "./utils/params";
-export let version = "1.0.48";
+export { TezX } from "./core/server.js";
+export { useParams } from "./utils/params.js";
+export let version = "1.0.49";

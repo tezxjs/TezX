@@ -1,6 +1,6 @@
-import { Context, ResponseHeaders } from "./context";
-import MiddlewareConfigure, { DuplicateMiddlewares, UniqueMiddlewares } from "./MiddlewareConfigure";
-import { HTTPMethod } from "./request";
+import { Context, ResponseHeaders } from "./context.js";
+import MiddlewareConfigure, { DuplicateMiddlewares, UniqueMiddlewares } from "./MiddlewareConfigure.js";
+import { HTTPMethod } from "./request.js";
 export type ctx<T extends Record<string, any> = {}> = Context<T> & T;
 export type NextCallback = () => Promise<any>;
 export type CallbackReturn = Promise<Response> | Response;

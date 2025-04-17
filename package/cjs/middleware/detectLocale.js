@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.detectLocale = void 0;
-const config_1 = require("../core/config");
+const config_js_1 = require("../core/config.js");
 const detectLocale = (options) => {
     const { supportedLocales, defaultLocale = "en", queryKeyLocale = "lang", cookieKeyLocale = "locale", localeContextKey = "locale", customLocaleDetector, } = options;
     return async (ctx, next) => {
@@ -36,7 +36,7 @@ const detectLocale = (options) => {
             detectedLocale = defaultLocale;
         }
         ctx[localeContextKey] = detectedLocale;
-        config_1.GlobalConfig.debugging.success(`Detected locale: ${detectedLocale}`);
+        config_js_1.GlobalConfig.debugging.success(`Detected locale: ${detectedLocale}`);
         return await next();
     };
 };

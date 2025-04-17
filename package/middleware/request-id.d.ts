@@ -1,4 +1,4 @@
-import { Middleware } from "../core/router";
+import { Middleware } from "../core/router.js";
 /**
  * Request ID Middleware
  * Assigns a unique request ID to each incoming request.

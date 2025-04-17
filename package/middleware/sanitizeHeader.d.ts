@@ -1,4 +1,4 @@
-import { Middleware } from "../core/router";
+import { Middleware } from "../core/router.js";
 type SanitizeHeadersOptions = {
     /**
      * 🟢 Whitelist of allowed headers (case-insensitive)

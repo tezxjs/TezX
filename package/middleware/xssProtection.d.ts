@@ -1,5 +1,5 @@
-import { Context } from "../core/context";
-import { NextCallback } from "../core/router";
+import { Context } from "../core/context.js";
+import { NextCallback } from "../core/router.js";
 export type XSSProtectionOptions = {
     /**
      * 🟢 Whether to enable XSS protection

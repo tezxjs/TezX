@@ -1,5 +1,8 @@
-import { HTTPMethod } from "./request";
-import { Middleware, Router, RouterConfig } from "./router";
+import { ConnAddress, HTTPMethod } from "./request.js";
+import { Middleware, Router, RouterConfig } from "./router.js";
+export type ServeOptions = {
+    connInfo: ConnAddress;
+};
 interface ServeResponse {
     status: number;
     headers: {
@@ -68,6 +71,6 @@ export declare class TezX<T extends Record<string, any> = {}> extends Router<T> 
         middlewares: Middleware<T>[];
         params: Record<string, string>;
     } | null;
-    serve(req: Request, connInfo: any): Promise<ServeResponse | any>;
+    serve(req: Request, options: ServeOptions): Promise<ServeResponse | any>;
 }
 export {};

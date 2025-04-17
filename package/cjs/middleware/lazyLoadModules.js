@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.lazyLoadModules = void 0;
-const config_1 = require("../core/config");
+const config_js_1 = require("../core/config.js");
 const lazyLoadModules = (options) => {
     const { moduleKey = (ctx) => ctx.req.params[queryKeyModule] || ctx.req.query[queryKeyModule], getModuleLoader, queryKeyModule = "module", moduleContextKey = "module", cacheTTL = 3600000, dependencies = {}, enableCache = true, cacheStorage = new Map(), lifecycleHooks = {}, validateModule, } = options;
     return async (ctx, next) => {
@@ -9,7 +9,7 @@ const lazyLoadModules = (options) => {
             ctx.req.params[queryKeyModule] ||
             ctx.req.query[queryKeyModule];
         if (!moduleName) {
-            config_1.GlobalConfig.debugging.warn("No module specified for lazy loading.");
+            config_js_1.GlobalConfig.debugging.warn("No module specified for lazy loading.");
             return await next();
         }
         let storage = cacheStorage;
@@ -24,7 +24,7 @@ const lazyLoadModules = (options) => {
                         storage.delete(moduleName);
                     }
                     else {
-                        config_1.GlobalConfig.debugging.info(`Using cached module: ${moduleName}`);
+                        config_js_1.GlobalConfig.debugging.info(`Using cached module: ${moduleName}`);
                         ctx[moduleContextKey] = cached?.module;
                         lifecycleHooks.onCacheHit?.(moduleName, ctx[moduleContextKey], ctx);
                         lifecycleHooks.onComplete?.(moduleName, ctx[moduleContextKey], ctx);
@@ -60,10 +60,10 @@ const lazyLoadModules = (options) => {
                 }
             }
             lifecycleHooks.onComplete?.(moduleName, module, ctx);
-            config_1.GlobalConfig.debugging.success(`Successfully loaded module: ${moduleName}`);
+            config_js_1.GlobalConfig.debugging.success(`Successfully loaded module: ${moduleName}`);
         }
         catch (error) {
-            config_1.GlobalConfig.debugging.error(`Error loading module: ${moduleName}`, error);
+            config_js_1.GlobalConfig.debugging.error(`Error loading module: ${moduleName}`, error);
             lifecycleHooks.onError?.(moduleName, error, ctx);
             ctx.setStatus = 500;
             throw error;

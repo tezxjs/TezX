@@ -1,5 +1,5 @@
-import { Context } from "./context";
-import { Callback, ctx } from "./router";
+import { Context } from "./context.js";
+import { Callback, ctx } from "./router.js";
 export interface option {
     status?: number;
 }

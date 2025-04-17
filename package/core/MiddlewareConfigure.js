@@ -1,6 +1,6 @@
-import { CommonHandler } from "./common";
-import { GlobalConfig } from "./config";
-import { sanitizePathSplit } from "../utils/url";
+import { sanitizePathSplit } from "../utils/url.js";
+import { CommonHandler } from "./common.js";
+import { GlobalConfig } from "./config.js";
 export class TriMiddleware {
     children = new Map();
     middlewares = new Set();

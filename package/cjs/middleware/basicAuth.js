@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.basicAuth = void 0;
-const config_1 = require("../core/config");
-const colors_1 = require("../utils/colors");
-const detectBot_1 = require("./detectBot");
+const config_js_1 = require("../core/config.js");
+const colors_js_1 = require("../utils/colors.js");
+const detectBot_js_1 = require("./detectBot.js");
 const basicAuth = (options) => {
     const { validateCredentials, getRealm = () => "Restricted Area", onUnauthorized = (ctx, error) => {
         const realm = getRealm(ctx);
@@ -13,7 +13,7 @@ const basicAuth = (options) => {
     }, rateLimit, supportedMethods = ["basic", "api-key", "bearer-token"], checkAccess, } = options;
     let storage = rateLimit?.storage;
     if (rateLimit && !rateLimit.storage) {
-        storage = (0, detectBot_1.createRateLimitDefaultStorage)();
+        storage = (0, detectBot_js_1.createRateLimitDefaultStorage)();
     }
     return async (ctx, next) => {
         let authMethod;
@@ -37,12 +37,12 @@ const basicAuth = (options) => {
             credentials = { apiKey: ctx.headers.get("x-api-key") };
         }
         if (!authMethod || !supportedMethods.includes(authMethod)) {
-            config_1.GlobalConfig.debugging.error(`${colors_1.COLORS.bgRed}[AUTH]${colors_1.COLORS.reset} Unsupported or missing authentication method.`);
+            config_js_1.GlobalConfig.debugging.error(`${colors_js_1.COLORS.bgRed}[AUTH]${colors_js_1.COLORS.reset} Unsupported or missing authentication method.`);
             return onUnauthorized(ctx, new Error("Unsupported authentication method"));
         }
         if (rateLimit) {
             let key = `${ctx.req.remoteAddress.address}:${ctx.req.remoteAddress.port}`;
-            const { check, entry } = (0, detectBot_1.isRateLimit)(ctx, key, storage, rateLimit.maxRequests, rateLimit.windowMs);
+            const { check, entry } = (0, detectBot_js_1.isRateLimit)(ctx, key, storage, rateLimit.maxRequests, rateLimit.windowMs);
             if (check) {
                 const retryAfter = Math.ceil((entry.resetTime - Date.now()) / 1000);
                 ctx.headers.set("Retry-After", retryAfter.toString());
@@ -63,7 +63,7 @@ const basicAuth = (options) => {
             return await next();
         }
         catch (error) {
-            config_1.GlobalConfig.debugging.error(`${colors_1.COLORS.bgRed}[AUTH]${colors_1.COLORS.reset} Failure for method: ${ctx.method}`);
+            config_js_1.GlobalConfig.debugging.error(`${colors_js_1.COLORS.bgRed}[AUTH]${colors_js_1.COLORS.reset} Failure for method: ${ctx.method}`);
             return onUnauthorized(ctx, error);
         }
     };

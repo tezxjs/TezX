@@ -1,4 +1,4 @@
-import { Context, Middleware } from "..";
+import { Context, Middleware } from "../index.js";
 export type LazyModuleLoader<T> = () => Promise<T>;
 export interface CacheItem<T = any> {
     module: T;

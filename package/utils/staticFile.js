@@ -1,4 +1,4 @@
-import { EnvironmentDetector } from "../core/environment";
+import { EnvironmentDetector } from "../core/environment.js";
 export const mimeTypes = {
     html: "text/html",
     htm: "text/html",

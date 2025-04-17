@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TriMiddleware = void 0;
-const common_1 = require("./common");
-const config_1 = require("./config");
-const url_1 = require("../utils/url");
+const url_js_1 = require("../utils/url.js");
+const common_js_1 = require("./common.js");
+const config_js_1 = require("./config.js");
 class TriMiddleware {
     children = new Map();
     middlewares = new Set();
@@ -11,7 +11,7 @@ class TriMiddleware {
     pathname;
     constructor(pathname = "/") {
         this.pathname = pathname;
-        if (config_1.GlobalConfig.allowDuplicateMw) {
+        if (config_js_1.GlobalConfig.allowDuplicateMw) {
             this.middlewares = [];
         }
         else {
@@ -20,7 +20,7 @@ class TriMiddleware {
     }
 }
 exports.TriMiddleware = TriMiddleware;
-class MiddlewareConfigure extends common_1.CommonHandler {
+class MiddlewareConfigure extends common_js_1.CommonHandler {
     triMiddlewares = new TriMiddleware();
     basePath;
     constructor(basePath = "/") {
@@ -28,7 +28,7 @@ class MiddlewareConfigure extends common_1.CommonHandler {
         this.basePath = basePath;
     }
     addMiddleware(pathname, middlewares) {
-        const parts = (0, url_1.sanitizePathSplit)(this.basePath, pathname);
+        const parts = (0, url_js_1.sanitizePathSplit)(this.basePath, pathname);
         let node = this.triMiddlewares;
         for (const part of parts) {
             if (part.startsWith("*")) {
@@ -55,7 +55,7 @@ class MiddlewareConfigure extends common_1.CommonHandler {
                 node = node.children.get(part);
             }
         }
-        if (config_1.GlobalConfig.allowDuplicateMw) {
+        if (config_js_1.GlobalConfig.allowDuplicateMw) {
             node.middlewares.push(...middlewares);
         }
         else {

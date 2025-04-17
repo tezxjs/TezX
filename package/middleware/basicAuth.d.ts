@@ -1,6 +1,6 @@
-import { Middleware } from "..";
-import { Context } from "../core/context";
-import { CallbackReturn } from "../core/router";
+import { Middleware } from "../core/router.js";
+import { Context } from "../core/context.js";
+import { CallbackReturn } from "../core/router.js";
 /**
  * Supported authentication method types.
  */

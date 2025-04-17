@@ -1,4 +1,4 @@
-import { Context, Middleware } from "..";
+import { Context, Middleware } from "../index.js";
 export type TranslationMap = {
     [key: string]: string | TranslationMap;
 };

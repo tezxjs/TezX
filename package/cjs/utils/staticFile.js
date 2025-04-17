@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defaultMimeType = exports.mimeTypes = void 0;
 exports.getFiles = getFiles;
-const environment_1 = require("../core/environment");
+const environment_js_1 = require("../core/environment.js");
 exports.mimeTypes = {
     html: "text/html",
     htm: "text/html",
@@ -109,7 +109,7 @@ exports.mimeTypes = {
 exports.defaultMimeType = "application/octet-stream";
 async function getFiles(dir, basePath = "/", ref, option) {
     const files = [];
-    const runtime = environment_1.EnvironmentDetector.getEnvironment;
+    const runtime = environment_js_1.EnvironmentDetector.getEnvironment;
     if (runtime == "deno") {
         for await (const entry of Deno.readDir(dir)) {
             const path = `${dir}/${entry.name}`;

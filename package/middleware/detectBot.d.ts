@@ -1,5 +1,5 @@
-import { Context, Middleware } from "..";
-import { CallbackReturn } from "../core/router";
+import { Context, Middleware } from "../index.js";
+import { CallbackReturn } from "../core/router.js";
 export type DetectBotReason = "User-Agent" | "Blacklisted IP" | "Query Parameter" | "Rate Limiting" | "Custom Detector" | "Multiple Indicators";
 type BotDetectionResult = {
     isBot: boolean;

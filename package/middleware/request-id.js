@@ -1,4 +1,4 @@
-import { generateID } from "../helper";
+import { generateID } from "../helper/index.js";
 export const requestID = (headerName = "X-Request-ID", contextKey = "requestID") => {
     return (ctx, next) => {
         const existingID = ctx.headers?.get(headerName.toLowerCase()) ||

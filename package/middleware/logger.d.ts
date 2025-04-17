@@ -1,4 +1,4 @@
-import { Middleware } from "../core/router";
+import { Middleware } from "../core/router.js";
 /**
  * Logger Middleware
  * Logs incoming requests with method, pathname, status, and execution time.

@@ -1,4 +1,4 @@
-import { EnvironmentDetector } from "../core/environment";
+import { EnvironmentDetector } from "../core/environment.js";
 function parseEnvFile(filePath, result) {
     try {
         let fileExists = false;

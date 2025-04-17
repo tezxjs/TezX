@@ -1,4 +1,4 @@
-import { EnvironmentDetector } from "../core/environment";
+import { EnvironmentDetector } from "../core/environment.js";
 export async function parseJsonBody(req) {
     const runtime = EnvironmentDetector.getEnvironment;
     if (runtime === "node") {

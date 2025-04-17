@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.i18nMiddleware = void 0;
-const config_1 = require("../core/config");
+const config_js_1 = require("../core/config.js");
 const i18nMiddleware = (options) => {
     const { loadTranslations, defaultCacheDuration = 3600000, isCacheValid = (cached) => cached.expiresAt > Date.now(), detectLanguage = (ctx) => ctx.req.query.lang ||
         ctx.cookies?.get("lang") ||
@@ -52,7 +52,7 @@ const i18nMiddleware = (options) => {
                     break;
                 }
                 catch (error) {
-                    config_1.GlobalConfig.debugging.warn(`Translation load failed for ${lang}:`, error);
+                    config_js_1.GlobalConfig.debugging.warn(`Translation load failed for ${lang}:`, error);
                 }
             }
             if (!translations) {
@@ -70,7 +70,7 @@ const i18nMiddleware = (options) => {
             return await next();
         }
         catch (error) {
-            config_1.GlobalConfig.debugging.error("i18n processing error:", error);
+            config_js_1.GlobalConfig.debugging.error("i18n processing error:", error);
             ctx.setStatus = 500;
             throw error;
         }

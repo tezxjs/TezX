@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Router = void 0;
-const staticFile_1 = require("../utils/staticFile");
-const url_1 = require("../utils/url");
-const config_1 = require("./config");
-const MiddlewareConfigure_1 = require("./MiddlewareConfigure");
+const staticFile_js_1 = require("../utils/staticFile.js");
+const url_js_1 = require("../utils/url.js");
+const config_js_1 = require("./config.js");
+const MiddlewareConfigure_js_1 = require("./MiddlewareConfigure.js");
 class TrieRouter {
     children = new Map();
     handlers = new Map();
@@ -16,7 +16,7 @@ class TrieRouter {
         this.pathname = pathname;
     }
 }
-class Router extends MiddlewareConfigure_1.default {
+class Router extends MiddlewareConfigure_js_1.default {
     routers = new Map();
     env = {};
     triRouter;
@@ -56,7 +56,7 @@ class Router extends MiddlewareConfigure_1.default {
             default:
                 throw new Error(`\x1b[1;31m404 Not Found\x1b[0m \x1b[1;32mInvalid arguments\x1b[0m`);
         }
-        (0, staticFile_1.getFiles)(dir, route, this, options);
+        (0, staticFile_js_1.getFiles)(dir, route, this, options);
         return this;
     }
     get(path, ...args) {
@@ -173,9 +173,9 @@ class Router extends MiddlewareConfigure_1.default {
         this.#addRoute(method, path, callback, middlewares);
     }
     #addRoute(method, path, callback, middlewares) {
-        const parts = (0, url_1.sanitizePathSplit)(this.basePath, path);
+        const parts = (0, url_js_1.sanitizePathSplit)(this.basePath, path);
         let finalMiddleware = middlewares;
-        if (!config_1.GlobalConfig.allowDuplicateMw) {
+        if (!config_js_1.GlobalConfig.allowDuplicateMw) {
             finalMiddleware = new Set(middlewares);
         }
         let p = parts.join("/");
@@ -189,7 +189,7 @@ class Router extends MiddlewareConfigure_1.default {
                 });
                 return this.routers.set(p, handler);
             }
-            if (!config_1.GlobalConfig.overwriteMethod && handler.has(method))
+            if (!config_js_1.GlobalConfig.overwriteMethod && handler.has(method))
                 return;
             return handler.set(method, { callback, middlewares: finalMiddleware });
         }
@@ -212,7 +212,7 @@ class Router extends MiddlewareConfigure_1.default {
                 node = node.children.get(part);
             }
         }
-        if (!config_1.GlobalConfig.overwriteMethod && node.handlers.has(method))
+        if (!config_js_1.GlobalConfig.overwriteMethod && node.handlers.has(method))
             return;
         node.handlers.set(method, {
             callback: callback,
@@ -228,14 +228,14 @@ class Router extends MiddlewareConfigure_1.default {
         if (!(router instanceof Router)) {
             throw new Error("Router instance is required.");
         }
-        const parts = (0, url_1.sanitizePathSplit)(this.basePath, path);
+        const parts = (0, url_js_1.sanitizePathSplit)(this.basePath, path);
         if (router.routers.size) {
             for (const [segment, handlers] of router.routers) {
                 let path = parts.length ? parts.join("/") + "/" + segment : segment;
                 if (this.routers.has(path)) {
                     const baseRouter = this.routers.get(path);
                     for (const [method, handler] of handlers) {
-                        if (!config_1.GlobalConfig.overwriteMethod && baseRouter.has(method))
+                        if (!config_js_1.GlobalConfig.overwriteMethod && baseRouter.has(method))
                             return;
                         baseRouter.set(method, handler);
                     }
@@ -272,7 +272,7 @@ class Router extends MiddlewareConfigure_1.default {
             for (const part of parts) {
                 if (part.startsWith("*")) {
                     if (!rootMiddlewares.children.has("*")) {
-                        rootMiddlewares.children.set("*", new MiddlewareConfigure_1.TriMiddleware());
+                        rootMiddlewares.children.set("*", new MiddlewareConfigure_js_1.TriMiddleware());
                     }
                     rootMiddlewares = rootMiddlewares.children.get("*");
                 }
@@ -283,13 +283,13 @@ class Router extends MiddlewareConfigure_1.default {
                         continue;
                     }
                     if (!rootMiddlewares.children.has(":")) {
-                        rootMiddlewares.children.set(":", new MiddlewareConfigure_1.TriMiddleware());
+                        rootMiddlewares.children.set(":", new MiddlewareConfigure_js_1.TriMiddleware());
                     }
                     rootMiddlewares = rootMiddlewares.children.get(":");
                 }
                 else {
                     if (!rootMiddlewares.children.has(part)) {
-                        rootMiddlewares.children.set(part, new MiddlewareConfigure_1.TriMiddleware());
+                        rootMiddlewares.children.set(part, new MiddlewareConfigure_js_1.TriMiddleware());
                     }
                     rootMiddlewares = rootMiddlewares.children.get(part);
                 }
@@ -306,7 +306,7 @@ class Router extends MiddlewareConfigure_1.default {
                 if (rtN.children.has(pathSegment)) {
                     let findNode = rtN.children.get(pathSegment);
                     for (const [method, handlers] of subRouter.handlers) {
-                        if (!config_1.GlobalConfig.overwriteMethod && node.handlers.has(method))
+                        if (!config_js_1.GlobalConfig.overwriteMethod && node.handlers.has(method))
                             return;
                         findNode.handlers.set(method, handlers);
                     }
@@ -322,7 +322,7 @@ class Router extends MiddlewareConfigure_1.default {
         let routerNode = router.triRouter;
         const routerMiddlewares = router.triMiddlewares;
         for (const [method, handlers] of routerNode.handlers) {
-            if (!config_1.GlobalConfig.overwriteMethod) {
+            if (!config_js_1.GlobalConfig.overwriteMethod) {
                 rootNode.handlers.set(method, handlers);
                 continue;
             }
@@ -338,7 +338,7 @@ class Router extends MiddlewareConfigure_1.default {
             for (const [path, middlewareNode] of children) {
                 if (n.children.has(path)) {
                     let findNode = n.children.get(path);
-                    if (config_1.GlobalConfig.allowDuplicateMw) {
+                    if (config_js_1.GlobalConfig.allowDuplicateMw) {
                         findNode.middlewares.push(...middlewareNode.middlewares);
                     }
                     else {
@@ -358,7 +358,7 @@ class Router extends MiddlewareConfigure_1.default {
                 }
             }
         }
-        if (config_1.GlobalConfig.allowDuplicateMw) {
+        if (config_js_1.GlobalConfig.allowDuplicateMw) {
             rootMiddlewares.middlewares.push(...routerMiddlewares.middlewares);
         }
         else {

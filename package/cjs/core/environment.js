@@ -11,17 +11,6 @@ class EnvironmentDetector {
             return "node";
         return "unknown";
     }
-    static detectProtocol(req) {
-        try {
-            if (this.getEnvironment === "node") {
-                return req?.socket?.encrypted ? "https" : "http";
-            }
-            return "unknown";
-        }
-        catch (error) {
-            throw new Error("Failed to detect protocol.");
-        }
-    }
     static getHost(headers) {
         try {
             return headers?.get("host") || "unknown";

@@ -1,6 +1,7 @@
-import { State } from "../utils/state";
-import { HeadersParser } from "./header";
-import { ConnAddress, HTTPMethod, Request } from "./request";
+import { State } from "../utils/state.js";
+import { HeadersParser } from "./header.js";
+import { HTTPMethod, Request } from "./request.js";
+import { ServeOptions } from "./server.js";
 export interface CookieOptions {
     expires?: Date;
     path?: string;
@@ -47,7 +48,7 @@ export declare class Context<T extends Record<string, any> = {}> {
      */
     state: State;
     protected readonly resBody?: BodyInit | null;
-    constructor(req: any, connInfo: ConnAddress);
+    constructor(req: any, options: ServeOptions);
     /**
      * Appends or set a value to an existing header or creates a new one.
      * @param key - Header name.

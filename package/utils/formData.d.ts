@@ -1,4 +1,4 @@
-import { FormDataOptions } from "../core/request";
+import { FormDataOptions } from "../core/request.js";
 export declare function parseJsonBody(req: any): Promise<Record<string, any>>;
 export declare function parseTextBody(req: any): Promise<string>;
 export declare function parseUrlEncodedBody(req: any): Promise<Record<string, any>>;

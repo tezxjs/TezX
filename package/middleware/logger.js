@@ -1,4 +1,4 @@
-import { COLORS } from "../utils/colors";
+import { COLORS } from "../utils/colors.js";
 export function logger() {
     return async (ctx, next) => {
         try {

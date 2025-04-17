@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.denoAdapter = denoAdapter;
 exports.bunAdapter = bunAdapter;
 exports.nodeAdapter = nodeAdapter;
-const config_1 = require("../core/config");
+const config_js_1 = require("../core/config.js");
 function denoAdapter(TezX) {
     function listen(port, callback) {
         const isDeno = typeof Deno !== "undefined";
@@ -25,7 +25,10 @@ function denoAdapter(TezX) {
                         family: localAddr?.family,
                     },
                 };
-                const response = await TezX.serve(req, address);
+                let options = {
+                    connInfo: address,
+                };
+                const response = await TezX.serve(req, options);
                 if (response instanceof Response) {
                     return response;
                 }
@@ -38,17 +41,18 @@ function denoAdapter(TezX) {
                 }
             }
             const server = isDeno ? Deno.serve({ port }, handleRequest) : null;
-            config_1.GlobalConfig.serverInfo = server;
             if (!server) {
                 throw new Error("Deno is not find");
             }
+            config_js_1.GlobalConfig.adapter = "deno";
+            config_js_1.GlobalConfig.server = server;
             const protocol = "\x1b[1;34mhttp\x1b[0m";
             const message = `\x1b[1m🚀 Deno TezX Server running at ${protocol}://localhost:${port}/\x1b[0m`;
             if (typeof callback === "function") {
                 callback(message);
             }
             else {
-                config_1.GlobalConfig.debugging.success(message);
+                config_js_1.GlobalConfig.debugging.success(message);
             }
             return server;
         }
@@ -67,13 +71,17 @@ function bunAdapter(TezX) {
             if (!serve) {
                 throw new Error("Bun is not find");
             }
+            config_js_1.GlobalConfig.adapter = "bun";
             const server = serve({
                 port: port,
                 async fetch(req) {
-                    const response = await TezX.serve(req, {
-                        remoteAddr: server.requestIP(req),
-                        localAddr: server.address,
-                    });
+                    let options = {
+                        connInfo: {
+                            remoteAddr: server.requestIP(req),
+                            localAddr: server.address,
+                        },
+                    };
+                    const response = await TezX.serve(req, options);
                     if (response instanceof Response) {
                         return response;
                     }
@@ -86,14 +94,14 @@ function bunAdapter(TezX) {
                     }
                 },
             });
-            config_1.GlobalConfig.serverInfo = server;
+            config_js_1.GlobalConfig.server = server;
             const protocol = "\x1b[1;34mhttp\x1b[0m";
             const message = `\x1b[1m Bun TezX Server running at ${protocol}://localhost:${port}/\x1b[0m`;
             if (typeof callback == "function") {
                 callback(message);
             }
             else {
-                config_1.GlobalConfig.debugging.success(message);
+                config_js_1.GlobalConfig.debugging.success(message);
             }
             return server;
         }
@@ -108,6 +116,7 @@ function bunAdapter(TezX) {
 function nodeAdapter(TezX) {
     function listen(port, callback) {
         Promise.resolve().then(() => require("http")).then((r) => {
+            config_js_1.GlobalConfig.adapter = "node";
             let server = r.createServer(async (req, res) => {
                 let address = {};
                 if (req.socket) {
@@ -124,7 +133,10 @@ function nodeAdapter(TezX) {
                         },
                     };
                 }
-                const response = await TezX.serve(req, address);
+                let options = {
+                    connInfo: address,
+                };
+                const response = await TezX.serve(req, options);
                 const statusText = response?.statusText;
                 if (!(response instanceof Response)) {
                     throw new Error("Invalid response from TezX.serve");
@@ -149,12 +161,12 @@ function nodeAdapter(TezX) {
             server.listen(port, () => {
                 const protocol = "\x1b[1;34mhttp\x1b[0m";
                 const message = `\x1b[1m NodeJS TezX Server running at ${protocol}://localhost:${port}/\x1b[0m`;
-                config_1.GlobalConfig.serverInfo = server;
+                config_js_1.GlobalConfig.server = server;
                 if (typeof callback == "function") {
                     callback(message);
                 }
                 else {
-                    config_1.GlobalConfig.debugging.success(message);
+                    config_js_1.GlobalConfig.debugging.success(message);
                 }
                 return server;
             });

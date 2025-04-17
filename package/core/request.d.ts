@@ -1,4 +1,5 @@
-import { UrlRef } from "../utils/url";
+import { UrlRef } from "../utils/url.js";
+import { ServeOptions } from "./server.js";
 export type FormDataOptions = {
     maxSize?: number;
     allowedTypes?: string[];
@@ -55,7 +56,7 @@ export declare class Request {
      * ```
      */
     remoteAddress: AddressType;
-    constructor(req: any, params: Record<string, any>, remoteAddress: AddressType);
+    constructor(req: any, params: Record<string, any>, options: ServeOptions);
     get headers(): {
         /**
          * Retrieves the first value of a specific header.

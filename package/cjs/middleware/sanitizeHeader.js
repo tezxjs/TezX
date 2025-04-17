@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sanitizeHeaders = void 0;
-const config_1 = require("../core/config");
+const config_js_1 = require("../core/config.js");
 const sanitizeHeaders = (options = {}) => {
     const { whitelist = [], blacklist = [], normalizeKeys = true, allowUnsafeCharacters = false, } = options;
     return async (ctx, next) => {
@@ -13,22 +13,22 @@ const sanitizeHeaders = (options = {}) => {
             const normalizedKey = normalizeKeys ? key.toLowerCase() : key;
             if (whitelist.length > 0 &&
                 !whitelist.some((r) => r?.toLowerCase() === normalizedKey)) {
-                config_1.GlobalConfig.debugging.warn(`🚫 Header "${normalizedKey}" not in whitelist - removed`);
+                config_js_1.GlobalConfig.debugging.warn(`🚫 Header "${normalizedKey}" not in whitelist - removed`);
                 continue;
             }
             if (blacklist.some((r) => r.toLowerCase() === normalizedKey)) {
-                config_1.GlobalConfig.debugging.warn(`🚫 Header "${normalizedKey}" in blacklist - removed`);
+                config_js_1.GlobalConfig.debugging.warn(`🚫 Header "${normalizedKey}" in blacklist - removed`);
                 continue;
             }
             if (!isValidHeaderName(normalizedKey)) {
-                config_1.GlobalConfig.debugging.warn(`⚠️ Invalid header name: "${normalizedKey}" - removed`);
+                config_js_1.GlobalConfig.debugging.warn(`⚠️ Invalid header name: "${normalizedKey}" - removed`);
                 continue;
             }
             const sanitizedValues = values
                 .map((value) => sanitizeHeaderValue(value, allowUnsafeCharacters))
                 .filter(Boolean);
             if (sanitizedValues.length === 0) {
-                config_1.GlobalConfig.debugging.warn(`⚠️ All values for "${normalizedKey}" invalid - removed`);
+                config_js_1.GlobalConfig.debugging.warn(`⚠️ All values for "${normalizedKey}" invalid - removed`);
                 continue;
             }
             sanitizedHeaders.set(normalizedKey, sanitizedValues);

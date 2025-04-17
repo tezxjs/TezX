@@ -1,4 +1,4 @@
-import { GlobalConfig } from "../core/config";
+import { GlobalConfig } from "../core/config.js";
 export const lazyLoadModules = (options) => {
     const { moduleKey = (ctx) => ctx.req.params[queryKeyModule] || ctx.req.query[queryKeyModule], getModuleLoader, queryKeyModule = "module", moduleContextKey = "module", cacheTTL = 3600000, dependencies = {}, enableCache = true, cacheStorage = new Map(), lifecycleHooks = {}, validateModule, } = options;
     return async (ctx, next) => {

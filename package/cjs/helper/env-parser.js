@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loadEnv = loadEnv;
-const environment_1 = require("../core/environment");
+const environment_js_1 = require("../core/environment.js");
 function parseEnvFile(filePath, result) {
     try {
         let fileExists = false;
-        let runtime = environment_1.EnvironmentDetector.getEnvironment;
+        let runtime = environment_js_1.EnvironmentDetector.getEnvironment;
         if (runtime === "node" || runtime === "bun") {
             const { existsSync } = require("fs");
             fileExists = existsSync(filePath);

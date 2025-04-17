@@ -1,4 +1,5 @@
-import { Callback, ctx } from "./router";
+import { AdapterType } from "../adapter/index.js";
+import { Callback, ctx } from "./router.js";
 export declare let GlobalConfig: {
     new (): {};
     notFound: Callback;
@@ -6,7 +7,8 @@ export declare let GlobalConfig: {
     allowDuplicateMw?: boolean;
     overwriteMethod?: boolean;
     debugMode?: boolean;
-    serverInfo: any;
+    server: any;
+    adapter: AdapterType;
     readonly debugging: {
         info: (msg: string, ...args: unknown[]) => void;
         warn: (msg: string, ...args: unknown[]) => void;

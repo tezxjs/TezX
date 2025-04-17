@@ -1,4 +1,4 @@
-import { GlobalConfig } from "../core/config";
+import { GlobalConfig } from "../core/config.js";
 export const i18nMiddleware = (options) => {
     const { loadTranslations, defaultCacheDuration = 3600000, isCacheValid = (cached) => cached.expiresAt > Date.now(), detectLanguage = (ctx) => ctx.req.query.lang ||
         ctx.cookies?.get("lang") ||

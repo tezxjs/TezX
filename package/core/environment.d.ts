@@ -1,6 +1,5 @@
-import { HeadersParser } from "./header";
+import { HeadersParser } from "./header.js";
 export declare class EnvironmentDetector {
     static get getEnvironment(): "node" | "bun" | "deno" | "unknown";
-    static detectProtocol(req: any): "unknown" | "http" | "https";
     static getHost(headers: HeadersParser): string;
 }

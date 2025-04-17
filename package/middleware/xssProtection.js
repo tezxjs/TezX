@@ -1,4 +1,4 @@
-import { GlobalConfig } from "../core/config";
+import { GlobalConfig } from "../core/config.js";
 export const xssProtection = (options = {}) => {
     const { enabled = true, mode = "block", fallbackCSP = "default-src 'self'; script-src 'self';", } = options;
     return async (ctx, next) => {

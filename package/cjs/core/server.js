@@ -1,18 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TezX = void 0;
-const colors_1 = require("../utils/colors");
-const config_1 = require("./config");
-const context_1 = require("./context");
-const router_1 = require("./router");
+const colors_js_1 = require("../utils/colors.js");
+const config_js_1 = require("./config.js");
+const context_js_1 = require("./context.js");
+const router_js_1 = require("./router.js");
 const params_1 = require("../utils/params");
-class TezX extends router_1.Router {
+class TezX extends router_js_1.Router {
     #onPathResolve;
     constructor({ basePath = "/", env = {}, debugMode = false, onPathResolve, allowDuplicateMw = false, overwriteMethod = true, } = {}) {
-        config_1.GlobalConfig.allowDuplicateMw = allowDuplicateMw;
-        config_1.GlobalConfig.overwriteMethod = overwriteMethod;
+        config_js_1.GlobalConfig.allowDuplicateMw = allowDuplicateMw;
+        config_js_1.GlobalConfig.overwriteMethod = overwriteMethod;
         if (debugMode) {
-            config_1.GlobalConfig.debugMode = debugMode;
+            config_js_1.GlobalConfig.debugMode = debugMode;
         }
         super({ basePath, env });
         this.#onPathResolve = onPathResolve;
@@ -119,16 +119,16 @@ class TezX extends router_1.Router {
         }
         return middlewares;
     }
-    async #handleRequest(req, connInfo) {
-        let ctx = new context_1.Context(req, connInfo);
+    async #handleRequest(req, options) {
+        let ctx = new context_js_1.Context(req, options);
         const urlRef = ctx.req.urlRef;
         const { pathname } = urlRef;
         let resolvePath = pathname;
         if (this.#onPathResolve) {
             resolvePath = this.#onPathResolve(pathname);
-            config_1.GlobalConfig.debugging.warn(`${colors_1.COLORS.white} PATH RESOLVE ${colors_1.COLORS.reset} ${colors_1.COLORS.red}${pathname}${colors_1.COLORS.reset} ➞ ${colors_1.COLORS.cyan}${resolvePath}${colors_1.COLORS.reset}`);
+            config_js_1.GlobalConfig.debugging.warn(`${colors_js_1.COLORS.white} PATH RESOLVE ${colors_js_1.COLORS.reset} ${colors_js_1.COLORS.red}${pathname}${colors_js_1.COLORS.reset} ➞ ${colors_js_1.COLORS.cyan}${resolvePath}${colors_js_1.COLORS.reset}`);
         }
-        if (typeof resolvePath !== 'string') {
+        if (typeof resolvePath !== "string") {
             throw new Error(`Path resolution failed: expected a string, got ${typeof resolvePath}`);
         }
         let middlewares = this.#findMiddleware(resolvePath);
@@ -143,7 +143,7 @@ class TezX extends router_1.Router {
                     return (await this.#createHandler(middlewares, callback)(ctx));
                 }
                 else {
-                    let res = (await config_1.GlobalConfig.notFound(ctx));
+                    let res = (await config_js_1.GlobalConfig.notFound(ctx));
                     ctx.setStatus = res.status;
                     return res;
                 }
@@ -154,7 +154,7 @@ class TezX extends router_1.Router {
                     if (response?.headers) {
                         ctx.headers.add(response.headers);
                     }
-                    const statusText = response?.statusText || context_1.httpStatusMap[response?.status] || "";
+                    const statusText = response?.statusText || context_js_1.httpStatusMap[response?.status] || "";
                     const status = response.status || ctx.getStatus;
                     let headers = ctx.headers.toObject();
                     return new Response(response.body, {
@@ -171,14 +171,14 @@ class TezX extends router_1.Router {
             if (err instanceof Error) {
                 error = err.stack;
             }
-            config_1.GlobalConfig.debugging.error(`${colors_1.COLORS.bgRed} ${ctx.pathname}, Method: ${ctx.method} ${colors_1.COLORS.reset}`, `${context_1.httpStatusMap[500]}: ${error} `);
-            let res = await config_1.GlobalConfig.onError(error, ctx);
+            config_js_1.GlobalConfig.debugging.error(`${colors_js_1.COLORS.bgRed} ${ctx.pathname}, Method: ${ctx.method} ${colors_js_1.COLORS.reset}`, `${context_js_1.httpStatusMap[500]}: ${error} `);
+            let res = await config_js_1.GlobalConfig.onError(error, ctx);
             ctx.setStatus = res.status;
             return res;
         }
     }
-    async serve(req, connInfo) {
-        return this.#handleRequest(req, connInfo);
+    async serve(req, options) {
+        return this.#handleRequest(req, options);
     }
 }
 exports.TezX = TezX;

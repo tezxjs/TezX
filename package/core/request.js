@@ -1,7 +1,8 @@
-import { parseJsonBody, parseMultipartBody, parseTextBody, parseUrlEncodedBody, } from "../utils/formData";
-import { urlParse } from "../utils/url";
-import { EnvironmentDetector } from "./environment";
-import { HeadersParser } from "./header";
+import { parseJsonBody, parseMultipartBody, parseTextBody, parseUrlEncodedBody, } from "../utils/formData.js";
+import { urlParse } from "../utils/url.js";
+import { GlobalConfig } from "./config.js";
+import { EnvironmentDetector } from "./environment.js";
+import { HeadersParser } from "./header.js";
 export class Request {
     #headers = new HeadersParser();
     url;
@@ -22,16 +23,23 @@ export class Request {
     rawRequest;
     params = {};
     remoteAddress = {};
-    constructor(req, params, remoteAddress) {
-        this.remoteAddress = remoteAddress;
+    constructor(req, params, options) {
+        this.remoteAddress = options?.connInfo?.remoteAddr;
         this.#headers = new HeadersParser(req?.headers);
         this.method = req?.method?.toUpperCase();
         this.params = params;
         this.rawRequest = req;
-        if (EnvironmentDetector.getEnvironment == "node") {
-            const protocol = EnvironmentDetector.detectProtocol(req);
+        if (EnvironmentDetector.getEnvironment == "node" ||
+            GlobalConfig.adapter == "node") {
+            let encrypted = req?.socket?.encrypted;
+            const protocol = typeof encrypted === "boolean"
+                ? encrypted
+                    ? "https"
+                    : "http"
+                : "http";
             const host = EnvironmentDetector.getHost(this.#headers);
-            this.url = `${protocol}://${host}${req.url}`;
+            const path = req.url || "/";
+            this.url = `${protocol}://${host}${path}`;
         }
         else {
             this.url = req.url;
