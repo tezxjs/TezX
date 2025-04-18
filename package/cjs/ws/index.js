@@ -37,7 +37,7 @@ function upgradeWebSocket(callback, options = {}) {
                         protocols
                     });
                 case 'bun':
-                    return websocketCallback;
+                    return callback;
                 case 'node':
                     return new node_js_1.NodeTransport().upgrade(ctx, websocketCallback, {
                         maxPayload,
