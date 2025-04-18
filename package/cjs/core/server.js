@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TezX = void 0;
 const colors_js_1 = require("../utils/colors.js");
+const params_js_1 = require("../utils/params.js");
 const config_js_1 = require("./config.js");
 const context_js_1 = require("./context.js");
 const router_js_1 = require("./router.js");
-const params_js_1 = require("../utils/params.js");
 class TezX extends router_js_1.Router {
     #onPathResolve;
     constructor({ basePath = "/", env = {}, debugMode = false, onPathResolve, allowDuplicateMw = false, overwriteMethod = true, } = {}) {
@@ -91,6 +91,9 @@ class TezX extends router_js_1.Router {
             if (response instanceof Response) {
                 return response;
             }
+            if (typeof response == 'function' && ctx.wsProtocol) {
+                return response;
+            }
             if (!response && !ctx.body) {
                 throw new Error(`Handler did not return a response or next() was not called. Path: ${ctx.pathname}, Method: ${ctx.method}`);
             }
@@ -149,6 +152,15 @@ class TezX extends router_js_1.Router {
                 }
             };
             let response = await this.#createHandler([...this.triMiddlewares.middlewares, ...middlewares], callback)(ctx);
+            if (ctx.wsProtocol) {
+                if (typeof response == "function") {
+                    return {
+                        websocket: response,
+                        ctx: ctx,
+                    };
+                }
+                return response;
+            }
             let finalResponse = () => {
                 return (ctx) => {
                     if (response?.headers) {

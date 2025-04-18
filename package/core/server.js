@@ -1,8 +1,8 @@
 import { COLORS } from "../utils/colors.js";
+import { useParams } from "../utils/params.js";
 import { GlobalConfig } from "./config.js";
 import { Context, httpStatusMap } from "./context.js";
 import { Router } from "./router.js";
-import { useParams } from "../utils/params.js";
 export class TezX extends Router {
     #onPathResolve;
     constructor({ basePath = "/", env = {}, debugMode = false, onPathResolve, allowDuplicateMw = false, overwriteMethod = true, } = {}) {
@@ -88,6 +88,9 @@ export class TezX extends Router {
             if (response instanceof Response) {
                 return response;
             }
+            if (typeof response == 'function' && ctx.wsProtocol) {
+                return response;
+            }
             if (!response && !ctx.body) {
                 throw new Error(`Handler did not return a response or next() was not called. Path: ${ctx.pathname}, Method: ${ctx.method}`);
             }
@@ -146,6 +149,15 @@ export class TezX extends Router {
                 }
             };
             let response = await this.#createHandler([...this.triMiddlewares.middlewares, ...middlewares], callback)(ctx);
+            if (ctx.wsProtocol) {
+                if (typeof response == "function") {
+                    return {
+                        websocket: response,
+                        ctx: ctx,
+                    };
+                }
+                return response;
+            }
             let finalResponse = () => {
                 return (ctx) => {
                     if (response?.headers) {

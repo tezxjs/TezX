@@ -1,16 +1,9 @@
+import { Context } from "./context.js";
 import { ConnAddress, HTTPMethod } from "./request.js";
 import { Middleware, Router, RouterConfig } from "./router.js";
 export type ServeOptions = {
     connInfo: ConnAddress;
 };
-interface ServeResponse {
-    status: number;
-    headers: {
-        [key: string]: string;
-    };
-    body: string;
-    statusText: string;
-}
 export type TezXConfig = {
     /**
      * `allowDuplicateMw` determines whether duplicate middleware functions
@@ -71,6 +64,8 @@ export declare class TezX<T extends Record<string, any> = {}> extends Router<T> 
         middlewares: Middleware<T>[];
         params: Record<string, string>;
     } | null;
-    serve(req: Request, options: ServeOptions): Promise<ServeResponse | any>;
+    serve(req: Request, options: ServeOptions): Promise<Response | {
+        websocket: (props: any) => any;
+        ctx: Context;
+    }>;
 }
-export {};

@@ -1,11 +1,4 @@
-import { TezX } from "../core/server.js";
 export type AdapterType = "bun" | "deno" | "node";
-export declare function denoAdapter<T extends Record<string, any> = {}>(TezX: TezX<T>): {
-    listen: (port: number, callback?: (message: string) => void) => any;
-};
-export declare function bunAdapter<T extends Record<string, any> = {}>(TezX: TezX<T>): {
-    listen: (port: number, callback?: (message: string) => void) => any;
-};
-export declare function nodeAdapter<T extends Record<string, any> = {}>(TezX: TezX<T>): {
-    listen: (port: number, callback?: (message: string) => void) => void;
-};
+export * from "./bun.js";
+export * from "./deno.js";
+export * from "./node.js";
