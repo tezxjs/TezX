@@ -14,7 +14,7 @@ interface LazyLoadOptions<T> {
      * 🛠️ Function that returns a loader function for the specified module, used to dynamically load the module.
      * If this function returns null, it indicates no loader is available for the module.
      */
-    getModuleLoader: (ctx: Context) => LazyModuleLoader<T> | null;
+    getModuleLoader: (ctx: Context) => Promise<LazyModuleLoader<T> | null> | null | LazyModuleLoader<T>;
     /**
      * 🔍 Query parameter name to select which module to load (e.g., "module").
      * @default "module"
@@ -25,10 +25,6 @@ interface LazyLoadOptions<T> {
      * @default "module"
      */
     moduleContextKey?: string;
-    /**
-     * ⚙️ Dependencies to inject into the module during initialization.
-     */
-    dependencies?: Record<string, any>;
     /**
      * 🔄 Enable caching of loaded modules to avoid re-loading them repeatedly.
      * @default true

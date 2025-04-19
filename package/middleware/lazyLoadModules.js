@@ -1,6 +1,10 @@
 import { GlobalConfig } from "../core/config.js";
 export const lazyLoadModules = (options) => {
-    const { moduleKey = (ctx) => ctx.req.params[queryKeyModule] || ctx.req.query[queryKeyModule], getModuleLoader, queryKeyModule = "module", moduleContextKey = "module", cacheTTL = 3600000, dependencies = {}, enableCache = true, cacheStorage = new Map(), lifecycleHooks = {}, validateModule, } = options;
+    const { moduleKey = (ctx) => ctx.req.params[queryKeyModule] || ctx.req.query[queryKeyModule], getModuleLoader, queryKeyModule = "module", moduleContextKey = "module", cacheTTL = 3600000, enableCache = true, cacheStorage, lifecycleHooks = {}, validateModule, } = options;
+    let storage = cacheStorage;
+    if (enableCache && !cacheStorage) {
+        storage = new Map();
+    }
     return async (ctx, next) => {
         let moduleName = moduleKey(ctx) ||
             ctx.req.params[queryKeyModule] ||
@@ -9,15 +13,11 @@ export const lazyLoadModules = (options) => {
             GlobalConfig.debugging.warn("No module specified for lazy loading.");
             return await next();
         }
-        let storage = cacheStorage;
-        if (enableCache && !cacheStorage) {
-            storage = new Map();
-        }
         try {
             if (enableCache) {
                 const cached = storage.get(moduleName);
                 if (cached) {
-                    if (cached.expiresAt > Date.now()) {
+                    if (cached.expiresAt < Date.now()) {
                         storage.delete(moduleName);
                     }
                     else {
@@ -32,7 +32,7 @@ export const lazyLoadModules = (options) => {
             if (!getModuleLoader) {
                 throw new Error(`No module loader found for module: ${moduleName}`);
             }
-            const moduleLoader = getModuleLoader(ctx);
+            const moduleLoader = await getModuleLoader(ctx);
             if (!moduleLoader) {
                 throw new Error(`No loader found for module: ${moduleName}`);
             }
@@ -41,7 +41,6 @@ export const lazyLoadModules = (options) => {
             if (validateModule && !validateModule(module)) {
                 throw new Error(`Module validation failed for: ${moduleName}`);
             }
-            ctx.dependencies = dependencies;
             if (enableCache) {
                 storage.set(moduleName, {
                     module,
@@ -51,8 +50,8 @@ export const lazyLoadModules = (options) => {
             }
             ctx[moduleContextKey] = module;
             if (module.init && typeof module.init === "function") {
-                const initResult = await module.init(dependencies, ctx);
-                if (initResult instanceof Response) {
+                const initResult = await module.init(ctx);
+                if (initResult) {
                     return initResult;
                 }
             }
