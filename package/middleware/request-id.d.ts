@@ -13,4 +13,7 @@ import { Middleware } from "../core/router.js";
  * app.use(requestID());
  * ```
  */
-export declare const requestID: (headerName?: string, contextKey?: string) => Middleware;
+export declare const requestID: (
+  headerName?: string,
+  contextKey?: string,
+) => Middleware;

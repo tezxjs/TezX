@@ -1,55 +1,27 @@
 export function sanitizePathSplit(basePath, path) {
-    const parts = `${basePath}/${path}`
-        .replace(/\\/g, "")
-        ?.split("/")
-        .filter(Boolean);
-    return parts;
+  const parts = `${basePath}/${path}`
+    .replace(/\\/g, "")
+    ?.split("/")
+    .filter(Boolean);
+  return parts;
 }
 export function urlParse(url) {
-    const urlPattern = /^(?:(\w+):\/\/)?(?:([^:@]+)?(?::([^@]+))?@)?([^:/?#]+)?(?::(\d+))?(\/[^?#]*)?(?:\?([^#]*))?(?:#(.*))?$/;
-    let matches = url.match(urlPattern);
-    if (!matches) {
-        href: url;
-    }
-    const [_, protocol, username, password, hostname, port, path, queryString, hash,] = matches;
-    let origin = hostname;
-    if (protocol) {
-        origin = protocol + "://" + hostname;
-    }
-    if (port) {
-        origin = origin + ":" + port;
-    }
-    let p = path;
-    if (p?.endsWith("/"))
-        p.slice(0, -1);
-    function query() {
-        if (queryString) {
-            const queryPart = decodeURIComponent(queryString);
-            const keyValuePairs = queryPart.split("&");
-            const paramsObj = keyValuePairs?.map((keyValue) => {
-                const [key, value] = keyValue.split("=");
-                return {
-                    [key]: value,
-                };
-            });
-            return paramsObj.reduce(function (total, value) {
-                return { ...total, ...value };
-            }, {});
-        }
-        else {
-            return {};
-        }
-    }
-    return {
-        pathname: p,
-        hash,
-        protocol,
-        origin,
-        username,
-        password,
-        hostname,
-        href: url,
-        port,
-        query: query(),
-    };
+  let u = URL.parse(url);
+  let query = {};
+  if (u?.search) {
+    const queryPart = decodeURIComponent(u?.search);
+    new URLSearchParams(queryPart).forEach((value, key) => {
+      console.log(key, value);
+      query[key] = value;
+    });
+  }
+  return {
+    pathname: u?.pathname,
+    query: query,
+    protocol: u?.protocol,
+    origin: u?.origin,
+    hostname: u?.hostname,
+    href: url,
+    port: u?.port,
+  };
 }
