@@ -1,6 +1,6 @@
 {
   "name": "tezx",
-  "version": "1.0.54",
+  "version": "1.0.55",
   "description": "TezX is a high-performance, lightweight JavaScript framework designed for speed, scalability, and flexibility. It enables efficient routing, middleware management, and static file serving with minimal configuration. Fully compatible with Node.js, Deno, and Bun.",
   "main": "cjs/index.js",
   "module": "index.js",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tezxjs/TezX.git"
+    "url": "git+https://github.com/tezxjs/TezX.git"
   },
   "bugs": {
     "url": "https://github.com/tezxjs/TezX/issues"
