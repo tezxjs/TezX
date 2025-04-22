@@ -9,8 +9,7 @@ export function urlParse(url) {
     let u = URL.parse(url);
     let query = {};
     if (u?.search) {
-        const queryPart = decodeURIComponent(u?.search);
-        new URLSearchParams(queryPart).forEach((value, key) => {
+        new URLSearchParams(u?.search).forEach((value, key) => {
             query[key] = value;
         });
     }
