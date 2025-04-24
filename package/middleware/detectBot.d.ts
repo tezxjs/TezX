@@ -1,5 +1,5 @@
-import { Context, Middleware } from "../index.js";
 import { CallbackReturn } from "../core/router.js";
+import { Context, Middleware } from "../index.js";
 export type DetectBotReason = "User-Agent" | "Blacklisted IP" | "Query Parameter" | "Rate Limiting" | "Custom Detector" | "Multiple Indicators";
 type BotDetectionResult = {
     isBot: boolean;
@@ -64,7 +64,6 @@ type DetectBotOptions = {
             count: number;
             resetTime: number;
         }) => void;
-        delete: (key: string) => void;
         clearExpired: () => void;
     };
     /**
@@ -114,7 +113,6 @@ export declare function createRateLimitDefaultStorage(): {
         count: number;
         resetTime: number;
     }>;
-    delete: (key: string) => boolean;
     clearExpired: () => void;
 };
 export declare function isRateLimit(ctx: Context, key: string, store: any, maxRequests: number, windowMs: number): {

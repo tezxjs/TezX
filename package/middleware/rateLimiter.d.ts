@@ -37,7 +37,6 @@ export type RateLimiterOptions = {
             count: number;
             resetTime: number;
         }) => void;
-        delete: (key: string) => void;
         clearExpired: () => void;
     };
     /**

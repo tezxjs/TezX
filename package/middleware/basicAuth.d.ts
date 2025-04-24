@@ -52,7 +52,6 @@ type DynamicBasicAuthOptions = {
                 count: number;
                 resetTime: number;
             }) => void;
-            delete: (key: string) => void;
             clearExpired: () => void;
         };
         /** 🔁 Max requests allowed within the window */
