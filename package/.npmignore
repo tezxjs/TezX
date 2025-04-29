@@ -15,4 +15,5 @@
 !README.md
 tsconfig.json
 .npmignore
+deno.json
 .gitignore
