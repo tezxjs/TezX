@@ -5,8 +5,8 @@ const config_js_1 = require("../core/config.js");
 const context_js_1 = require("../core/context.js");
 function bunAdapter(TezX, options = {}) {
     function listen(...arg) {
-        let port = typeof arg?.[0] === "number" ? arg?.[0] : undefined;
-        let callback = typeof arg[0] == "function" ? arg[0] : arg?.[1];
+        const port = typeof arg[0] === "function" ? undefined : arg[0];
+        const callback = typeof arg[0] === "function" ? arg[0] : arg[1];
         const serve = typeof Bun !== "undefined" ? Bun.serve : null;
         try {
             if (!serve) {

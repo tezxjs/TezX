@@ -4,8 +4,8 @@ exports.denoAdapter = denoAdapter;
 const config_js_1 = require("../core/config.js");
 function denoAdapter(TezX, options = {}) {
     function listen(...arg) {
-        let port = typeof arg?.[0] === "number" ? arg?.[0] : undefined;
-        let callback = typeof arg[0] == "function" ? arg[0] : arg?.[1];
+        const port = typeof arg[0] === "function" ? undefined : arg[0];
+        const callback = typeof arg[0] === "function" ? arg[0] : arg[1];
         const isDeno = typeof Deno !== "undefined";
         try {
             async function handleRequest(req, connInfo) {

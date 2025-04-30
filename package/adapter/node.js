@@ -58,7 +58,7 @@ export function nodeAdapter(TezX, options = {}) {
                     }
                 }
             });
-            const port = typeof arg[0] === "number" ? arg[0] : undefined;
+            const port = typeof arg[0] === "function" ? undefined : arg[0];
             const callback = typeof arg[0] === "function" ? arg[0] : arg[1];
             server.listen(options?.unix || port || 0, () => {
                 const protocol = ssl ? "\x1b[1;35mhttps\x1b[0m" : "\x1b[1;34mhttp\x1b[0m";
