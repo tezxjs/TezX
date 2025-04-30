@@ -10,7 +10,7 @@ export declare class TriMiddleware {
     constructor(pathname?: string);
 }
 export default class MiddlewareConfigure<T extends Record<string, any> = {}> extends CommonHandler {
-    triMiddlewares: TriMiddleware;
+    protected triMiddlewares: TriMiddleware;
     protected basePath: string;
     constructor(basePath?: string);
     protected addMiddleware(pathname: string, middlewares: Middleware<T>[]): void;

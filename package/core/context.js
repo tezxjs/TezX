@@ -90,8 +90,7 @@ export class Context {
         this.#rawRequest = req;
         this.method = req?.method?.toUpperCase();
         this.#requestHeaders = new HeadersParser(req?.headers);
-        if (EnvironmentDetector.getEnvironment == "node" ||
-            GlobalConfig.adapter == "node") {
+        if (GlobalConfig.adapter == "node") {
             let encrypted = req?.socket?.encrypted;
             const protocol = typeof encrypted === "boolean"
                 ? encrypted
@@ -283,7 +282,7 @@ export class Context {
             let fileExists = false;
             const runtime = EnvironmentDetector.getEnvironment;
             if (runtime === "node") {
-                const { existsSync } = await import("fs");
+                const { existsSync } = await import("node:fs");
                 fileExists = existsSync(filePath);
             }
             else if (runtime === "bun") {
@@ -303,7 +302,7 @@ export class Context {
             }
             let fileBuffer;
             if (runtime === "node") {
-                const { readFileSync } = await import("fs");
+                const { readFileSync } = await import("node:fs");
                 fileBuffer = await readFileSync(filePath);
             }
             else if (runtime === "bun") {
@@ -333,7 +332,7 @@ export class Context {
             const resolvedPath = filePath;
             let fileExists = false;
             if (runtime === "node") {
-                const { existsSync } = await import("fs");
+                const { existsSync } = await import("node:fs");
                 fileExists = existsSync(resolvedPath);
             }
             else if (runtime === "bun") {
@@ -353,7 +352,7 @@ export class Context {
             }
             let fileSize = 0;
             if (runtime === "node") {
-                const { statSync } = await import("fs");
+                const { statSync } = await import("node:fs");
                 fileSize = statSync(resolvedPath).size;
             }
             else if (runtime === "bun") {
@@ -367,7 +366,7 @@ export class Context {
             const mimeType = mimeTypes[ext] || defaultMimeType;
             let fileStream;
             if (runtime === "node") {
-                const { createReadStream } = await import("fs");
+                const { createReadStream } = await import("node:fs");
                 fileStream = createReadStream(resolvedPath);
             }
             else if (runtime === "bun") {

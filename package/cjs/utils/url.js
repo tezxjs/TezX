@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.wildcardOrOptionalParamRegex = void 0;
 exports.sanitizePathSplit = sanitizePathSplit;
 exports.urlParse = urlParse;
 function sanitizePathSplit(basePath, path) {
@@ -9,6 +10,7 @@ function sanitizePathSplit(basePath, path) {
         .filter(Boolean);
     return parts;
 }
+exports.wildcardOrOptionalParamRegex = /\/\*|:[^/]+[?*]/;
 function urlParse(url) {
     let u = URL.parse(url);
     let query = {};

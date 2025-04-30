@@ -21,7 +21,7 @@ export function bunAdapter(TezX, options = {}) {
                     })
                     : serve({
                         error: (error) => {
-                            return (options?.error)(server, error);
+                            return options?.error?.(server, error);
                         },
                         development: options?.development,
                         hostname: options?.hostname,

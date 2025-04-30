@@ -1,6 +1,6 @@
-import { EnvironmentDetector } from "../core/environment.js";
+import { GlobalConfig } from "../core/config.js";
 export async function parseJsonBody(req) {
-    const runtime = EnvironmentDetector.getEnvironment;
+    const runtime = GlobalConfig.adapter;
     if (runtime === "node") {
         return new Promise((resolve, reject) => {
             let body = "";
@@ -25,7 +25,7 @@ export async function parseJsonBody(req) {
     }
 }
 export async function parseTextBody(req) {
-    const runtime = EnvironmentDetector.getEnvironment;
+    const runtime = GlobalConfig.adapter;
     if (runtime === "node") {
         return new Promise((resolve, reject) => {
             let body = "";
@@ -50,7 +50,7 @@ export async function parseTextBody(req) {
     }
 }
 export async function parseUrlEncodedBody(req) {
-    const runtime = EnvironmentDetector.getEnvironment;
+    const runtime = GlobalConfig.adapter;
     if (runtime === "node") {
         return new Promise((resolve, reject) => {
             let body = "";
@@ -86,7 +86,7 @@ export async function parseUrlEncodedBody(req) {
     }
 }
 export async function parseMultipartBody(req, boundary, options) {
-    const runtime = EnvironmentDetector.getEnvironment;
+    const runtime = GlobalConfig.adapter;
     if (runtime === "node") {
         return new Promise((resolve, reject) => {
             let body = "";

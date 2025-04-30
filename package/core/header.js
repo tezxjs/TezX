@@ -67,7 +67,7 @@ export class HeadersParser {
     }
     forEach(callback) {
         for (const [key, value] of this.headers) {
-            callback(key, value);
+            callback(value, key);
         }
     }
     toObject() {

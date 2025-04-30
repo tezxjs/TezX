@@ -25,14 +25,13 @@ class Router extends MiddlewareConfigure_js_1.default {
         this.basePath = basePath;
         this.env = { ...env };
         this.triRouter = new TrieRouter(basePath);
-        this.get.bind(this);
-        this.post.bind(this);
-        this.put.bind(this);
-        this.delete.bind(this);
-        this.all.bind(this);
-        this.#routeAddTriNode.bind(this);
-        this.addRouter.bind(this);
-        this.group.bind(this);
+        this.get = this.get.bind(this);
+        this.post = this.post.bind(this);
+        this.put = this.put.bind(this);
+        this.delete = this.delete.bind(this);
+        this.all = this.all.bind(this);
+        this.addRouter = this.addRouter.bind(this);
+        this.group = this.group.bind(this);
     }
     static(...args) {
         let route = "";
@@ -179,7 +178,7 @@ class Router extends MiddlewareConfigure_js_1.default {
             finalMiddleware = new Set(middlewares);
         }
         let p = parts.join("/");
-        if (/(\/\*|\?)/.test(`/${p}`)) {
+        if (url_js_1.wildcardOrOptionalParamRegex.test(`/${p}`)) {
             let handler = this.routers.get(p);
             if (!handler) {
                 handler = new Map();

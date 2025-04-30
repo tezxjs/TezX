@@ -126,8 +126,8 @@ async function getFiles(dir, basePath = "/", ref, option) {
         }
     }
     else {
-        const fs = await Promise.resolve().then(() => require("fs/promises"));
-        const path = await Promise.resolve().then(() => require("path"));
+        const fs = await Promise.resolve().then(() => require("node:fs/promises"));
+        const path = await Promise.resolve().then(() => require("node:path"));
         const entries = await fs.readdir(dir, { withFileTypes: true });
         for (const entry of entries) {
             const fullPath = path.join(dir, entry.name);

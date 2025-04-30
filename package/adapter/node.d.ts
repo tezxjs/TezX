@@ -11,9 +11,9 @@ type SSLOptions = ServerOptions & TlsOptions & {
 type TezXServerOptions = UnixSocketOptions | SSLOptions;
 export declare function nodeAdapter<T extends Record<string, any> = {}>(TezX: TezX<T>, options?: TezXServerOptions): {
     listen: {
-        (callback?: (message: string) => void): any;
+        (callback?: () => void): any;
         (port?: number): any;
-        (port?: number, callback?: (message: string) => void): any;
+        (port?: number, callback?: () => void): any;
     };
 };
 export {};

@@ -69,12 +69,9 @@ function nodeAdapter(TezX, options = {}) {
                     ? `\x1b[1mNodeJS TezX Server running at unix://${address}\x1b[0m`
                     : `\x1b[1mNodeJS TezX Server running at ${protocol}://localhost:${address?.port}/\x1b[0m`;
                 config_js_1.GlobalConfig.server = server;
-                if (typeof callback == "function") {
-                    callback(message);
-                }
-                else {
-                    config_js_1.GlobalConfig.debugging.success(message);
-                }
+                config_js_1.GlobalConfig.debugging.success(message);
+                if (typeof callback == "function")
+                    callback();
                 return server;
             });
         })

@@ -119,18 +119,22 @@ export class TezX extends Router {
         }
         return middlewares;
     }
-    async #handleRequest(req, options) {
-        let ctx = new Context(req, options);
-        const urlRef = ctx.req.urlRef;
-        const { pathname } = urlRef;
+    async #resolvePath(pathname) {
         let resolvePath = pathname;
         if (this.#onPathResolve) {
-            resolvePath = this.#onPathResolve(pathname);
+            resolvePath = await this.#onPathResolve(pathname);
             GlobalConfig.debugging.warn(`${COLORS.white} PATH RESOLVE ${COLORS.reset} ${COLORS.red}${pathname}${COLORS.reset} ➞ ${COLORS.cyan}${resolvePath}${COLORS.reset}`);
         }
         if (typeof resolvePath !== "string") {
             throw new Error(`Path resolution failed: expected a string, got ${typeof resolvePath}`);
         }
+        return resolvePath;
+    }
+    async #handleRequest(req, options) {
+        let ctx = new Context(req, options);
+        const urlRef = ctx.req.urlRef;
+        const { pathname } = urlRef;
+        let resolvePath = await this.#resolvePath(pathname);
         let middlewares = this.#findMiddleware(resolvePath);
         ctx.env = this.env;
         try {
@@ -176,15 +180,18 @@ export class TezX extends Router {
             return finalResponse()(ctx);
         }
         catch (err) {
-            let error = err;
-            if (err instanceof Error) {
-                error = err.stack;
-            }
-            GlobalConfig.debugging.error(`${COLORS.bgRed} ${ctx.pathname}, Method: ${ctx.method} ${COLORS.reset}`, `${httpStatusMap[500]}: ${error} `);
-            let res = await GlobalConfig.onError(error, ctx);
-            ctx.setStatus = res.status;
-            return res;
+            return this.#handleError(err, ctx);
         }
+    }
+    async #handleError(err, ctx) {
+        let error = err;
+        if (err instanceof Error) {
+            error = err.stack;
+        }
+        GlobalConfig.debugging.error(`${COLORS.bgRed} ${ctx.pathname}, Method: ${ctx.method} ${COLORS.reset}`, `${httpStatusMap[500]}: ${error} `);
+        let res = await GlobalConfig.onError(error, ctx);
+        ctx.setStatus = res.status;
+        return res;
     }
     async serve(req, options) {
         return this.#handleRequest(req, options);

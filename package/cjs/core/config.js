@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GlobalConfig = void 0;
 const debugging_js_1 = require("../utils/debugging.js");
+const environment_js_1 = require("./environment.js");
 let GlobalConfig = class {
     static notFound = (ctx) => {
         const { method, urlRef: { pathname }, } = ctx.req;
@@ -14,7 +15,7 @@ let GlobalConfig = class {
     static overwriteMethod = true;
     static debugMode = false;
     static server;
-    static adapter;
+    static adapter = environment_js_1.EnvironmentDetector.getEnvironment;
     static get debugging() {
         return this.debugMode
             ? {

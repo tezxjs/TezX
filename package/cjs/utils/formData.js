@@ -4,9 +4,9 @@ exports.parseJsonBody = parseJsonBody;
 exports.parseTextBody = parseTextBody;
 exports.parseUrlEncodedBody = parseUrlEncodedBody;
 exports.parseMultipartBody = parseMultipartBody;
-const environment_js_1 = require("../core/environment.js");
+const config_js_1 = require("../core/config.js");
 async function parseJsonBody(req) {
-    const runtime = environment_js_1.EnvironmentDetector.getEnvironment;
+    const runtime = config_js_1.GlobalConfig.adapter;
     if (runtime === "node") {
         return new Promise((resolve, reject) => {
             let body = "";
@@ -31,7 +31,7 @@ async function parseJsonBody(req) {
     }
 }
 async function parseTextBody(req) {
-    const runtime = environment_js_1.EnvironmentDetector.getEnvironment;
+    const runtime = config_js_1.GlobalConfig.adapter;
     if (runtime === "node") {
         return new Promise((resolve, reject) => {
             let body = "";
@@ -56,7 +56,7 @@ async function parseTextBody(req) {
     }
 }
 async function parseUrlEncodedBody(req) {
-    const runtime = environment_js_1.EnvironmentDetector.getEnvironment;
+    const runtime = config_js_1.GlobalConfig.adapter;
     if (runtime === "node") {
         return new Promise((resolve, reject) => {
             let body = "";
@@ -92,7 +92,7 @@ async function parseUrlEncodedBody(req) {
     }
 }
 async function parseMultipartBody(req, boundary, options) {
-    const runtime = environment_js_1.EnvironmentDetector.getEnvironment;
+    const runtime = config_js_1.GlobalConfig.adapter;
     if (runtime === "node") {
         return new Promise((resolve, reject) => {
             let body = "";

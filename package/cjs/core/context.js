@@ -93,8 +93,7 @@ class Context {
         this.#rawRequest = req;
         this.method = req?.method?.toUpperCase();
         this.#requestHeaders = new header_js_1.HeadersParser(req?.headers);
-        if (environment_js_1.EnvironmentDetector.getEnvironment == "node" ||
-            config_js_1.GlobalConfig.adapter == "node") {
+        if (config_js_1.GlobalConfig.adapter == "node") {
             let encrypted = req?.socket?.encrypted;
             const protocol = typeof encrypted === "boolean"
                 ? encrypted
@@ -286,7 +285,7 @@ class Context {
             let fileExists = false;
             const runtime = environment_js_1.EnvironmentDetector.getEnvironment;
             if (runtime === "node") {
-                const { existsSync } = await Promise.resolve().then(() => require("fs"));
+                const { existsSync } = await Promise.resolve().then(() => require("node:fs"));
                 fileExists = existsSync(filePath);
             }
             else if (runtime === "bun") {
@@ -306,7 +305,7 @@ class Context {
             }
             let fileBuffer;
             if (runtime === "node") {
-                const { readFileSync } = await Promise.resolve().then(() => require("fs"));
+                const { readFileSync } = await Promise.resolve().then(() => require("node:fs"));
                 fileBuffer = await readFileSync(filePath);
             }
             else if (runtime === "bun") {
@@ -336,7 +335,7 @@ class Context {
             const resolvedPath = filePath;
             let fileExists = false;
             if (runtime === "node") {
-                const { existsSync } = await Promise.resolve().then(() => require("fs"));
+                const { existsSync } = await Promise.resolve().then(() => require("node:fs"));
                 fileExists = existsSync(resolvedPath);
             }
             else if (runtime === "bun") {
@@ -356,7 +355,7 @@ class Context {
             }
             let fileSize = 0;
             if (runtime === "node") {
-                const { statSync } = await Promise.resolve().then(() => require("fs"));
+                const { statSync } = await Promise.resolve().then(() => require("node:fs"));
                 fileSize = statSync(resolvedPath).size;
             }
             else if (runtime === "bun") {
@@ -370,7 +369,7 @@ class Context {
             const mimeType = staticFile_js_1.mimeTypes[ext] || staticFile_js_1.defaultMimeType;
             let fileStream;
             if (runtime === "node") {
-                const { createReadStream } = await Promise.resolve().then(() => require("fs"));
+                const { createReadStream } = await Promise.resolve().then(() => require("node:fs"));
                 fileStream = createReadStream(resolvedPath);
             }
             else if (runtime === "bun") {

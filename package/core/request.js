@@ -80,10 +80,11 @@ export class Request {
             return parseUrlEncodedBody(this.rawRequest);
         }
         else if (contentType.includes("multipart/form-data")) {
-            const boundary = contentType?.split("; ")?.[1]?.split("=")?.[1];
-            if (!boundary) {
-                throw Error("Boundary not found");
+            const boundaryMatch = contentType.match(/boundary=([^;]+)/);
+            if (!boundaryMatch) {
+                throw new Error("Boundary not found in multipart/form-data");
             }
+            const boundary = boundaryMatch[1];
             return await parseMultipartBody(this.rawRequest, boundary, options);
         }
         else {

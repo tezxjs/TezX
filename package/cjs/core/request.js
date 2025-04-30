@@ -83,10 +83,11 @@ class Request {
             return (0, formData_js_1.parseUrlEncodedBody)(this.rawRequest);
         }
         else if (contentType.includes("multipart/form-data")) {
-            const boundary = contentType?.split("; ")?.[1]?.split("=")?.[1];
-            if (!boundary) {
-                throw Error("Boundary not found");
+            const boundaryMatch = contentType.match(/boundary=([^;]+)/);
+            if (!boundaryMatch) {
+                throw new Error("Boundary not found in multipart/form-data");
             }
+            const boundary = boundaryMatch[1];
             return await (0, formData_js_1.parseMultipartBody)(this.rawRequest, boundary, options);
         }
         else {

@@ -122,8 +122,8 @@ export async function getFiles(dir, basePath = "/", ref, option) {
         }
     }
     else {
-        const fs = await import("fs/promises");
-        const path = await import("path");
+        const fs = await import("node:fs/promises");
+        const path = await import("node:path");
         const entries = await fs.readdir(dir, { withFileTypes: true });
         for (const entry of entries) {
             const fullPath = path.join(dir, entry.name);

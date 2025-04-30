@@ -5,6 +5,7 @@ export function sanitizePathSplit(basePath, path) {
         .filter(Boolean);
     return parts;
 }
+export const wildcardOrOptionalParamRegex = /\/\*|:[^/]+[?*]/;
 export function urlParse(url) {
     let u = URL.parse(url);
     let query = {};

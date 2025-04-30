@@ -128,7 +128,7 @@ export declare class Request {
          *   console.log(key, value);
          * });
          */
-        forEach: (callback: (key: string, value: string[]) => void) => void;
+        forEach: (callback: (value: string[], key: string) => void) => void;
         /**
          * Converts all headers into a plain JavaScript object.
          * Single-value headers are represented as a string, and multi-value headers as an array.

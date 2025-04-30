@@ -10,4 +10,5 @@ export type UrlRef = {
     pathname: string | undefined;
 };
 export declare function sanitizePathSplit(basePath: string, path: string): string[];
+export declare const wildcardOrOptionalParamRegex: RegExp;
 export declare function urlParse(url: string): UrlRef;
