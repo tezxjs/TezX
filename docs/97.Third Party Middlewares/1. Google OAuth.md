@@ -54,7 +54,7 @@ app.get('/auth/google', getGoogleOAuthURL({
   authClient: client,
   scopes: ['openid','email','profile'],
 }), (ctx) => {
-  return ctx.redirect(ctx.state.get('google'));
+  return ctx.redirect(ctx.state.get('google_oauth_url'));
 });
 
 // 3. Callback route, verify token and establish session
@@ -141,7 +141,7 @@ interface OAuthURLParams {
 
 /**
  * Middleware that adds `state` header, generates auth URL, and redirects.
- * On success: ctx.state.get('google') contains the URL.
+ * On success: ctx.state.get('google_oauth_url') contains the URL.
  */
 export function getGoogleOAuthURL(params: OAuthURLParams): Middleware<any>;
 ```
