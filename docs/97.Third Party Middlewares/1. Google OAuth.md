@@ -233,15 +233,23 @@ export function verifyGoogleToken(params: VerifyParams): Middleware<any>;
 
 ```ts
 /** Google user info returned by tokeninfo endpoint */
-export type User = {
-  sub: string;           // Google user ID
-  email: string;
-  email_verified: boolean;
-  name?: string;
-  given_name?: string;
-  family_name?: string;
-  picture?: string;
-  locale?: string;
+export type GoogleUser = {
+    iss: string;
+    azp: string;
+    aud: string;
+    sub: string;
+    email: string;
+    email_verified: string;
+    at_hash: string;
+    name: string;
+    picture: string;
+    given_name: string;
+    family_name: string;
+    iat: string;
+    exp: string;
+    alg: string;
+    kid: string;
+    typ: string;
   // ...other standard claims
 };
 
