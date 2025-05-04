@@ -19,6 +19,7 @@
   "bugs": {
     "url": "https://github.com/tezxjs/TezX/issues"
   },
+  "homepage": "https://github.com/tezxjs/TezX/issues#readme",
   "exports": {
     ".": {
       "import": "./index.js",
@@ -51,7 +52,6 @@
       "default": "./ws/index.js"
     }
   },
-  "homepage": "https://github.com/tezxjs/TezX",
   "files": [
     "adapter/",
     "cjs/",
