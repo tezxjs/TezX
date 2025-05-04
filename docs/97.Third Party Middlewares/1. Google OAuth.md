@@ -1,5 +1,5 @@
 
-## @tezx/google-oauth
+## @tezx/google-oauth2
 
 Provides:
 
@@ -13,13 +13,13 @@ Provides:
 ### 🔧 Installation
 
 ```bash
-npm install @tezx/google-oauth googleapis google-auth-library
+npm install @tezx/google-oauth2 @googleapis/oauth2
 ```
 
 Or with Yarn:
 
 ```bash
-yarn add @tezx/google-oauth googleapis google-auth-library
+yarn add @tezx/google-oauth2 @googleapis/oauth2
 ```
 
 ---
@@ -28,7 +28,7 @@ yarn add @tezx/google-oauth googleapis google-auth-library
 
 ```ts
 import { TezX } from 'tezx';
-import { GoogleOauthClient, getGoogleOAuthURL, verifyGoogleToken } from '@tezx/google-oauth';
+import { GoogleOauthClient, getGoogleOAuthURL, verifyGoogleToken } from '@tezx/google-oauth2';
 
 const app = new TezX({
   debugMode: true,
