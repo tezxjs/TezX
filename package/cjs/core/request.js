@@ -54,6 +54,9 @@ class Request {
             forEach: function forEach(callback) {
                 return requestHeaders.forEach(callback);
             },
+            toJSON() {
+                return requestHeaders.toJSON();
+            },
             toObject: function toObject() {
                 return requestHeaders.toObject();
             },

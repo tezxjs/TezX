@@ -1,6 +1,6 @@
 export class DenoTransport {
     async upgrade(ctx, event, options) {
-        const { socket, response } = (Deno).upgradeWebSocket(ctx.req.rawRequest, {
+        const { socket, response } = Deno.upgradeWebSocket(ctx.req.rawRequest, {
             protocol: options.protocol,
             idleTimeout: options.idleTimeout,
         });

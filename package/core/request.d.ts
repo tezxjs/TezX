@@ -130,6 +130,12 @@ export declare class Request {
          */
         forEach: (callback: (value: string[], key: string) => void) => void;
         /**
+         * Converts headers to a JSON-safe plain object (only single string values).
+         * Multi-value headers are joined by commas.
+         * @returns A record of headers with string values.
+         */
+        toJSON(): Record<string, string>;
+        /**
          * Converts all headers into a plain JavaScript object.
          * Single-value headers are represented as a string, and multi-value headers as an array.
          * @returns A plain object with header names as keys and their values as strings or arrays.

@@ -4,7 +4,7 @@ import { Context } from "../core/context.js";
 export function nodeAdapter(TezX, options = {}) {
     function listen(...arg) {
         let ssl = options?.enableSSL;
-        import(ssl ? "node:https" : 'node:http')
+        import(ssl ? "node:https" : "node:http")
             .then((r) => {
             GlobalConfig.adapter = "node";
             let server = r.createServer(options, async (req, res) => {
@@ -39,11 +39,10 @@ export function nodeAdapter(TezX, options = {}) {
                 if (!(response instanceof Response)) {
                     throw new Error("Invalid response from TezX.serve");
                 }
-                const headers = Object.fromEntries(await response.headers.entries());
                 if (statusText) {
                     res.statusMessage = statusText;
                 }
-                res.writeHead(response.status, headers);
+                res.writeHead(response.status, [...response.headers.entries()]);
                 const { Readable } = await import("node:stream");
                 if (response.body instanceof Readable) {
                     return response.body.pipe(res);
@@ -61,7 +60,9 @@ export function nodeAdapter(TezX, options = {}) {
             const port = typeof arg[0] === "function" ? undefined : arg[0];
             const callback = typeof arg[0] === "function" ? arg[0] : arg[1];
             server.listen(options?.unix || port || 0, () => {
-                const protocol = ssl ? "\x1b[1;35mhttps\x1b[0m" : "\x1b[1;34mhttp\x1b[0m";
+                const protocol = ssl
+                    ? "\x1b[1;35mhttps\x1b[0m"
+                    : "\x1b[1;34mhttp\x1b[0m";
                 const address = server.address();
                 const message = typeof address === "string"
                     ? `\x1b[1mNodeJS TezX Server running at unix://${address}\x1b[0m`

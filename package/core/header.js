@@ -77,5 +77,12 @@ export class HeadersParser {
         }
         return obj;
     }
+    toJSON() {
+        const obj = {};
+        for (const [key, value] of this.headers.entries()) {
+            obj[key] = Array.isArray(value) ? value.join(", ") : value;
+        }
+        return obj;
+    }
 }
 Object.defineProperty(HeadersParser, "name", { value: "Headers" });

@@ -68,4 +68,10 @@ export declare class HeadersParser {
      * @returns A record of headers where single-value headers are returned as a string.
      */
     toObject(): Record<string, string | string[]>;
+    /**
+     * Converts headers to a JSON-safe plain object (only single string values).
+     * Multi-value headers are joined by commas.
+     * @returns A record of headers with string values.
+     */
+    toJSON(): Record<string, string>;
 }

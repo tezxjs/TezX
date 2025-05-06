@@ -1,5 +1,5 @@
 import { getFiles } from "../utils/staticFile.js";
-import { sanitizePathSplit, wildcardOrOptionalParamRegex } from "../utils/url.js";
+import { sanitizePathSplit, wildcardOrOptionalParamRegex, } from "../utils/url.js";
 import { GlobalConfig } from "./config.js";
 import MiddlewareConfigure, { TriMiddleware, } from "./MiddlewareConfigure.js";
 class TrieRouter {

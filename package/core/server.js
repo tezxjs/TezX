@@ -73,18 +73,24 @@ export class TezX extends Router {
         }
         return null;
     }
-    #createHandler(middlewares, finalCallback) {
+    #createHandler(middlewares) {
         return async (ctx) => {
+            let response = undefined;
             let index = 0;
-            const next = async () => {
-                if (index < middlewares.length) {
-                    return await middlewares[index++](ctx, next);
+            let next = async () => {
+                const currentMiddleware = middlewares[index++];
+                let result = await currentMiddleware?.(ctx, next);
+                if (result instanceof Response) {
+                    ctx.res = result;
+                    response = ctx.res;
+                    return;
                 }
-                else {
-                    return await finalCallback(ctx);
+                if (result) {
+                    response = result;
+                    return;
                 }
             };
-            const response = await next();
+            await next();
             if (response instanceof Response) {
                 return response;
             }
@@ -92,10 +98,10 @@ export class TezX extends Router {
                 return response;
             }
             if (!response && !ctx.body) {
-                throw new Error(`Handler did not return a response or next() was not called. Path: ${ctx.pathname}, Method: ${ctx.method}`);
+                throw new Error(`Handler failed: Middleware chain incomplete or response missing. Did you forget ${COLORS.bgRed} 'await next()' ${COLORS.reset} or to return a response? ${COLORS.bgCyan} Path: ${ctx.pathname}, Method: ${ctx.method} ${COLORS.reset}`);
             }
             const resBody = response || ctx.body;
-            return ctx.send(resBody, ctx.headers.toObject());
+            return ctx.send(resBody, ctx.headers.toJSON());
         };
     }
     #findMiddleware(pathname) {
@@ -138,21 +144,18 @@ export class TezX extends Router {
         let middlewares = this.#findMiddleware(resolvePath);
         ctx.env = this.env;
         try {
-            let callback = async (ctx) => {
-                const find = this.findRoute(ctx.req.method, resolvePath);
-                if (find?.callback) {
-                    ctx.params = find.params;
-                    const callback = find.callback;
-                    let middlewares = find.middlewares;
-                    return (await this.#createHandler(middlewares, callback)(ctx));
-                }
-                else {
-                    let res = (await GlobalConfig.notFound(ctx));
-                    ctx.setStatus = res.status;
-                    return res;
-                }
-            };
-            let response = await this.#createHandler([...this.triMiddlewares.middlewares, ...middlewares], callback)(ctx);
+            let combine = [...this.triMiddlewares.middlewares, ...middlewares];
+            const find = this.findRoute(ctx.req.method, resolvePath);
+            if (find?.callback) {
+                ctx.params = find.params;
+                const callback = find.callback;
+                let routeMiddlewares = find.middlewares || [];
+                combine.push(...routeMiddlewares, callback);
+            }
+            else {
+                combine.push(GlobalConfig.notFound);
+            }
+            let response = await this.#createHandler(combine)(ctx);
             if (ctx.wsProtocol) {
                 if (typeof response == "function") {
                     return {
