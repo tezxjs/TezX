@@ -86,12 +86,11 @@ class TezX extends router_js_1.Router {
                 if (result instanceof Response) {
                     ctx.res = result;
                     response = ctx.res;
-                    return result;
                 }
                 if (result) {
                     response = result;
-                    return response;
                 }
+                return ctx.res;
             };
             await next();
             if (response instanceof Response) {
