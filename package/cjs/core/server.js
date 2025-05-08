@@ -78,31 +78,39 @@ class TezX extends router_js_1.Router {
     }
     #createHandler(middlewares) {
         return async (ctx) => {
-            let response = undefined;
             let index = 0;
-            let next = async () => {
+            let response = undefined;
+            const next = async () => {
+                if (index >= middlewares.length) {
+                    return;
+                }
                 const currentMiddleware = middlewares[index++];
-                let result = await currentMiddleware?.(ctx, next);
-                if (result instanceof Response) {
-                    ctx.res = result;
-                    response = ctx.res;
+                try {
+                    const result = await currentMiddleware(ctx, next);
+                    if (result instanceof Response) {
+                        ctx.res = result;
+                    }
+                    if (result !== undefined) {
+                        response = result;
+                    }
+                    return response;
                 }
-                if (result) {
-                    response = result;
+                catch (err) {
+                    ctx.body = err;
+                    throw err;
                 }
-                return ctx.res;
             };
-            await next();
-            if (response instanceof Response) {
-                return response;
+            let res = await next();
+            if (res instanceof Response) {
+                return res;
             }
-            if (typeof response == "function" && ctx.wsProtocol) {
-                return response;
+            if (typeof res == "function" && ctx.wsProtocol) {
+                return res;
             }
-            if (!response && !ctx.body) {
+            if (!res && !ctx.body) {
                 throw new Error(`Handler failed: Middleware chain incomplete or response missing. Did you forget ${colors_js_1.COLORS.bgRed} 'await next()' ${colors_js_1.COLORS.reset} or to return a response? ${colors_js_1.COLORS.bgCyan} Path: ${ctx.pathname}, Method: ${ctx.method} ${colors_js_1.COLORS.reset}`);
             }
-            const resBody = response || ctx.body;
+            const resBody = res || ctx.body;
             return ctx.send(resBody, ctx.headers.toJSON());
         };
     }
