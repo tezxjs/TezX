@@ -76,7 +76,6 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * app.get('/admin', [authMiddleware, adminMiddleware], (ctx) => { ... });
      */
     get(path: string, callback: Callback<T>): this;
-    get(path: string, middleware: Middleware<T>): this;
     get(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     get(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
@@ -85,7 +84,6 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * @param args - Handler callback or middleware(s) + handler
      */
     post(path: string, callback: Callback<T>): this;
-    post(path: string, middleware: Middleware<T>): this;
     post(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     post(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
@@ -94,7 +92,6 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * @param args - Handler callback or middleware(s) + handler
      */
     put(path: string, callback: Callback<T>): this;
-    put(path: string, middleware: Middleware<T>): this;
     put(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     put(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
@@ -103,7 +100,6 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * @param args - Handler callback or middleware(s) + handler
      */
     patch(path: string, callback: Callback<T>): this;
-    patch(path: string, middleware: Middleware<T>): this;
     patch(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     patch(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
@@ -112,7 +108,6 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * @param args - Handler callback or middleware(s) + handler
      */
     delete(path: string, callback: Callback<T>): this;
-    delete(path: string, middleware: Middleware<T>): this;
     delete(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     delete(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
@@ -121,7 +116,6 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * @param args - Handler callback or middleware(s) + handler
      */
     options(path: string, callback: Callback<T>): this;
-    options(path: string, middleware: Middleware<T>): this;
     options(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     options(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
@@ -130,7 +124,6 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * @param args - Handler callback or middleware(s) + handler
      */
     head(path: string, callback: Callback<T>): this;
-    head(path: string, middleware: Middleware<T>): this;
     head(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     head(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
@@ -139,7 +132,6 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * @param args - Handler callback or middleware(s) + handler
      */
     all(path: string, callback: Callback<T>): this;
-    all(path: string, middleware: Middleware<T>): this;
     all(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     all(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
@@ -190,7 +182,6 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
     use(path: string, middlewares: Middleware<T>[], callback: Callback<T> | Router<T | any>): this;
     use(path: string, middleware: Middleware<T>, callback: Callback<T> | Router<T | any>): this;
     use(path: string, middlewares: Middleware<T>[]): this;
-    use(path: string, middleware: Middleware<T>): this;
     use(path: string, callback: Callback<T> | Router<T | any>): this;
     use(middlewares: Middleware<T>[], callback: Callback<T> | Router<T | any>): this;
     use(middleware: Middleware<T>, callback: Callback<T> | Router<T | any>): this;

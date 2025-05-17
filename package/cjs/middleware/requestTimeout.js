@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requestTimeout = void 0;
-const config_1 = require("../core/config");
+const config_js_1 = require("../core/config.js");
 const requestTimeout = (options) => {
     const { getTimeout, onTimeout = (ctx) => {
         ctx.setStatus = 504;
         ctx.body = { error: "Request timed out." };
     }, logTimeoutEvent = (ctx, error) => {
-        config_1.GlobalConfig.debugging.warn(`[TIMEOUT] ${error.message}: ${ctx.method} ${ctx.path}`);
+        config_js_1.GlobalConfig.debugging.warn(`[TIMEOUT] ${error.message}: ${ctx.method} ${ctx.path}`);
     }, cleanup = () => {
     }, } = options;
     return async (ctx, next) => {

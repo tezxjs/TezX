@@ -1,5 +1,5 @@
-import { Context } from "../core/context";
-import { CallbackReturn, Middleware } from "../core/router";
+import { Context } from "../core/context.js";
+import { CallbackReturn, Middleware } from "../core/router.js";
 type TimeoutOptions = {
     /**
      * ⏳ Function to dynamically determine the timeout duration (in milliseconds).

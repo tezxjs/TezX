@@ -1,4 +1,4 @@
-import { GlobalConfig } from "../core/config";
+import { GlobalConfig } from "../core/config.js";
 export const requestTimeout = (options) => {
     const { getTimeout, onTimeout = (ctx) => {
         ctx.setStatus = 504;
