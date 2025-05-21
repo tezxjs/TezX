@@ -13,3 +13,4 @@ export * from "./requestTimeout.js";
 export * from "./sanitizeHeader.js";
 export * from "./secureHeaders.js";
 export * from "./xssProtection.js";
+export * from "./cacheControl.js";

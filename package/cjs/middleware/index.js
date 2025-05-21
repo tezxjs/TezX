@@ -32,3 +32,4 @@ __exportStar(require("./requestTimeout.js"), exports);
 __exportStar(require("./sanitizeHeader.js"), exports);
 __exportStar(require("./secureHeaders.js"), exports);
 __exportStar(require("./xssProtection.js"), exports);
+__exportStar(require("./cacheControl.js"), exports);
