@@ -33,21 +33,38 @@ export class TezX extends Router {
         }
         return null;
     }
-    #triRouter(method, pathname) {
+    #triRouter(method, pathname, priority = "static") {
         const parts = pathname.split("/").filter(Boolean);
         const params = {};
         let node = this.triRouter;
-        for (let part of parts) {
-            if (node.children.has(part)) {
-                node = node.children.get(part);
+        if (priority == "static") {
+            for (let part of parts) {
+                if (node.children.has(part)) {
+                    node = node.children.get(part);
+                }
+                else if (node.children.has(":")) {
+                    node = node.children.get(":");
+                    if (node.paramName)
+                        params[node.paramName] = part;
+                }
+                else {
+                    return null;
+                }
             }
-            else if (node.children.has(":")) {
-                node = node.children.get(":");
-                if (node.paramName)
-                    params[node.paramName] = part;
-            }
-            else {
-                return null;
+        }
+        else {
+            for (let part of parts) {
+                if (node.children.has(":")) {
+                    node = node.children.get(":");
+                    if (node.paramName)
+                        params[node.paramName] = part;
+                }
+                else if (node.children.has(part)) {
+                    node = node.children.get(part);
+                }
+                else {
+                    return null;
+                }
             }
         }
         if (node?.handlers?.size && node?.pathname) {
@@ -64,7 +81,9 @@ export class TezX extends Router {
         return null;
     }
     findRoute(method, pathname) {
-        const route = this.#triRouter(method, pathname) || this.#hashRouter(method, pathname);
+        const route = this.#triRouter(method, pathname) ||
+            this.#hashRouter(method, pathname) ||
+            this.#triRouter(method, pathname, "param");
         if (route) {
             return {
                 ...route,
@@ -160,6 +179,7 @@ export class TezX extends Router {
                 combine.push(...routeMiddlewares, callback);
             }
             else {
+                ctx.setStatus = 404;
                 combine.push(GlobalConfig.notFound);
             }
             let response = await this.#createHandler(combine)(ctx);

@@ -96,10 +96,10 @@ function sanitized(title) {
     const base = title
         .toLowerCase()
         .trim()
-        .replace(/[_\s]+/g, '-')
-        .replace(/[^a-z0-9-.]+/g, '')
-        .replace(/--+/g, '-')
-        .replace(/^-+|-+$/g, '');
+        .replace(/[_\s]+/g, "-")
+        .replace(/[^a-z0-9-.]+/g, "")
+        .replace(/--+/g, "-")
+        .replace(/^-+|-+$/g, "");
     return base;
 }
 async function parseMultipartBody(req, boundary, options) {
@@ -143,8 +143,7 @@ async function parseMultipartBody(req, boundary, options) {
                                 const fieldName = fieldNameMatch[1];
                                 const contentType = contentTypeMatch[1];
                                 if (options?.sanitized) {
-                                    filename =
-                                        `${Date.now()}-${sanitized(filename)}`;
+                                    filename = `${Date.now()}-${sanitized(filename)}`;
                                 }
                                 if (Array.isArray(options?.allowedTypes) &&
                                     !options.allowedTypes?.includes(contentType)) {
@@ -202,8 +201,7 @@ async function parseMultipartBody(req, boundary, options) {
             if (val instanceof File && typeof options == "object") {
                 let filename = val.name;
                 if (options?.sanitized) {
-                    filename =
-                        `${Date.now()}-${sanitized(filename)}`;
+                    filename = `${Date.now()}-${sanitized(filename)}`;
                 }
                 if (Array.isArray(options?.allowedTypes) &&
                     !options.allowedTypes?.includes(val.type)) {

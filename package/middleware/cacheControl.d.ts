@@ -24,8 +24,8 @@ export type CacheRule = {
 export type CacheSettings = Pick<CacheRule, "maxAge" | "scope" | "enableETag" | "vary">;
 export type CacheOptions = {
     /**
-    * 🧪 Weak ETag generation (optional).
-    */
+     * 🧪 Weak ETag generation (optional).
+     */
     useWeakETag?: boolean;
     /**
      * 📝 Logging function for cache events.
