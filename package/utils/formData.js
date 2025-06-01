@@ -85,6 +85,16 @@ export async function parseUrlEncodedBody(req) {
         throw new Error("Unsupported environment for multipart parsing");
     }
 }
+export function sanitized(title) {
+    const base = title
+        .toLowerCase()
+        .trim()
+        .replace(/[_\s]+/g, '-')
+        .replace(/[^a-z0-9-.]+/g, '')
+        .replace(/--+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    return base;
+}
 export async function parseMultipartBody(req, boundary, options) {
     const runtime = GlobalConfig.adapter;
     if (runtime === "node") {
@@ -127,7 +137,7 @@ export async function parseMultipartBody(req, boundary, options) {
                                 const contentType = contentTypeMatch[1];
                                 if (options?.sanitized) {
                                     filename =
-                                        `${Date.now()}-${filename.replace(/\s+/g, "")?.replace(/[^a-zA-Z0-9.-]/g, "-")}`?.toLowerCase();
+                                        `${Date.now()}-${sanitized(filename)}`;
                                 }
                                 if (Array.isArray(options?.allowedTypes) &&
                                     !options.allowedTypes?.includes(contentType)) {
@@ -186,7 +196,7 @@ export async function parseMultipartBody(req, boundary, options) {
                 let filename = val.name;
                 if (options?.sanitized) {
                     filename =
-                        `${Date.now()}-${filename.replace(/\s+/g, "")?.replace(/[^a-zA-Z0-9.-]/g, "-")}`?.toLowerCase();
+                        `${Date.now()}-${sanitized(filename)}`;
                 }
                 if (Array.isArray(options?.allowedTypes) &&
                     !options.allowedTypes?.includes(val.type)) {

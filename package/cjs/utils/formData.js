@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseJsonBody = parseJsonBody;
 exports.parseTextBody = parseTextBody;
 exports.parseUrlEncodedBody = parseUrlEncodedBody;
+exports.sanitized = sanitized;
 exports.parseMultipartBody = parseMultipartBody;
 const config_js_1 = require("../core/config.js");
 async function parseJsonBody(req) {
@@ -91,6 +92,16 @@ async function parseUrlEncodedBody(req) {
         throw new Error("Unsupported environment for multipart parsing");
     }
 }
+function sanitized(title) {
+    const base = title
+        .toLowerCase()
+        .trim()
+        .replace(/[_\s]+/g, '-')
+        .replace(/[^a-z0-9-.]+/g, '')
+        .replace(/--+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    return base;
+}
 async function parseMultipartBody(req, boundary, options) {
     const runtime = config_js_1.GlobalConfig.adapter;
     if (runtime === "node") {
@@ -133,7 +144,7 @@ async function parseMultipartBody(req, boundary, options) {
                                 const contentType = contentTypeMatch[1];
                                 if (options?.sanitized) {
                                     filename =
-                                        `${Date.now()}-${filename.replace(/\s+/g, "")?.replace(/[^a-zA-Z0-9.-]/g, "-")}`?.toLowerCase();
+                                        `${Date.now()}-${sanitized(filename)}`;
                                 }
                                 if (Array.isArray(options?.allowedTypes) &&
                                     !options.allowedTypes?.includes(contentType)) {
@@ -192,7 +203,7 @@ async function parseMultipartBody(req, boundary, options) {
                 let filename = val.name;
                 if (options?.sanitized) {
                     filename =
-                        `${Date.now()}-${filename.replace(/\s+/g, "")?.replace(/[^a-zA-Z0-9.-]/g, "-")}`?.toLowerCase();
+                        `${Date.now()}-${sanitized(filename)}`;
                 }
                 if (Array.isArray(options?.allowedTypes) &&
                     !options.allowedTypes?.includes(val.type)) {
