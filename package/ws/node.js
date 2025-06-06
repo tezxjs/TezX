@@ -17,6 +17,7 @@ export class NodeTransport {
         };
     }
     setupHandlers(ws, event, options) {
+        event.open?.(ws);
         ws.on("open", () => event.open?.(ws));
         ws.on("message", (data) => event.message?.(ws, data));
         ws.on("close", (code, reason) => event.close?.(ws, { code, reason }));
