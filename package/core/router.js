@@ -2,7 +2,7 @@ import { getFiles } from "../utils/staticFile.js";
 import { sanitizePathSplit, wildcardOrOptionalParamRegex, } from "../utils/url.js";
 import { GlobalConfig } from "./config.js";
 import MiddlewareConfigure, { TriMiddleware, } from "./MiddlewareConfigure.js";
-class TrieRouter {
+export class TrieRouter {
     children = new Map();
     handlers = new Map();
     pathname;
@@ -214,7 +214,7 @@ export class Router extends MiddlewareConfigure {
             callback: callback,
             middlewares: finalMiddleware,
         });
-        node.pathname = path;
+        node.pathname = `/${p}`;
     }
     #addRouteMiddleware(path, middlewareFunctions) {
         this.addMiddleware(path, middlewareFunctions);

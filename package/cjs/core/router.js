@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Router = void 0;
+exports.Router = exports.TrieRouter = void 0;
 const staticFile_js_1 = require("../utils/staticFile.js");
 const url_js_1 = require("../utils/url.js");
 const config_js_1 = require("./config.js");
@@ -16,6 +16,7 @@ class TrieRouter {
         this.pathname = pathname;
     }
 }
+exports.TrieRouter = TrieRouter;
 class Router extends MiddlewareConfigure_js_1.default {
     routers = new Map();
     env = {};
@@ -217,7 +218,7 @@ class Router extends MiddlewareConfigure_js_1.default {
             callback: callback,
             middlewares: finalMiddleware,
         });
-        node.pathname = path;
+        node.pathname = `/${p}`;
     }
     #addRouteMiddleware(path, middlewareFunctions) {
         this.addMiddleware(path, middlewareFunctions);

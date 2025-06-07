@@ -19,7 +19,7 @@ export type RouterConfig = {
      */
     basePath?: string;
 };
-declare class TrieRouter {
+export declare class TrieRouter {
     children: Map<string, TrieRouter>;
     handlers: Map<HTTPMethod, {
         callback: Callback<any>;
@@ -34,12 +34,13 @@ export type StaticServeOption = {
     cacheControl?: string;
     headers?: ResponseHeaders;
 };
+export type RouterHandler<T extends Record<string, any>> = {
+    callback: Callback<T>;
+    middlewares: UniqueMiddlewares | DuplicateMiddlewares;
+};
 export declare class Router<T extends Record<string, any> = {}> extends MiddlewareConfigure<T> {
     #private;
-    protected routers: Map<string, Map<HTTPMethod, {
-        callback: Callback<T>;
-        middlewares: UniqueMiddlewares | DuplicateMiddlewares;
-    }>>;
+    protected routers: Map<string, Map<HTTPMethod, RouterHandler<T>>>;
     protected env: Record<string, string | number>;
     protected triRouter: TrieRouter;
     constructor({ basePath, env }?: RouterConfig);
@@ -189,4 +190,3 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
     use(middleware: Middleware<T>): this;
     use(callback: Callback<T> | Router<T | any>): this;
 }
-export {};

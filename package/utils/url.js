@@ -1,6 +1,14 @@
+function normalizePath(path) {
+    return ('/' +
+        path
+            .replace(/\\/g, '')
+            .replace(/\/+/g, '/')
+            .replace(/^\/+/, ''));
+}
 export function sanitizePathSplit(basePath, path) {
     const parts = `${basePath}/${path}`
-        .replace(/\\/g, "")
+        .replace(/\\/g, '')
+        .replace(/\/+/g, '/')
         ?.split("/")
         .filter(Boolean);
     return parts;

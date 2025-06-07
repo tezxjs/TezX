@@ -204,8 +204,15 @@ export class Context {
             headers,
         });
     }
-    html(data, ...args) {
+    html(strings, ...args) {
         let status = this.#status;
+        let data = strings;
+        if (Array.isArray(strings)) {
+            data = strings.reduce((result, str, i) => {
+                const value = args?.[i] ?? "";
+                return result + str + value;
+            }, "");
+        }
         let headers = {
             "Content-Type": "text/html; charset=utf-8",
         };

@@ -3,7 +3,7 @@ import { Callback, ctx } from "./router.js";
 export declare let GlobalConfig: {
     new (): {};
     notFound: Callback;
-    onError: <T extends Record<string, any> = {}>(err: string, ctx: ctx<T>) => any;
+    onError: <T extends Record<string, any> = {}>(err: string, ctx: ctx<T>) => Response;
     allowDuplicateMw?: boolean;
     overwriteMethod?: boolean;
     debugMode?: boolean;

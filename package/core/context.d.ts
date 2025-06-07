@@ -114,19 +114,20 @@ export declare class Context<T extends Record<string, any> = {}> {
      * @param headers - (Optional) Additional response headers.
      * @returns Response object.
      */
-    send(body: any, status?: number, headers?: ResponseHeaders): any;
-    send(body: any, headers?: ResponseHeaders): any;
-    send(body: any, status?: number): any;
+    send(body: any, status?: number, headers?: ResponseHeaders): Response;
+    send(body: any, headers?: ResponseHeaders): Response;
+    send(body: any, status?: number): Response;
     /**
      * Sends an HTML response.
-     * @param data - The HTML content as a string.
+     * @param strings - The HTML content as a string. Supports `both template literals` and plain string input..
      * @param status - (Optional) HTTP status code (default: 200).
      * @param headers - (Optional) Additional response headers.
      * @returns Response object with HTML data.
      */
-    html(data: string, status?: number, headers?: ResponseHeaders): any;
-    html(data: string, headers?: ResponseHeaders): any;
-    html(data: string, status?: number): any;
+    html(strings: readonly string[], ...values: any[]): Response;
+    html(strings: string, status?: number, headers?: ResponseHeaders): Response;
+    html(strings: string, headers?: ResponseHeaders): Response;
+    html(strings: string, status?: number): Response;
     /**
      * Sends a plain text response.
      * @param data - The text content.
@@ -134,9 +135,9 @@ export declare class Context<T extends Record<string, any> = {}> {
      * @param headers - (Optional) Additional response headers.
      * @returns Response object with plain text data.
      */
-    text(data: string, status?: number, headers?: ResponseHeaders): any;
-    text(data: string, headers?: ResponseHeaders): any;
-    text(data: string, status?: number): any;
+    text(data: string, status?: number, headers?: ResponseHeaders): Response;
+    text(data: string, headers?: ResponseHeaders): Response;
+    text(data: string, status?: number): Response;
     /**
      * Sends an XML response.
      * @param data - The XML content.
@@ -144,9 +145,9 @@ export declare class Context<T extends Record<string, any> = {}> {
      * @param headers - (Optional) Additional response headers.
      * @returns Response object with XML data.
      */
-    xml(data: string, status?: number, headers?: ResponseHeaders): any;
-    xml(data: string, headers?: ResponseHeaders): any;
-    xml(data: string, status?: number): any;
+    xml(data: string, status?: number, headers?: ResponseHeaders): Response;
+    xml(data: string, headers?: ResponseHeaders): Response;
+    xml(data: string, status?: number): Response;
     /**
      * HTTP status code..
      * @param status - number.
