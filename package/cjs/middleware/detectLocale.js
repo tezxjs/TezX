@@ -4,7 +4,7 @@ exports.detectLocale = void 0;
 const config_js_1 = require("../core/config.js");
 const detectLocale = (options) => {
     const { supportedLocales, defaultLocale = "en", queryKeyLocale = "lang", cookieKeyLocale = "locale", localeContextKey = "locale", customLocaleDetector, } = options;
-    return async (ctx, next) => {
+    return async function detectLocale(ctx, next) {
         let detectedLocale;
         const queryLocale = ctx.req.query[queryKeyLocale];
         if (queryLocale && supportedLocales.includes(queryLocale)) {

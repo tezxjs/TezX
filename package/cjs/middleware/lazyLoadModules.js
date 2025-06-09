@@ -8,7 +8,7 @@ const lazyLoadModules = (options) => {
     if (enableCache && !cacheStorage) {
         storage = new Map();
     }
-    return async (ctx, next) => {
+    return async function lazyLoadModules(ctx, next) {
         let moduleName = moduleKey(ctx) ||
             ctx.req.params[queryKeyModule] ||
             ctx.req.query[queryKeyModule];

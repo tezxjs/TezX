@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.i18nMiddleware = void 0;
+exports.i18n = void 0;
 const config_js_1 = require("../core/config.js");
-const i18nMiddleware = (options) => {
+const i18n = (options) => {
     const { loadTranslations, defaultCacheDuration = 3600000, isCacheValid = (cached) => cached.expiresAt > Date.now(), detectLanguage = (ctx) => ctx.req.query.lang ||
         ctx.cookies?.get("lang") ||
         ctx.req.headers.get("accept-language")?.split(",")[0] ||
@@ -11,7 +11,7 @@ const i18nMiddleware = (options) => {
         return Object.entries(options).reduce((msg, [key, value]) => msg.replace(new RegExp(`{{${key}}}`, "g"), String(value)), message);
     }, cacheTranslations = true, } = options;
     const translationCache = {};
-    return async (ctx, next) => {
+    return async function i18n(ctx, next) {
         try {
             const detectedLanguage = detectLanguage(ctx);
             const languageChain = [
@@ -76,4 +76,4 @@ const i18nMiddleware = (options) => {
         }
     };
 };
-exports.i18nMiddleware = i18nMiddleware;
+exports.i18n = i18n;

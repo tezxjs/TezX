@@ -21,7 +21,7 @@ Object.defineProperty(exports, "cors", { enumerable: true, get: function () { re
 var detectBot_js_1 = require("./detectBot.js");
 Object.defineProperty(exports, "detectBot", { enumerable: true, get: function () { return detectBot_js_1.detectBot; } });
 __exportStar(require("./detectLocale.js"), exports);
-__exportStar(require("./i18nMiddleware.js"), exports);
+__exportStar(require("./i18n.js"), exports);
 __exportStar(require("./lazyLoadModules.js"), exports);
 __exportStar(require("./logger.js"), exports);
 __exportStar(require("./pagination.js"), exports);

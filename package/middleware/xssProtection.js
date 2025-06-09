@@ -1,7 +1,7 @@
 import { GlobalConfig } from "../core/config.js";
 export const xssProtection = (options = {}) => {
     const { enabled = true, mode = "block", fallbackCSP = "default-src 'self'; script-src 'self';", } = options;
-    return async (ctx, next) => {
+    return async function xssProtection(ctx, next) {
         const isEnabled = typeof enabled === "function" ? enabled(ctx) : enabled;
         if (!isEnabled) {
             GlobalConfig.debugging.warn("🟠 XSS protection is disabled.");

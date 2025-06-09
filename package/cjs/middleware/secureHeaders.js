@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.secureHeaders = void 0;
 const secureHeaders = (options = {}) => {
-    return async (ctx, next) => {
+    return async function secureHeaders(ctx, next) {
         const resolveValue = (value) => {
             return typeof value === "function" ? value(ctx) : value;
         };

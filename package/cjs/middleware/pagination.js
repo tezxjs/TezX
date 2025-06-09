@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.paginationHandler = void 0;
 const paginationHandler = (options = {}) => {
     const { defaultPage = 1, defaultLimit = 10, maxLimit = 100, queryKeyPage = "page", queryKeyLimit = "limit", countKey = "total", dataKey = "data", getDataSource, } = options;
-    return async (ctx, next) => {
+    return async function paginationHandler(ctx, next) {
         const rawPage = ctx.req.query[queryKeyPage];
         const rawLimit = ctx.req.query[queryKeyLimit];
         const page = Math.max(parseInt(rawPage || `${defaultPage}`, 10), 1);

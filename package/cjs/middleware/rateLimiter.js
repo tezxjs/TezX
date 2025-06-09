@@ -7,7 +7,7 @@ const rateLimiter = (options) => {
         ctx.setStatus = 429;
         throw new Error(`Rate limit exceeded. Try again in ${retryAfter} seconds.`);
     }, } = options;
-    return async (ctx, next) => {
+    return async function rateLimiter(ctx, next) {
         const key = keyGenerator(ctx);
         const { check, entry } = (0, detectBot_js_1.isRateLimit)(ctx, key, storage, maxRequests, windowMs);
         if (check) {

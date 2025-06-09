@@ -2,7 +2,7 @@ export * from "./basicAuth.js";
 export { cors } from "./cors.js";
 export { detectBot } from "./detectBot.js";
 export * from "./detectLocale.js";
-export * from "./i18nMiddleware.js";
+export * from "./i18n.js";
 export * from "./lazyLoadModules.js";
 export * from "./logger.js";
 export * from "./pagination.js";

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.logger = logger;
 const colors_js_1 = require("../utils/colors.js");
 function logger() {
-    return async (ctx, next) => {
+    return async function logger(ctx, next) {
         try {
             console.log(`${colors_js_1.COLORS.bold}<-- ${colors_js_1.COLORS.reset}${colors_js_1.COLORS.bgMagenta} ${ctx.method} ${colors_js_1.COLORS.reset} ${ctx.pathname}`);
             const startTime = performance.now();

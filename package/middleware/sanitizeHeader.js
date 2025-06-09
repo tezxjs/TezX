@@ -1,7 +1,7 @@
 import { GlobalConfig } from "../core/config.js";
 export const sanitizeHeaders = (options = {}) => {
     const { whitelist = [], blacklist = [], normalizeKeys = true, allowUnsafeCharacters = false, } = options;
-    return async (ctx, next) => {
+    return async function sanitizeHeaders(ctx, next) {
         const sanitizedHeaders = new Map();
         for (const [key, values] of ctx.headers.entries()) {
             if (!Array.isArray(values) || values.length === 0) {

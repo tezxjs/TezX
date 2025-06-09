@@ -86,16 +86,16 @@ export type I18nOptions = {
  *
  * @example
  * // Basic usage
- * app.use(i18nMiddleware({
+ * app.use(i18n({
  *   loadTranslations: lang => import(`./locales/${lang}.json`),
  *   defaultLanguage: 'en'
  * }));
  *
  * // With caching and custom detection
- * app.use(i18nMiddleware({
+ * app.use(i18n({
  *   loadTranslations: fetchTranslations,
  *   detectLanguage: ctx => ctx.get('X-Language'),
  *   cacheTranslations: true
  * }));
  */
-export declare const i18nMiddleware: (options: I18nOptions) => Middleware;
+export declare const i18n: (options: I18nOptions) => Middleware;

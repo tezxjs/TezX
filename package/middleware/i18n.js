@@ -1,5 +1,5 @@
 import { GlobalConfig } from "../core/config.js";
-export const i18nMiddleware = (options) => {
+export const i18n = (options) => {
     const { loadTranslations, defaultCacheDuration = 3600000, isCacheValid = (cached) => cached.expiresAt > Date.now(), detectLanguage = (ctx) => ctx.req.query.lang ||
         ctx.cookies?.get("lang") ||
         ctx.req.headers.get("accept-language")?.split(",")[0] ||
@@ -8,7 +8,7 @@ export const i18nMiddleware = (options) => {
         return Object.entries(options).reduce((msg, [key, value]) => msg.replace(new RegExp(`{{${key}}}`, "g"), String(value)), message);
     }, cacheTranslations = true, } = options;
     const translationCache = {};
-    return async (ctx, next) => {
+    return async function i18n(ctx, next) {
         try {
             const detectedLanguage = detectLanguage(ctx);
             const languageChain = [

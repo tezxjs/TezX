@@ -1,6 +1,6 @@
 import { COLORS } from "../utils/colors.js";
 export function logger() {
-    return async (ctx, next) => {
+    return async function logger(ctx, next) {
         try {
             console.log(`${COLORS.bold}<-- ${COLORS.reset}${COLORS.bgMagenta} ${ctx.method} ${COLORS.reset} ${ctx.pathname}`);
             const startTime = performance.now();

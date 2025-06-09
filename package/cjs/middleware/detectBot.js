@@ -13,7 +13,7 @@ const detectBot = (options = {}) => {
     if (enableRateLimiting) {
         store = createRateLimitDefaultStorage();
     }
-    return async (ctx, next) => {
+    return async function detectBot(ctx, next) {
         const detectionResult = {
             isBot: false,
             indicators: [],

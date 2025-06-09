@@ -7,7 +7,7 @@ export const requestTimeout = (options) => {
         GlobalConfig.debugging.warn(`[TIMEOUT] ${error.message}: ${ctx.method} ${ctx.path}`);
     }, cleanup = () => {
     }, } = options;
-    return async (ctx, next) => {
+    return async function requestTimeout(ctx, next) {
         let timeoutId = null;
         try {
             const timeout = getTimeout(ctx);

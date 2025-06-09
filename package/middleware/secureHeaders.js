@@ -1,5 +1,5 @@
 export const secureHeaders = (options = {}) => {
-    return async (ctx, next) => {
+    return async function secureHeaders(ctx, next) {
         const resolveValue = (value) => {
             return typeof value === "function" ? value(ctx) : value;
         };

@@ -1,6 +1,6 @@
 export function cors(option = {}) {
     const { methods, allowedHeaders, credentials, exposedHeaders, maxAge, origin, } = option;
-    return async (ctx, next) => {
+    return async function cors(ctx, next) {
         const reqOrigin = ctx.req.headers.get("origin") || "";
         let allowOrigin = "*";
         if (typeof origin === "string") {

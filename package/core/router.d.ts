@@ -183,6 +183,7 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
     use(path: string, middlewares: Middleware<T>[], callback: Callback<T> | Router<T | any>): this;
     use(path: string, middleware: Middleware<T>, callback: Callback<T> | Router<T | any>): this;
     use(path: string, middlewares: Middleware<T>[]): this;
+    use(path: string, middlewares: Middleware<T>): this;
     use(path: string, callback: Callback<T> | Router<T | any>): this;
     use(middlewares: Middleware<T>[], callback: Callback<T> | Router<T | any>): this;
     use(middleware: Middleware<T>, callback: Callback<T> | Router<T | any>): this;

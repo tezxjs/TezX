@@ -15,7 +15,7 @@ const basicAuth = (options) => {
     if (rateLimit && !rateLimit.storage) {
         storage = (0, detectBot_js_1.createRateLimitDefaultStorage)();
     }
-    return async (ctx, next) => {
+    return async function basicAuth(ctx, next) {
         let authMethod;
         let credentials = {};
         const authHeader = ctx.req.headers.get("authorization");

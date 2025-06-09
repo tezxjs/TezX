@@ -11,7 +11,7 @@ const cacheControl = (options) => {
             config_js_1.GlobalConfig.debugging.success(`[CACHE] ${event.toUpperCase()} for ${ctx.method} ${ctx.pathname}`);
         }
     }, } = options;
-    return async (ctx, next) => {
+    return async function cacheControl(ctx, next) {
         if (!["GET", "HEAD"].includes(ctx.method)) {
             return await next();
         }
