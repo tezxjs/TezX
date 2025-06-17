@@ -1,5 +1,4 @@
 import { UrlRef } from "../utils/url.js";
-import { HeadersParser } from "./header.js";
 import { TezXServeOptions } from "./server.js";
 export type FormDataOptions = {
     maxSize?: number;
@@ -20,7 +19,6 @@ export type ConnAddress = {
 };
 export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "OPTIONS" | "PATCH" | "HEAD" | "ALL" | "TRACE" | "CONNECT" | string;
 export declare class Request {
-    #private;
     /**
      * Full request URL including protocol and query string
      * @type {string}
@@ -57,31 +55,21 @@ export declare class Request {
      * ```
      */
     remoteAddress: NetAddr;
-    constructor({ headers, params, req, options, urlRef, }: {
+    constructor({ params, method, req, options, }: {
+        method: string;
         req: any;
         params: Record<string, any>;
-        headers: HeadersParser;
-        urlRef: UrlRef;
         options: TezXServeOptions;
     });
     get headers(): {
         /**
          * Retrieves the first value of a specific header.
          * @param key - Header name to search for.
-         * @returns The first header value or undefined if not found.
+         * @returns The first header value or null if not found.
          * @example
          * get('content-type') // returns 'application/json'
          */
-        get: (key: string) => string | undefined;
-        /**
-         * Retrieves all values of a specific header.
-         * If multiple values exist for a header, all will be returned as an array.
-         * @param key - Header name to search for.
-         * @returns An array of all header values associated with the key.
-         * @example
-         * getAll('accept-language') // returns ['en-US', 'fr-CA']
-         */
-        getAll: (key: string) => string | never[];
+        get: (key: string) => string | null;
         /**
          * Checks if a header exists in the request.
          * @param key - Header name to check for existence.
@@ -93,13 +81,13 @@ export declare class Request {
         /**
          * Returns an iterator over all header entries.
          * Each entry is a [key, value] pair where the value can be an array of strings.
-         * @returns IterableIterator for iterating over header key-value pairs.
+         * @returns HeadersIterator for iterating over header key-value pairs.
          * @example
          * for (let [key, value] of headers.entries()) {
          *   console.log(key, value);
          * }
          */
-        entries: () => IterableIterator<[string, string[]]>;
+        entries: () => HeadersIterator<[string, string]>;
         /**
          * Returns an iterator over all header keys.
          * This allows iteration over the names of all headers in the request.
@@ -113,13 +101,13 @@ export declare class Request {
         /**
          * Returns an iterator over all header values.
          * This allows iteration over the values of all headers, with each value being an array of strings.
-         * @returns IterableIterator of header values.
+         * @returns HeadersIterator<string> of header values.
          * @example
          * for (let value of headers.values()) {
          *   console.log(value);
          * }
          */
-        values: () => IterableIterator<string[]>;
+        values: () => HeadersIterator<string>;
         /**
          * Iterates over each header and executes a callback for every header found.
          * @param callback - Function to execute for each header. Receives the value array and key.
@@ -128,34 +116,25 @@ export declare class Request {
          *   console.log(key, value);
          * });
          */
-        forEach: (callback: (value: string[], key: string) => void) => void;
+        forEach: (callbackfn: (value: string, key: string, parent: Headers) => void) => void;
         /**
          * Converts headers to a JSON-safe plain object (only single string values).
          * Multi-value headers are joined by commas.
          * @returns A record of headers with string values.
          */
         toJSON(): Record<string, string>;
-        /**
-         * Converts all headers into a plain JavaScript object.
-         * Single-value headers are represented as a string, and multi-value headers as an array.
-         * @returns A plain object with header names as keys and their values as strings or arrays.
-         * @example
-         * const headersObject = headers.toObject();
-         * console.log(headersObject);
-         */
-        toObject: () => Record<string, string | string[]>;
     };
     /**
      * Parses the request body as plain text.
      * @returns {Promise<string>} The text content of the request body.
      */
-    text(): Promise<string>;
+    text(): Promise<any>;
     /**
      * Parses the request body as JSON.
      * @returns {Promise<Record<string, any>>} The parsed JSON object.
      * If the Content-Type is not 'application/json', it returns an empty object.
      */
-    json(): Promise<Record<string, any>>;
+    json(): Promise<any>;
     /**
      * Parses the request body based on Content-Type.
      * Supports:

@@ -38,7 +38,7 @@ export function cors(option = {}) {
         if (ctx.req.method === "OPTIONS") {
             return new Response(null, {
                 status: 204,
-                headers: ctx.headers.toObject(),
+                headers: ctx.headers.toJSON(),
             });
         }
         return await next();

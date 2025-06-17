@@ -1,7 +1,8 @@
 import { COLORS } from "../utils/colors.js";
+import { httpStatusMap } from "../utils/httpStatusMap.js";
 import { useParams } from "../utils/params.js";
 import { GlobalConfig } from "./config.js";
-import { Context, httpStatusMap } from "./context.js";
+import { Context } from "./context.js";
 import { Router } from "./router.js";
 export class TezX extends Router {
     #onPathResolve;
@@ -194,12 +195,12 @@ export class TezX extends Router {
             }
             let finalResponse = () => {
                 return (ctx) => {
-                    if (response?.headers) {
-                        ctx.headers.add(response.headers);
+                    for (const [key, value] of response?.headers.entries()) {
+                        ctx.headers.set(key, value);
                     }
                     const statusText = response?.statusText || httpStatusMap[response?.status] || "";
                     const status = response.status || ctx.getStatus;
-                    let headers = ctx.headers.toObject();
+                    let headers = ctx.headers.toJSON();
                     return new Response(response.body, {
                         status,
                         statusText,

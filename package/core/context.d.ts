@@ -1,6 +1,5 @@
 import { State } from "../utils/state.js";
-import { HeadersParser } from "./header.js";
-import { HTTPMethod, Request } from "./request.js";
+import { HTTPMethod, Request as RequestParser } from "./request.js";
 import { TezXServeOptions } from "./server.js";
 export interface CookieOptions {
     expires?: Date;
@@ -11,11 +10,11 @@ export interface CookieOptions {
     httpOnly?: boolean;
     sameSite?: "Strict" | "Lax" | "None";
 }
-export declare const httpStatusMap: Record<number, string>;
 export type ResponseHeaders = Record<string, string>;
 export declare class Context<T extends Record<string, any> = {}> {
     #private;
     [key: string]: any;
+    rawRequest: Request;
     /**
      * Environment variables and configuration
      * @type {object}
@@ -23,9 +22,9 @@ export declare class Context<T extends Record<string, any> = {}> {
     env: Record<string, any> & T;
     /**
      * Parser for handling and manipulating HTTP headers
-     * @type {HeadersParser}
+     * @type {Headers}
      */
-    headers: HeadersParser;
+    headers: Headers;
     /**
      * Request path without query parameters
      * @type {string}
@@ -193,7 +192,7 @@ export declare class Context<T extends Record<string, any> = {}> {
      * // Access route params
      * const id = request.params.get('id');
      */
-    get req(): Request;
+    get req(): RequestParser;
     protected set params(params: Record<string, any>);
     /**
      * Set response body to be passed between middlewares or returned as final output.

@@ -8,12 +8,4 @@ export class EnvironmentDetector {
             return "node";
         return "unknown";
     }
-    static getHost(headers) {
-        try {
-            return headers?.get("host") || "unknown";
-        }
-        catch (error) {
-            throw new Error("Failed to get host.");
-        }
-    }
 }

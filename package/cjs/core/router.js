@@ -63,6 +63,11 @@ class Router extends MiddlewareConfigure_js_1.default {
         this.#registerRoute("GET", path, ...args);
         return this;
     }
+    sse(path, handler) {
+        this.get(path, async (ctx) => {
+            return handler(ctx);
+        });
+    }
     post(path, ...args) {
         this.#registerRoute("POST", path, ...args);
         return this;

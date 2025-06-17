@@ -31,9 +31,9 @@ const sanitizeHeaders = (options = {}) => {
                 config_js_1.GlobalConfig.debugging.warn(`⚠️ All values for "${normalizedKey}" invalid - removed`);
                 continue;
             }
-            sanitizedHeaders.set(normalizedKey, sanitizedValues);
+            sanitizedHeaders.set(normalizedKey, sanitizedValues?.join(", "));
         }
-        ctx.headers.clear().add([...sanitizedHeaders.entries()]);
+        ctx.headers = new Headers(sanitizedHeaders);
         return await next();
     };
 };

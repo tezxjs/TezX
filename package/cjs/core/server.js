@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TezX = void 0;
 const colors_js_1 = require("../utils/colors.js");
+const httpStatusMap_js_1 = require("../utils/httpStatusMap.js");
 const params_js_1 = require("../utils/params.js");
 const config_js_1 = require("./config.js");
 const context_js_1 = require("./context.js");
@@ -197,12 +198,12 @@ class TezX extends router_js_1.Router {
             }
             let finalResponse = () => {
                 return (ctx) => {
-                    if (response?.headers) {
-                        ctx.headers.add(response.headers);
+                    for (const [key, value] of response?.headers.entries()) {
+                        ctx.headers.set(key, value);
                     }
-                    const statusText = response?.statusText || context_js_1.httpStatusMap[response?.status] || "";
+                    const statusText = response?.statusText || httpStatusMap_js_1.httpStatusMap[response?.status] || "";
                     const status = response.status || ctx.getStatus;
-                    let headers = ctx.headers.toObject();
+                    let headers = ctx.headers.toJSON();
                     return new Response(response.body, {
                         status,
                         statusText,
@@ -221,7 +222,7 @@ class TezX extends router_js_1.Router {
         if (err instanceof Error) {
             error = err.stack;
         }
-        config_js_1.GlobalConfig.debugging.error(`${colors_js_1.COLORS.bgRed} ${ctx.pathname}, Method: ${ctx.method} ${colors_js_1.COLORS.reset}`, `${context_js_1.httpStatusMap[500]}: ${error} `);
+        config_js_1.GlobalConfig.debugging.error(`${colors_js_1.COLORS.bgRed} ${ctx.pathname}, Method: ${ctx.method} ${colors_js_1.COLORS.reset}`, `${httpStatusMap_js_1.httpStatusMap[500]}: ${error} `);
         let res = await config_js_1.GlobalConfig.onError(error, ctx);
         ctx.setStatus = res.status;
         return res;

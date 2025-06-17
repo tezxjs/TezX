@@ -80,6 +80,35 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
     get(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
     get(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
+     * Registers a Server-Sent Events (SSE) route handler for the given path.
+     *
+     * This method sets up an HTTP GET route that sends real-time updates to the client
+     * over a persistent HTTP connection using the SSE protocol.
+     *
+     * ### Example:
+     * ```ts
+     * app.sse("/events", async (ctx) => {
+     *   const stream = new ReadableStream({
+     *     start(controller) {
+     *       controller.enqueue(new TextEncoder().encode("data: Hello\n\n"));
+     *     },
+     *   });
+     *
+     *   return ctx.send(stream, {
+     *     headers: {
+     *       "Content-Type": "text/event-stream",
+     *       "Cache-Control": "no-cache",
+     *       "Connection": "keep-alive",
+     *     },
+     *   });
+     * });
+     * ```
+     *
+     * @param {string} path - The route path for SSE (e.g. `/events`).
+     * @param {(ctx: Context) => any} handler - A handler function that returns a streamed response.
+     */
+    sse(path: string, handler: (ctx: Context) => any): void;
+    /**
      * Registers a POST route with optional middleware(s)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler

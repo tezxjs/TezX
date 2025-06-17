@@ -1,79 +1,13 @@
 import { State } from "../utils/state.js";
 import { defaultMimeType, mimeTypes } from "../utils/staticFile.js";
-import { urlParse } from "../utils/url.js";
+import { toWebRequest } from "../utils/toWebRequest.js";
 import { GlobalConfig } from "./config.js";
 import { EnvironmentDetector } from "./environment.js";
-import { HeadersParser } from "./header.js";
-import { Request } from "./request.js";
-export const httpStatusMap = {
-    100: "Continue",
-    101: "Switching Protocols",
-    102: "Processing",
-    103: "Early Hints",
-    200: "OK",
-    201: "Created",
-    202: "Accepted",
-    203: "Non-Authoritative Information",
-    204: "No Content",
-    205: "Reset Content",
-    206: "Partial Content",
-    207: "Multi-Status",
-    208: "Already Reported",
-    226: "IM Used",
-    300: "Multiple Choices",
-    301: "Moved Permanently",
-    302: "Found",
-    303: "See Other",
-    304: "Not Modified",
-    305: "Use Proxy",
-    306: "Switch Proxy",
-    307: "Temporary Redirect",
-    308: "Permanent Redirect",
-    400: "Bad Request",
-    401: "Unauthorized",
-    402: "Payment Required",
-    403: "Forbidden",
-    404: "Not Found",
-    405: "Method Not Allowed",
-    406: "Not Acceptable",
-    407: "Proxy Authentication Required",
-    408: "Request Timeout",
-    409: "Conflict",
-    410: "Gone",
-    411: "Length Required",
-    412: "Precondition Failed",
-    413: "Payload Too Large",
-    414: "URI Too Long",
-    415: "Unsupported Media Type",
-    416: "Range Not Satisfiable",
-    417: "Expectation Failed",
-    418: "I'm a Teapot",
-    421: "Misdirected Request",
-    422: "Unprocessable Entity",
-    423: "Locked",
-    424: "Failed Dependency",
-    425: "Too Early",
-    426: "Upgrade Required",
-    428: "Precondition Required",
-    429: "Too Many Requests",
-    431: "Request Header Fields Too Large",
-    451: "Unavailable For Legal Reasons",
-    500: "Internal Server Error",
-    501: "Not Implemented",
-    502: "Bad Gateway",
-    503: "Service Unavailable",
-    504: "Gateway Timeout",
-    505: "HTTP Version Not Supported",
-    506: "Variant Also Negotiates",
-    507: "Insufficient Storage",
-    508: "Loop Detected",
-    510: "Not Extended",
-    511: "Network Authentication Required",
-};
+import { Request as RequestParser } from "./request.js";
 export class Context {
-    #rawRequest;
+    rawRequest;
     env = {};
-    headers = new HeadersParser();
+    headers = new Headers();
     pathname;
     url;
     method;
@@ -82,30 +16,20 @@ export class Context {
     #params = {};
     resBody;
     #body;
-    #urlRef;
-    #requestHeaders;
     #options;
     constructor(req, options) {
         this.#options = options;
-        this.#rawRequest = req;
         this.method = req?.method?.toUpperCase();
-        this.#requestHeaders = new HeadersParser(req?.headers);
         if (GlobalConfig.adapter == "node") {
-            let encrypted = req?.socket?.encrypted;
-            const protocol = typeof encrypted === "boolean"
-                ? encrypted
-                    ? "https"
-                    : "http"
-                : "http";
-            const host = EnvironmentDetector.getHost(this.#requestHeaders);
-            const path = req.url || "/";
-            this.url = `${protocol}://${host}${path}`;
+            let request = toWebRequest(req, this.method);
+            this.url = request.url;
+            this.rawRequest = request;
         }
         else {
             this.url = req.url;
+            this.rawRequest = req;
         }
-        this.#urlRef = urlParse(this.url);
-        this.pathname = this.#urlRef.pathname;
+        this.pathname = this.req.urlRef.pathname;
     }
     header(key, value, options) {
         let append = options?.append;
@@ -118,16 +42,9 @@ export class Context {
         return this;
     }
     get cookies() {
-        const c = this.#requestHeaders.getAll("cookie");
+        const c = this.req.headers.get("cookie");
         let cookies = {};
-        if (Array.isArray(c) && c.length != 0) {
-            const cookieHeader = c.join("; ").split(";");
-            for (const pair of cookieHeader) {
-                const [key, value] = pair?.trim()?.split("=");
-                cookies[key] = decodeURIComponent(value);
-            }
-        }
-        else if (typeof c == "string") {
+        if (typeof c == "string") {
             const cookieHeader = c.split(";");
             for (const pair of cookieHeader) {
                 const [key, value] = pair?.trim()?.split("=");
@@ -418,10 +335,9 @@ export class Context {
         return response;
     }
     get req() {
-        return new Request({
-            headers: this.#requestHeaders,
-            req: this.#rawRequest,
-            urlRef: this.#urlRef,
+        return new RequestParser({
+            method: this.method,
+            req: this.rawRequest,
             options: this.#options,
             params: this.#params,
         });

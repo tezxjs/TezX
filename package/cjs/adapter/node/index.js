@@ -1,12 +1,14 @@
-import { Buffer } from "node:buffer";
-import { GlobalConfig } from "../core/config.js";
-import { Context } from "../core/context.js";
-export function nodeAdapter(TezX, options = {}) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.nodeAdapter = nodeAdapter;
+const node_buffer_1 = require("node:buffer");
+const config_js_1 = require("../../core/config.js");
+const context_js_1 = require("../../core/context.js");
+function nodeAdapter(TezX, options = {}) {
     function listen(...arg) {
         let ssl = options?.enableSSL;
-        import(ssl ? "node:https" : "node:http")
-            .then((r) => {
-            GlobalConfig.adapter = "node";
+        Promise.resolve(`${ssl ? "node:https" : "node:http"}`).then(s => require(s)).then((r) => {
+            config_js_1.GlobalConfig.adapter = "node";
             let server = r.createServer(options, async (req, res) => {
                 let address = {};
                 if (req.socket) {
@@ -28,7 +30,7 @@ export function nodeAdapter(TezX, options = {}) {
                 };
                 const response = await TezX.serve(req, options);
                 if (typeof response?.websocket == "function" &&
-                    response.ctx instanceof Context &&
+                    response.ctx instanceof context_js_1.Context &&
                     response.ctx.wsProtocol) {
                     let ctx = response.ctx;
                     response.websocket(ctx, server);
@@ -43,14 +45,14 @@ export function nodeAdapter(TezX, options = {}) {
                     res.statusMessage = statusText;
                 }
                 res.writeHead(response.status, [...response.headers.entries()]);
-                const { Readable } = await import("node:stream");
+                const { Readable } = await Promise.resolve().then(() => require("node:stream"));
                 if (response.body instanceof Readable) {
                     return response.body.pipe(res);
                 }
                 else {
                     const buffer = await response.arrayBuffer();
                     if (buffer.byteLength > 0) {
-                        return res.end(Buffer.from(buffer));
+                        return res.end(node_buffer_1.Buffer.from(buffer));
                     }
                     else {
                         return res.end();
@@ -67,8 +69,8 @@ export function nodeAdapter(TezX, options = {}) {
                 const message = typeof address === "string"
                     ? `\x1b[1mNodeJS TezX Server running at unix://${address}\x1b[0m`
                     : `\x1b[1mNodeJS TezX Server running at ${protocol}://localhost:${address?.port}/\x1b[0m`;
-                GlobalConfig.server = server;
-                GlobalConfig.debugging.success(message);
+                config_js_1.GlobalConfig.server = server;
+                config_js_1.GlobalConfig.debugging.success(message);
                 if (typeof callback == "function")
                     callback();
                 return server;

@@ -149,7 +149,10 @@ async function getFiles(dir, basePath = "/", ref, option) {
                 ctx.headers.set("Cache-Control", option.cacheControl);
             }
             if (option.headers) {
-                ctx.headers.add(option.headers);
+                for (const key in option.headers) {
+                    let value = option.headers?.[key];
+                    ctx.headers.set(key, value);
+                }
             }
             return ctx.sendFile(r.file);
         });
