@@ -1,10 +1,10 @@
 import { Buffer } from "node:buffer";
-import { GlobalConfig } from "../../core/config.js";
-import { Context } from "../../core/context.js";
+import { GlobalConfig } from "../core/config.js";
+import { Context } from "../core/context.js";
 export function nodeAdapter(TezX, options = {}) {
     function listen(...arg) {
         let ssl = options?.enableSSL;
-        import(ssl ? "node:https" : "node:http")
+        return import(ssl ? "node:https" : "node:http")
             .then((r) => {
             GlobalConfig.adapter = "node";
             let server = r.createServer(options, async (req, res) => {
@@ -73,6 +73,7 @@ export function nodeAdapter(TezX, options = {}) {
                     callback();
                 return server;
             });
+            return server;
         })
             .catch((r) => {
             throw Error(r.message);

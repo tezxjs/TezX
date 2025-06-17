@@ -195,16 +195,16 @@ export class TezX extends Router {
             }
             let finalResponse = () => {
                 return (ctx) => {
-                    for (const [key, value] of response?.headers.entries()) {
+                    let headers = response?.headers;
+                    for (const [key, value] of headers.entries()) {
                         ctx.headers.set(key, value);
                     }
                     const statusText = response?.statusText || httpStatusMap[response?.status] || "";
                     const status = response.status || ctx.getStatus;
-                    let headers = ctx.headers.toJSON();
                     return new Response(response.body, {
                         status,
                         statusText,
-                        headers,
+                        headers: ctx.headers,
                     });
                 };
             };

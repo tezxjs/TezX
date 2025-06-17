@@ -2,12 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.nodeAdapter = nodeAdapter;
 const node_buffer_1 = require("node:buffer");
-const config_js_1 = require("../../core/config.js");
-const context_js_1 = require("../../core/context.js");
+const config_js_1 = require("../core/config.js");
+const context_js_1 = require("../core/context.js");
 function nodeAdapter(TezX, options = {}) {
     function listen(...arg) {
         let ssl = options?.enableSSL;
-        Promise.resolve(`${ssl ? "node:https" : "node:http"}`).then(s => require(s)).then((r) => {
+        return Promise.resolve(`${ssl ? "node:https" : "node:http"}`).then(s => require(s)).then((r) => {
             config_js_1.GlobalConfig.adapter = "node";
             let server = r.createServer(options, async (req, res) => {
                 let address = {};
@@ -75,6 +75,7 @@ function nodeAdapter(TezX, options = {}) {
                     callback();
                 return server;
             });
+            return server;
         })
             .catch((r) => {
             throw Error(r.message);

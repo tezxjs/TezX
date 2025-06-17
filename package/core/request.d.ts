@@ -91,13 +91,13 @@ export declare class Request {
         /**
          * Returns an iterator over all header keys.
          * This allows iteration over the names of all headers in the request.
-         * @returns IterableIterator of header names.
+         * @returns HeadersIterator of header names.
          * @example
          * for (let key of headers.keys()) {
          *   console.log(key);
          * }
          */
-        keys: () => IterableIterator<string>;
+        keys: () => HeadersIterator<string>;
         /**
          * Returns an iterator over all header values.
          * This allows iteration over the values of all headers, with each value being an array of strings.

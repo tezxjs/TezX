@@ -1,6 +1,6 @@
 import type { ServerOptions } from "node:http";
 import type { TlsOptions } from "node:tls";
-import { TezX } from "../../core/server.js";
+import { TezX } from "../core/server.js";
 type UnixSocketOptions = ServerOptions & {
     unix?: string;
     enableSSL?: false;
