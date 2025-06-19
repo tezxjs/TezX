@@ -2,7 +2,7 @@ import { State } from "../utils/state.js";
 import { defaultMimeType, mimeTypes } from "../utils/staticFile.js";
 import { toWebRequest } from "../utils/toWebRequest.js";
 import { GlobalConfig } from "./config.js";
-import { EnvironmentDetector } from "./environment.js";
+import { Environment } from "./environment.js";
 import { Request as RequestParser } from "./request.js";
 export class Context {
     rawRequest;
@@ -104,12 +104,18 @@ export class Context {
         else if (typeof args[0] === "object") {
             headers = args[0];
         }
-        if (!headers["Content-Type"] && !headers["content-type"]) {
-            if (typeof body === "string" || typeof body == "number") {
-                headers["Content-Type"] = "text/plain;";
+        const contentTypeHeader = headers["Content-Type"] || headers["content-type"] || "";
+        if (!contentTypeHeader) {
+            if (typeof body === "string") {
+                headers["Content-Type"] = "text/plain; charset=utf-8";
             }
-            else if (typeof body === "object" && body !== null) {
-                headers["Content-Type"] = "application/json;";
+            else if (typeof body === "number" || typeof body === "boolean") {
+                headers["Content-Type"] = "text/plain; charset=utf-8";
+            }
+            else if (typeof body === "object" &&
+                body !== null &&
+                !(body instanceof ReadableStream)) {
+                headers["Content-Type"] = "application/json; charset=utf-8";
                 body = JSON.stringify(body);
             }
             else {
@@ -204,7 +210,7 @@ export class Context {
     async download(filePath, fileName) {
         try {
             let fileExists = false;
-            const runtime = EnvironmentDetector.getEnvironment;
+            const runtime = Environment.getEnvironment;
             if (runtime === "node") {
                 const { existsSync } = await import("node:fs");
                 fileExists = existsSync(filePath);
@@ -252,7 +258,7 @@ export class Context {
     }
     async sendFile(filePath, ...args) {
         try {
-            const runtime = EnvironmentDetector.getEnvironment;
+            const runtime = Environment.getEnvironment;
             const resolvedPath = filePath;
             let fileExists = false;
             if (runtime === "node") {

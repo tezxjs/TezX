@@ -1,6 +1,6 @@
 {
   "name": "tezx",
-  "version": "1.0.77",
+  "version": "2.0.1",
   "description": "TezX is a high-performance, lightweight JavaScript framework designed for speed, scalability, and flexibility. It enables efficient routing, middleware management, and static file serving with minimal configuration. Fully compatible with Node.js, Deno, and Bun.",
   "main": "cjs/index.js",
   "module": "index.js",
@@ -28,11 +28,23 @@
       "types": "./middleware/index.d.ts",
       "default": "./middleware/index.js"
     },
-    "./adapter": {
-      "import": "./adapter/index.js",
-      "require": "./cjs/adapter/index.js",
-      "types": "./adapter/index.d.ts",
-      "default": "./adapter/index.js"
+    "./node": {
+      "import": "./node/index.js",
+      "require": "./cjs/node/index.js",
+      "types": "./node/index.d.ts",
+      "default": "./node/index.js"
+    },
+    "./bun": {
+      "import": "./bun/index.js",
+      "require": "./cjs/bun/index.js",
+      "types": "./bun/index.d.ts",
+      "default": "./bun/index.js"
+    },
+    "./deno": {
+      "import": "./deno/index.js",
+      "require": "./cjs/deno/index.js",
+      "types": "./deno/index.d.ts",
+      "default": "./deno/index.js"
     },
     "./helper": {
       "import": "./helper/index.js",
@@ -52,6 +64,9 @@
     "cjs/",
     "core/",
     "helper/",
+    "bun/",
+    "deno/",
+    "node/",
     "middleware/",
     "utils/",
     "ws/",

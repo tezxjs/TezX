@@ -107,12 +107,18 @@ class Context {
         else if (typeof args[0] === "object") {
             headers = args[0];
         }
-        if (!headers["Content-Type"] && !headers["content-type"]) {
-            if (typeof body === "string" || typeof body == "number") {
-                headers["Content-Type"] = "text/plain;";
+        const contentTypeHeader = headers["Content-Type"] || headers["content-type"] || "";
+        if (!contentTypeHeader) {
+            if (typeof body === "string") {
+                headers["Content-Type"] = "text/plain; charset=utf-8";
             }
-            else if (typeof body === "object" && body !== null) {
-                headers["Content-Type"] = "application/json;";
+            else if (typeof body === "number" || typeof body === "boolean") {
+                headers["Content-Type"] = "text/plain; charset=utf-8";
+            }
+            else if (typeof body === "object" &&
+                body !== null &&
+                !(body instanceof ReadableStream)) {
+                headers["Content-Type"] = "application/json; charset=utf-8";
                 body = JSON.stringify(body);
             }
             else {
@@ -207,7 +213,7 @@ class Context {
     async download(filePath, fileName) {
         try {
             let fileExists = false;
-            const runtime = environment_js_1.EnvironmentDetector.getEnvironment;
+            const runtime = environment_js_1.Environment.getEnvironment;
             if (runtime === "node") {
                 const { existsSync } = await Promise.resolve().then(() => require("node:fs"));
                 fileExists = existsSync(filePath);
@@ -255,7 +261,7 @@ class Context {
     }
     async sendFile(filePath, ...args) {
         try {
-            const runtime = environment_js_1.EnvironmentDetector.getEnvironment;
+            const runtime = environment_js_1.Environment.getEnvironment;
             const resolvedPath = filePath;
             let fileExists = false;
             if (runtime === "node") {

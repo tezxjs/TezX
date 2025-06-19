@@ -4,16 +4,12 @@ exports.wildcardOrOptionalParamRegex = void 0;
 exports.sanitizePathSplit = sanitizePathSplit;
 exports.urlParse = urlParse;
 function normalizePath(path) {
-    return ('/' +
-        path
-            .replace(/\\/g, '')
-            .replace(/\/+/g, '/')
-            .replace(/^\/+/, ''));
+    return ("/" + path.replace(/\\/g, "").replace(/\/+/g, "/").replace(/^\/+/, ""));
 }
 function sanitizePathSplit(basePath, path) {
     const parts = `${basePath}/${path}`
-        .replace(/\\/g, '')
-        .replace(/\/+/g, '/')
+        .replace(/\\/g, "")
+        .replace(/\/+/g, "/")
         ?.split("/")
         .filter(Boolean);
     return parts;

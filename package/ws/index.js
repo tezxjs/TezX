@@ -1,4 +1,4 @@
-import { EnvironmentDetector } from "../core/environment.js";
+import { Environment } from "../core/environment.js";
 import { DenoTransport } from "./deno.js";
 import { NodeTransport } from "./node.js";
 export function upgradeWebSocket(callback, options = {}) {
@@ -20,7 +20,7 @@ export function upgradeWebSocket(callback, options = {}) {
         }
         ctx.wsProtocol = ctx.req.urlRef.protocol === "https:" ? "wss" : "ws";
         try {
-            const env = EnvironmentDetector.getEnvironment;
+            const env = Environment.getEnvironment;
             if (!callback) {
                 throw new Error("WebSocket callback is missing. Please provide a valid callback function to handle the WebSocket events.");
             }

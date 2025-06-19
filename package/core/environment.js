@@ -1,4 +1,4 @@
-export class EnvironmentDetector {
+export class Environment {
     static get getEnvironment() {
         if (typeof Bun !== "undefined")
             return "bun";

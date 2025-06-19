@@ -1,4 +1,4 @@
-import { EnvironmentDetector } from "../core/environment.js";
+import { Environment } from "../core/environment.js";
 export const mimeTypes = {
     html: "text/html",
     htm: "text/html",
@@ -105,7 +105,7 @@ export const mimeTypes = {
 export const defaultMimeType = "application/octet-stream";
 export async function getFiles(dir, basePath = "/", ref, option) {
     const files = [];
-    const runtime = EnvironmentDetector.getEnvironment;
+    const runtime = Environment.getEnvironment;
     if (runtime == "deno") {
         for await (const entry of Deno.readDir(dir)) {
             const path = `${dir}/${entry.name}`;

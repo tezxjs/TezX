@@ -23,7 +23,7 @@ function upgradeWebSocket(callback, options = {}) {
         }
         ctx.wsProtocol = ctx.req.urlRef.protocol === "https:" ? "wss" : "ws";
         try {
-            const env = environment_js_1.EnvironmentDetector.getEnvironment;
+            const env = environment_js_1.Environment.getEnvironment;
             if (!callback) {
                 throw new Error("WebSocket callback is missing. Please provide a valid callback function to handle the WebSocket events.");
             }

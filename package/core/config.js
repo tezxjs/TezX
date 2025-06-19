@@ -1,5 +1,5 @@
 import { loggerOutput } from "../utils/debugging.js";
-import { EnvironmentDetector } from "./environment.js";
+import { Environment } from "./environment.js";
 export let GlobalConfig = class {
     static notFound = (ctx) => {
         const { method, urlRef: { pathname }, } = ctx.req;
@@ -12,7 +12,7 @@ export let GlobalConfig = class {
     static overwriteMethod = true;
     static debugMode = false;
     static server;
-    static adapter = EnvironmentDetector.getEnvironment;
+    static adapter = Environment.getEnvironment;
     static get debugging() {
         return this.debugMode
             ? {

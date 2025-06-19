@@ -1,32 +1,26 @@
-import { EnvironmentDetector } from "../core/environment.js";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.loadEnv = loadEnv;
+const environment_js_1 = require("../core/environment.js");
+const colors_js_1 = require("../utils/colors.js");
 function parseEnvFile(filePath, result) {
     try {
-        let fileExists = false;
-        let runtime = EnvironmentDetector.getEnvironment;
-        if (runtime === "node" || runtime === "bun") {
-            const { existsSync } = require("fs");
-            fileExists = existsSync(filePath);
+        let runtime = environment_js_1.Environment.getEnvironment;
+        if (runtime !== "deno") {
+            throw new Error(`Please use ${colors_js_1.COLORS.bgRed}import {loadEnv} from "tezx/${runtime}"${colors_js_1.COLORS.reset} environment`);
         }
-        else if (runtime === "deno") {
-            try {
-                Deno.statSync(filePath);
-                fileExists = true;
-            }
-            catch {
-                fileExists = false;
-            }
+        let fileExists = false;
+        try {
+            Deno.statSync(filePath);
+            fileExists = true;
+        }
+        catch {
+            fileExists = false;
         }
         if (!fileExists) {
             return;
         }
-        let fileContent = "";
-        if (runtime === "node" || runtime === "bun") {
-            const { readFileSync } = require("fs");
-            fileContent = readFileSync(filePath, "utf8");
-        }
-        else if (runtime === "deno") {
-            fileContent = new TextDecoder("utf-8").decode(Deno.readFileSync(filePath));
-        }
+        let fileContent = new TextDecoder("utf-8").decode(Deno.readFileSync(filePath));
         const lines = fileContent.split("\n");
         for (const line of lines) {
             const trimmedLine = line.trim();
@@ -38,12 +32,7 @@ function parseEnvFile(filePath, result) {
                     .replace(/^"(.*)"$/, "$1")
                     .replace(/^'(.*)'$/, "$1");
                 result[key] = parsedValue;
-                if (runtime === "node" || runtime === "bun") {
-                    process.env[key] = parsedValue;
-                }
-                else if (runtime === "deno") {
-                    Deno.env.set(key, parsedValue);
-                }
+                Deno.env.set(key, parsedValue);
             }
         }
     }
@@ -51,7 +40,7 @@ function parseEnvFile(filePath, result) {
         console.error(`[dotenv] Error parsing file: ${filePath}`, error);
     }
 }
-export function loadEnv(basePath = "./") {
+function loadEnv(basePath = "./") {
     const result = {};
     const envFiles = [
         ".env",

@@ -91,6 +91,10 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      *   const stream = new ReadableStream({
      *     start(controller) {
      *       controller.enqueue(new TextEncoder().encode("data: Hello\n\n"));
+     *       ctx.rawRequest?.signal?.addEventListener("abort", () => {
+     *          clearInterval(interval);
+     *          controller.close()
+     *        });
      *     },
      *   });
      *

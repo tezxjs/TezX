@@ -65,7 +65,24 @@ class Router extends MiddlewareConfigure_js_1.default {
     }
     sse(path, handler) {
         this.get(path, async (ctx) => {
-            return handler(ctx);
+            let res = await handler(ctx);
+            const headersMap = {};
+            if (res instanceof Response) {
+                for (const [key, value] of res.headers.entries()) {
+                    headersMap[key.toLowerCase()] = value;
+                }
+                res = res.body;
+            }
+            const headers = {
+                ...headersMap,
+                "content-type": "text/event-stream",
+                "cache-control": "no-cache",
+                connection: "keep-alive",
+            };
+            return new Response(res, {
+                status: 200,
+                headers,
+            });
         });
     }
     post(path, ...args) {

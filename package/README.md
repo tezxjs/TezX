@@ -189,7 +189,7 @@ npm run dev
 `src/index.ts`:
 
 ```ts
-import { bunAdapter } from "tezx/adapter";
+import { bunAdapter } from "tezx/bun";
 bunAdapter(app).listen(3000, (message) => {
   console.log(message);
 });
@@ -206,7 +206,7 @@ bunAdapter(app).listen(3000, (message) => {
 `src/index.ts`:
 
 ```ts
-import { denoAdapter } from "tezx/adapter";
+import { denoAdapter } from "tezx/deno";
 denoAdapter(app).listen(3000, (message) => {
   console.log(message);
 });

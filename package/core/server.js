@@ -128,7 +128,11 @@ export class TezX extends Router {
                 throw new Error(`Handler failed: Middleware chain incomplete or response missing. Did you forget ${COLORS.bgRed} 'await next()' ${COLORS.reset} or to return a response? ${COLORS.bgCyan} Path: ${ctx.pathname}, Method: ${ctx.method} ${COLORS.reset}`);
             }
             const resBody = res || ctx.body;
-            return ctx.send(resBody, ctx.headers.toJSON());
+            const toJson = {};
+            for (const [key, value] of ctx.headers.entries()) {
+                toJson[key] = value;
+            }
+            return ctx.send(resBody, toJson);
         };
     }
     #findMiddleware(pathname) {

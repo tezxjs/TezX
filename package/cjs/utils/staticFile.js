@@ -109,7 +109,7 @@ exports.mimeTypes = {
 exports.defaultMimeType = "application/octet-stream";
 async function getFiles(dir, basePath = "/", ref, option) {
     const files = [];
-    const runtime = environment_js_1.EnvironmentDetector.getEnvironment;
+    const runtime = environment_js_1.Environment.getEnvironment;
     if (runtime == "deno") {
         for await (const entry of Deno.readDir(dir)) {
             const path = `${dir}/${entry.name}`;

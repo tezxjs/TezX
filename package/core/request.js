@@ -49,7 +49,11 @@ export class Request {
                 return requestHeaders.forEach(callbackfn);
             },
             toJSON() {
-                return requestHeaders.toJSON();
+                const obj = {};
+                for (const [key, value] of requestHeaders.entries()) {
+                    obj[key] = value;
+                }
+                return obj;
             },
         };
     }
@@ -103,7 +107,8 @@ export class Request {
                         val.size > options.maxSize) {
                         throw new Error(`File size exceeds the limit: ${val.size} bytes (Max: ${options.maxSize} bytes)`);
                     }
-                    if (typeof options?.maxFiles != "undefined" && options.maxFiles == 0) {
+                    if (typeof options?.maxFiles != "undefined" &&
+                        options.maxFiles == 0) {
                         throw new Error(`Field "${key}" exceeds the maximum allowed file count of ${options.maxFiles}.`);
                     }
                     val = new File([await val.arrayBuffer()], filename, {

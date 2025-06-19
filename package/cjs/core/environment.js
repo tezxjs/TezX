@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EnvironmentDetector = void 0;
-class EnvironmentDetector {
+exports.Environment = void 0;
+class Environment {
     static get getEnvironment() {
         if (typeof Bun !== "undefined")
             return "bun";
@@ -12,4 +12,4 @@ class EnvironmentDetector {
         return "unknown";
     }
 }
-exports.EnvironmentDetector = EnvironmentDetector;
+exports.Environment = Environment;

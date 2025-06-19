@@ -15,7 +15,7 @@ let GlobalConfig = class {
     static overwriteMethod = true;
     static debugMode = false;
     static server;
-    static adapter = environment_js_1.EnvironmentDetector.getEnvironment;
+    static adapter = environment_js_1.Environment.getEnvironment;
     static get debugging() {
         return this.debugMode
             ? {
