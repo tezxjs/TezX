@@ -49,7 +49,7 @@ function loadEnv(basePath = "./") {
         `.env.${process?.env?.NODE_ENV || "development"}.local`,
     ];
     for (const envFile of envFiles) {
-        parseEnvFile(`${basePath}${envFile}`, result);
+        parseEnvFile(`${basePath && basePath?.endsWith("/") ? basePath : `${basePath}/`}${envFile}`, result);
     }
     return result;
 }
