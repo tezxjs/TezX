@@ -1,2 +1,2 @@
 export * from "./adapter.js";
-export * from "../node/index.js";
+export * from "../node/env.js";
