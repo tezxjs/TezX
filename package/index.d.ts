@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router } from "./core/router.js";
 import { TezX } from "./core/server.js";
 import { useParams } from "./utils/params.js";
 export { Router } from "./core/router.js";
