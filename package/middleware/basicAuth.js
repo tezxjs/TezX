@@ -1,5 +1,5 @@
 import { GlobalConfig } from "../core/config.js";
-import { COLORS } from "../utils/colors.js";
+import { colorText } from "../utils/colors.js";
 import { createRateLimitDefaultStorage, isRateLimit } from "./detectBot.js";
 export const basicAuth = (options) => {
     const { validateCredentials, getRealm = () => "Restricted Area", onUnauthorized = (ctx, error) => {
@@ -34,7 +34,7 @@ export const basicAuth = (options) => {
             credentials = { apiKey: ctx.headers.get("x-api-key") };
         }
         if (!authMethod || !supportedMethods.includes(authMethod)) {
-            GlobalConfig.debugging.error(`${COLORS.bgRed}[AUTH]${COLORS.reset} Unsupported or missing authentication method.`);
+            GlobalConfig.debugging.error(`${colorText("[AUTH]", "bgRed")} Unsupported or missing authentication method.`);
             return onUnauthorized(ctx, new Error("Unsupported authentication method"));
         }
         if (rateLimit) {
@@ -60,7 +60,7 @@ export const basicAuth = (options) => {
             return await next();
         }
         catch (error) {
-            GlobalConfig.debugging.error(`${COLORS.bgRed}[AUTH]${COLORS.reset} Failure for method: ${ctx.method}`);
+            GlobalConfig.debugging.error(`${colorText("[AUTH]", "bgRed")} Failure for method: ${ctx.method}`);
             return onUnauthorized(ctx, error);
         }
     };

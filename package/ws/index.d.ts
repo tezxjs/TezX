@@ -177,4 +177,4 @@ export type WebSocketOptions = {
     maxPayload?: number;
 };
 export declare function upgradeWebSocket(callback: WebSocketCallback, options?: WebSocketOptions): Middleware;
-export {};
+export default upgradeWebSocket;

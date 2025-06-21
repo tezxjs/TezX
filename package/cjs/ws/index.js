@@ -50,3 +50,4 @@ function upgradeWebSocket(callback, options = {}) {
         }
     };
 }
+exports.default = upgradeWebSocket;

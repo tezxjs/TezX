@@ -1,6 +1,5 @@
-import { Middleware } from "../core/router.js";
 import { Context } from "../core/context.js";
-import { CallbackReturn } from "../core/router.js";
+import { CallbackReturn, Middleware } from "../core/router.js";
 /**
  * Supported authentication method types.
  */
@@ -14,7 +13,7 @@ export type AuthCredential = {
 /**
  * Configuration options for dynamic basic authentication.
  */
-type DynamicBasicAuthOptions = {
+export type DynamicBasicAuthOptions = {
     /**
      * 🔐 Function to validate the provided credentials.
      * @param method - The method of authentication.
@@ -80,4 +79,3 @@ type DynamicBasicAuthOptions = {
  * @returns A middleware function.
  */
 export declare const basicAuth: (options: DynamicBasicAuthOptions) => Middleware;
-export {};

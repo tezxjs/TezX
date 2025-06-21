@@ -1,6 +1,6 @@
 import { Context } from "../core/context.js";
 import { CallbackReturn, Middleware } from "../core/router.js";
-type TimeoutOptions = {
+export type TimeoutOptions = {
     /**
      * ⏳ Function to dynamically determine the timeout duration (in milliseconds).
      */
@@ -23,4 +23,3 @@ type TimeoutOptions = {
  * @param options - Custom options for dynamic timeout handling.
  */
 export declare const requestTimeout: (options: TimeoutOptions) => Middleware;
-export {};

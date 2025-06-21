@@ -19,3 +19,6 @@ export const COLORS = {
     bgCyan: "\x1b[46m",
     bgWhite: "\x1b[47m",
 };
+export function colorText(text, color) {
+    return `${COLORS[color]}${text}${COLORS.reset}`;
+}

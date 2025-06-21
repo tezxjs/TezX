@@ -1,4 +1,4 @@
-import { COLORS } from "../utils/colors.js";
+import { colorText } from "../utils/colors.js";
 import { httpStatusMap } from "../utils/httpStatusMap.js";
 import { useParams } from "../utils/params.js";
 import { GlobalConfig } from "./config.js";
@@ -125,7 +125,7 @@ export class TezX extends Router {
                 return res;
             }
             if (!res && !ctx.body) {
-                throw new Error(`Handler failed: Middleware chain incomplete or response missing. Did you forget ${COLORS.bgRed} 'await next()' ${COLORS.reset} or to return a response? ${COLORS.bgCyan} Path: ${ctx.pathname}, Method: ${ctx.method} ${COLORS.reset}`);
+                throw new Error(`Handler failed: Middleware chain incomplete or response missing. Did you forget ${colorText(" await next() ", "bgRed")} or to return a response? ${colorText(` Path: ${ctx.pathname}, Method: ${ctx.method} `, "bgCyan")}`);
             }
             const resBody = res || ctx.body;
             const toJson = {};
@@ -160,7 +160,7 @@ export class TezX extends Router {
         let resolvePath = pathname;
         if (this.#onPathResolve) {
             resolvePath = await this.#onPathResolve(pathname);
-            GlobalConfig.debugging.warn(`${COLORS.white} PATH RESOLVE ${COLORS.reset} ${COLORS.red}${pathname}${COLORS.reset} ➞ ${COLORS.cyan}${resolvePath}${COLORS.reset}`);
+            GlobalConfig.debugging.warn(`${colorText(" PATH RESOLVE ", "white")} ${colorText(pathname, "red")} ➞ ${colorText(resolvePath, "cyan")}`);
         }
         if (typeof resolvePath !== "string") {
             throw new Error(`Path resolution failed: expected a string, got ${typeof resolvePath}`);
@@ -223,7 +223,7 @@ export class TezX extends Router {
         if (err instanceof Error) {
             error = err.stack;
         }
-        GlobalConfig.debugging.error(`${COLORS.bgRed} ${ctx.pathname}, Method: ${ctx.method} ${COLORS.reset}`, `${httpStatusMap[500]}: ${error} `);
+        GlobalConfig.debugging.error(`${colorText(` ${ctx.pathname}, Method: ${ctx.method} `, "bgRed")}`, `${httpStatusMap[500]}: ${error} `);
         let res = await GlobalConfig.onError(error, ctx);
         ctx.setStatus = res.status;
         return res;

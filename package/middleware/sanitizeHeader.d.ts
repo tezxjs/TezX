@@ -1,5 +1,5 @@
 import { Middleware } from "../core/router.js";
-type SanitizeHeadersOptions = {
+export type SanitizeHeadersOptions = {
     /**
      * 🟢 Whitelist of allowed headers (case-insensitive)
      * @default [] (allow all if empty)
@@ -50,4 +50,3 @@ type SanitizeHeadersOptions = {
  * }));
  */
 export declare const sanitizeHeaders: (options?: SanitizeHeadersOptions) => Middleware;
-export {};

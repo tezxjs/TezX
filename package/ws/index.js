@@ -47,3 +47,4 @@ export function upgradeWebSocket(callback, options = {}) {
         }
     };
 }
+export default upgradeWebSocket;

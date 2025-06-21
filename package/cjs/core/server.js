@@ -128,7 +128,7 @@ class TezX extends router_js_1.Router {
                 return res;
             }
             if (!res && !ctx.body) {
-                throw new Error(`Handler failed: Middleware chain incomplete or response missing. Did you forget ${colors_js_1.COLORS.bgRed} 'await next()' ${colors_js_1.COLORS.reset} or to return a response? ${colors_js_1.COLORS.bgCyan} Path: ${ctx.pathname}, Method: ${ctx.method} ${colors_js_1.COLORS.reset}`);
+                throw new Error(`Handler failed: Middleware chain incomplete or response missing. Did you forget ${(0, colors_js_1.colorText)(" await next() ", "bgRed")} or to return a response? ${(0, colors_js_1.colorText)(` Path: ${ctx.pathname}, Method: ${ctx.method} `, "bgCyan")}`);
             }
             const resBody = res || ctx.body;
             const toJson = {};
@@ -163,7 +163,7 @@ class TezX extends router_js_1.Router {
         let resolvePath = pathname;
         if (this.#onPathResolve) {
             resolvePath = await this.#onPathResolve(pathname);
-            config_js_1.GlobalConfig.debugging.warn(`${colors_js_1.COLORS.white} PATH RESOLVE ${colors_js_1.COLORS.reset} ${colors_js_1.COLORS.red}${pathname}${colors_js_1.COLORS.reset} ➞ ${colors_js_1.COLORS.cyan}${resolvePath}${colors_js_1.COLORS.reset}`);
+            config_js_1.GlobalConfig.debugging.warn(`${(0, colors_js_1.colorText)(" PATH RESOLVE ", "white")} ${(0, colors_js_1.colorText)(pathname, "red")} ➞ ${(0, colors_js_1.colorText)(resolvePath, "cyan")}`);
         }
         if (typeof resolvePath !== "string") {
             throw new Error(`Path resolution failed: expected a string, got ${typeof resolvePath}`);
@@ -226,7 +226,7 @@ class TezX extends router_js_1.Router {
         if (err instanceof Error) {
             error = err.stack;
         }
-        config_js_1.GlobalConfig.debugging.error(`${colors_js_1.COLORS.bgRed} ${ctx.pathname}, Method: ${ctx.method} ${colors_js_1.COLORS.reset}`, `${httpStatusMap_js_1.httpStatusMap[500]}: ${error} `);
+        config_js_1.GlobalConfig.debugging.error(`${(0, colors_js_1.colorText)(` ${ctx.pathname}, Method: ${ctx.method} `, "bgRed")}`, `${httpStatusMap_js_1.httpStatusMap[500]}: ${error} `);
         let res = await config_js_1.GlobalConfig.onError(error, ctx);
         ctx.setStatus = res.status;
         return res;

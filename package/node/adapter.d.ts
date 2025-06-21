@@ -1,14 +1,14 @@
 import type { ServerOptions } from "node:http";
 import type { TlsOptions } from "node:tls";
 import { TezX } from "../core/server.js";
-type UnixSocketOptions = ServerOptions & {
+export type UnixSocketOptions = ServerOptions & {
     unix?: string;
     enableSSL?: false;
 };
-type SSLOptions = ServerOptions & TlsOptions & {
+export type SSLOptions = ServerOptions & TlsOptions & {
     enableSSL: true;
 };
-type TezXServerOptions = UnixSocketOptions | SSLOptions;
+export type TezXServerOptions = UnixSocketOptions | SSLOptions;
 /**
  * Starts the TezX server using Node.js native `http` or `https` module based on the `enableSSL` flag.
  * - If `enableSSL` is true and valid TLS options are provided, it uses `https.createServer`.
@@ -44,4 +44,3 @@ export declare function nodeAdapter<T extends Record<string, any> = {}>(TezX: Te
         (port?: number, callback?: () => void): any;
     };
 };
-export {};

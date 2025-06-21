@@ -14,5 +14,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("./adapter.js"), exports);
+const env_js_1 = require("../node/env.js");
+const adapter_js_1 = require("./adapter.js");
 __exportStar(require("../node/env.js"), exports);
+__exportStar(require("./adapter.js"), exports);
+exports.default = {
+    bunAdapter: adapter_js_1.bunAdapter,
+    loadEnv: env_js_1.loadEnv,
+};

@@ -1,12 +1,12 @@
 import { CallbackReturn } from "../core/router.js";
 import { Context, Middleware } from "../index.js";
 export type DetectBotReason = "User-Agent" | "Blacklisted IP" | "Query Parameter" | "Rate Limiting" | "Custom Detector" | "Multiple Indicators";
-type BotDetectionResult = {
+export type BotDetectionResult = {
     isBot: boolean;
     reason?: DetectBotReason;
     indicators: string[];
 };
-type DetectBotOptions = {
+export type DetectBotOptions = {
     /**
      * 🤖 List of bot-like user-agent substrings to detect
      * @default ["bot", "spider", "crawl", "slurp"]
@@ -119,4 +119,3 @@ export declare function isRateLimit(ctx: Context, key: string, store: any, maxRe
     check: boolean;
     entry: any;
 };
-export {};

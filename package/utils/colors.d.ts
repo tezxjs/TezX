@@ -19,3 +19,4 @@ export declare const COLORS: {
     bgCyan: string;
     bgWhite: string;
 };
+export declare function colorText(text: string | number, color: keyof typeof COLORS): string;

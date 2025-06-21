@@ -4,7 +4,7 @@ export interface CacheItem<T = any> {
     module: T;
     expiresAt: number;
 }
-interface LazyLoadOptions<T> {
+export interface LazyLoadOptions<T> {
     /**
      * 🗺️ Key to identify the module to load. This can be a function that extracts the module name from the request context.
      * @default (ctx) => ctx.req.params[queryKeyModule] || ctx.req.query[queryKeyModule]
@@ -70,4 +70,3 @@ interface LazyLoadOptions<T> {
  * @returns A middleware function to use in your application.
  */
 export declare const lazyLoadModules: <T = any>(options: LazyLoadOptions<T>) => Middleware;
-export {};

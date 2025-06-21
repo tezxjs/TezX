@@ -7,7 +7,7 @@ function parseEnvFile(filePath, result) {
     try {
         let runtime = environment_js_1.Environment.getEnvironment;
         if (runtime !== "deno") {
-            throw new Error(`Please use ${colors_js_1.COLORS.bgRed}import {loadEnv} from "tezx/${runtime}"${colors_js_1.COLORS.reset} environment`);
+            throw new Error(`Please use ${(0, colors_js_1.colorText)(`import {loadEnv} from "tezx/${runtime}"`, "bgRed")} environment`);
         }
         let fileExists = false;
         try {

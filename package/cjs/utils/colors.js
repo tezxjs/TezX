@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.COLORS = void 0;
+exports.colorText = colorText;
 exports.COLORS = {
     reset: "\x1b[0m",
     bold: "\x1b[1m",
@@ -22,3 +23,6 @@ exports.COLORS = {
     bgCyan: "\x1b[46m",
     bgWhite: "\x1b[47m",
 };
+function colorText(text, color) {
+    return `${exports.COLORS[color]}${text}${exports.COLORS.reset}`;
+}

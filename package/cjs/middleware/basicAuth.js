@@ -37,7 +37,7 @@ const basicAuth = (options) => {
             credentials = { apiKey: ctx.headers.get("x-api-key") };
         }
         if (!authMethod || !supportedMethods.includes(authMethod)) {
-            config_js_1.GlobalConfig.debugging.error(`${colors_js_1.COLORS.bgRed}[AUTH]${colors_js_1.COLORS.reset} Unsupported or missing authentication method.`);
+            config_js_1.GlobalConfig.debugging.error(`${(0, colors_js_1.colorText)("[AUTH]", "bgRed")} Unsupported or missing authentication method.`);
             return onUnauthorized(ctx, new Error("Unsupported authentication method"));
         }
         if (rateLimit) {
@@ -63,7 +63,7 @@ const basicAuth = (options) => {
             return await next();
         }
         catch (error) {
-            config_js_1.GlobalConfig.debugging.error(`${colors_js_1.COLORS.bgRed}[AUTH]${colors_js_1.COLORS.reset} Failure for method: ${ctx.method}`);
+            config_js_1.GlobalConfig.debugging.error(`${(0, colors_js_1.colorText)("[AUTH]", "bgRed")} Failure for method: ${ctx.method}`);
             return onUnauthorized(ctx, error);
         }
     };
