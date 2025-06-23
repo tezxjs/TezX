@@ -50,7 +50,7 @@ import { TezX } from "https://deno.land/x/tezx/mod.ts";
 ```ts
 import { TezX } from "tezx";
 import { logger } from "tezx/middleware";
-import { nodeAdapter } from "tezx/adapter";
+import { nodeAdapter } from "tezx/node";
 
 const app = new TezX();
 app.use(logger());

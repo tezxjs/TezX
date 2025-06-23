@@ -50,7 +50,7 @@ import { TezX } from "https://deno.land/x/tezx/mod.ts";
 ```ts
 import { TezX } from "tezx";
 import { logger } from "tezx/middleware";
-import { nodeAdapter } from "tezx/adapter";
+import { nodeAdapter } from "tezx/node";
 
 const app = new TezX();
 app.use(logger());
@@ -189,7 +189,7 @@ npm run dev
 `src/index.ts`:
 
 ```ts
-import { bunAdapter } from "tezx/adapter";
+import { bunAdapter } from "tezx/bun";
 bunAdapter(app).listen(3000, (message) => {
   console.log(message);
 });
@@ -206,7 +206,7 @@ bunAdapter(app).listen(3000, (message) => {
 `src/index.ts`:
 
 ```ts
-import { denoAdapter } from "tezx/adapter";
+import { denoAdapter } from "tezx/bun";
 denoAdapter(app).listen(3000, (message) => {
   console.log(message);
 });
