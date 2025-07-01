@@ -1,9 +1,11 @@
 import { Environment } from "../core/environment.js";
 import { sanitizePathSplit } from "../utils/url.js";
 import { generateID } from "./common.js";
-export { AdapterType, GlobalConfig } from "../core/config.js";
+export { GlobalConfig } from "../core/config.js";
+export type { AdapterType } from "../core/config.js";
 export { Environment } from "../core/environment.js";
-export { sanitizePathSplit, UrlRef } from "../utils/url.js";
+export { sanitizePathSplit } from "../utils/url.js";
+export type { UrlRef } from "../utils/url.js";
 export { generateID } from "./common.js";
 declare const _default: {
     Environment: typeof Environment;

@@ -1,3 +1,4 @@
+import { addBaseToRegex, compileRegexRoute } from "../utils/regexRouter.js";
 import { getFiles } from "../utils/staticFile.js";
 import { sanitizePathSplit, wildcardOrOptionalParamRegex, } from "../utils/url.js";
 import { GlobalConfig } from "./config.js";
@@ -191,25 +192,57 @@ export class Router extends MiddlewareConfigure {
         this.#addRoute(method, path, callback, middlewares);
     }
     #addRoute(method, path, callback, middlewares) {
-        const parts = sanitizePathSplit(this.basePath, path);
         let finalMiddleware = middlewares;
+        if (path instanceof RegExp) {
+            let regex = addBaseToRegex(this.basePath, path);
+            let regexPath = `regex://${regex?.source}`;
+            let handler = this.routers.get(regexPath);
+            if (!handler) {
+                handler = new Map();
+                handler.set(method, {
+                    callback: callback,
+                    paramNames: [],
+                    regex: regex,
+                    middlewares: finalMiddleware,
+                });
+                return this.routers.set(regexPath, handler);
+            }
+            if (!GlobalConfig.overwriteMethod && handler.has(method))
+                return;
+            return handler.set(method, {
+                callback,
+                paramNames: [],
+                regex: regex,
+                middlewares: finalMiddleware
+            });
+        }
+        const parts = sanitizePathSplit(this.basePath, path);
         if (!GlobalConfig.allowDuplicateMw) {
             finalMiddleware = new Set(middlewares);
         }
         let p = parts.join("/");
         if (wildcardOrOptionalParamRegex.test(`/${p}`)) {
-            let handler = this.routers.get(p);
+            let strPath = `string://${p}`;
+            let { paramNames, regex } = compileRegexRoute(parts);
+            let handler = this.routers.get(strPath);
             if (!handler) {
                 handler = new Map();
                 handler.set(method, {
                     callback: callback,
+                    regex: regex,
+                    paramNames: paramNames,
                     middlewares: finalMiddleware,
                 });
-                return this.routers.set(p, handler);
+                return this.routers.set(strPath, handler);
             }
             if (!GlobalConfig.overwriteMethod && handler.has(method))
                 return;
-            return handler.set(method, { callback, middlewares: finalMiddleware });
+            return handler.set(method, {
+                callback,
+                regex: regex,
+                paramNames: paramNames,
+                middlewares: finalMiddleware
+            });
         }
         let node = this.triRouter;
         for (const part of parts) {
@@ -249,17 +282,62 @@ export class Router extends MiddlewareConfigure {
         const parts = sanitizePathSplit(this.basePath, path);
         if (router.routers.size) {
             for (const [segment, handlers] of router.routers) {
-                let path = parts.length ? parts.join("/") + "/" + segment : segment;
-                if (this.routers.has(path)) {
-                    const baseRouter = this.routers.get(path);
-                    for (const [method, handler] of handlers) {
-                        if (!GlobalConfig.overwriteMethod && baseRouter.has(method))
-                            return;
-                        baseRouter.set(method, handler);
+                if (segment.indexOf("string://") == 0) {
+                    let pattern = segment.replace(/^string:\/\//, "");
+                    let joined = [...parts, pattern].join("/");
+                    let strPath = `string://${joined}`;
+                    if (this.routers.has(strPath)) {
+                        const baseRouter = this.routers.get(strPath);
+                        for (const [method, handler] of handlers) {
+                            let { regex, paramNames } = baseRouter?.get(method);
+                            handler.regex = regex;
+                            handler.paramNames = paramNames;
+                            if (!GlobalConfig.overwriteMethod && baseRouter.has(method))
+                                continue;
+                            baseRouter.set(method, handler);
+                        }
+                    }
+                    else {
+                        let h = new Map();
+                        for (const [method, { callback, middlewares }] of handlers) {
+                            let { paramNames, regex } = compileRegexRoute(joined);
+                            h.set(method, {
+                                callback: callback,
+                                middlewares: middlewares,
+                                paramNames,
+                                regex
+                            });
+                        }
+                        this.routers.set(strPath, h);
                     }
                 }
                 else {
-                    this.routers.set(path, new Map(handlers));
+                    let pattern = segment.replace("regex://", "");
+                    let base = parts?.join("/");
+                    let regex = addBaseToRegex(base, new RegExp(pattern));
+                    let regexPath = `regex://${regex.source}`;
+                    if (this.routers.has(regexPath)) {
+                        const baseRouter = this.routers.get(regexPath);
+                        for (const [method, handler] of handlers) {
+                            handler.regex = regex;
+                            handler.paramNames = [];
+                            if (!GlobalConfig.overwriteMethod && baseRouter.has(method))
+                                continue;
+                            baseRouter.set(method, handler);
+                        }
+                    }
+                    else {
+                        let h = new Map();
+                        for (const [method, { callback, middlewares }] of handlers) {
+                            h.set(method, {
+                                callback: callback,
+                                middlewares: middlewares,
+                                paramNames: [],
+                                regex
+                            });
+                        }
+                        this.routers.set(regexPath, h);
+                    }
                 }
             }
         }

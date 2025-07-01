@@ -62,7 +62,7 @@ export declare class TezX<T extends Record<string, any> = {}> extends Router<T> 
     protected findRoute(method: HTTPMethod, pathname: string): {
         callback: any;
         middlewares: Middleware<T>[];
-        params: Record<string, string>;
+        params: Record<string, null | string>;
     } | null;
     serve(req: Request, options: TezXServeOptions): Promise<Response | {
         websocket: (props: any) => any;

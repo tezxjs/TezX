@@ -6,6 +6,7 @@ export type NextCallback = () => Promise<any>;
 export type CallbackReturn = Promise<Response> | Response;
 export type Callback<T extends Record<string, any> = {}> = (ctx: ctx<T>) => CallbackReturn;
 export type Middleware<T extends Record<string, any> = {}> = (ctx: ctx<T>, next: NextCallback) => Promise<Response | void> | Response | NextCallback;
+export type PathType = string | RegExp;
 export type RouterConfig = {
     /**
      * `env` allows you to define environment variables for the router.
@@ -36,6 +37,8 @@ export type StaticServeOption = {
 };
 export type RouterHandler<T extends Record<string, any>> = {
     callback: Callback<T>;
+    paramNames: string[];
+    regex: RegExp;
     middlewares: UniqueMiddlewares | DuplicateMiddlewares;
 };
 export declare class Router<T extends Record<string, any> = {}> extends MiddlewareConfigure<T> {
@@ -72,13 +75,14 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      *
      * // With middleware
      * app.get('/secure', authMiddleware, (ctx) => { ... });
+     * app.get(/^\/item\/(\d+)\/(edit|view)?\/?$/, (ctx) => { ... });
      *
      * // With multiple middlewares
      * app.get('/admin', [authMiddleware, adminMiddleware], (ctx) => { ... });
      */
-    get(path: string, callback: Callback<T>): this;
-    get(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
-    get(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    get(path: PathType, callback: Callback<T>): this;
+    get(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
+    get(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
      * Registers a Server-Sent Events (SSE) route handler for the given path.
      *
@@ -108,66 +112,66 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * });
      * ```
      *
-     * @param {string} path - The route path for SSE (e.g. `/events`).
+     * @param {PathType} path - The route path for SSE (e.g. `/events`).
      * @param {(ctx: Context) => any} handler - A handler function that returns a streamed response.
      */
-    sse(path: string, handler: (ctx: Context) => any): void;
+    sse(path: PathType, handler: (ctx: Context) => any): void;
     /**
      * Registers a POST route with optional middleware(s)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
-    post(path: string, callback: Callback<T>): this;
-    post(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
-    post(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    post(path: PathType, callback: Callback<T>): this;
+    post(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
+    post(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
      * Registers a PUT route with optional middleware(s)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
-    put(path: string, callback: Callback<T>): this;
-    put(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
-    put(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    put(path: PathType, callback: Callback<T>): this;
+    put(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
+    put(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
      * Registers a PATCH route with optional middleware(s)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
-    patch(path: string, callback: Callback<T>): this;
-    patch(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
-    patch(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    patch(path: PathType, callback: Callback<T>): this;
+    patch(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
+    patch(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
      * Registers a DELETE route with optional middleware(s)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
-    delete(path: string, callback: Callback<T>): this;
-    delete(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
-    delete(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    delete(path: PathType, callback: Callback<T>): this;
+    delete(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
+    delete(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
      * Registers an OPTIONS route (primarily for CORS preflight requests)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
-    options(path: string, callback: Callback<T>): this;
-    options(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
-    options(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    options(path: PathType, callback: Callback<T>): this;
+    options(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
+    options(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
      * Registers a HEAD route (returns headers only)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
-    head(path: string, callback: Callback<T>): this;
-    head(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
-    head(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    head(path: PathType, callback: Callback<T>): this;
+    head(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
+    head(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
      * Registers a route that responds to all HTTP methods
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
-    all(path: string, callback: Callback<T>): this;
-    all(path: string, middleware: Middleware<T>, callback: Callback<T>): this;
-    all(path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    all(path: PathType, callback: Callback<T>): this;
+    all(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
+    all(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
      * Generic method registration for custom HTTP methods
      * @param method - HTTP method name (e.g., 'PURGE')
@@ -178,10 +182,10 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * // Register custom method
      * server.addRoute('PURGE', '/cache', purgeHandler);
      */
-    addRoute(method: HTTPMethod, path: string, callback: Callback<T>): this;
-    addRoute(method: HTTPMethod, path: string, middleware: Middleware<T>): this;
-    addRoute(method: HTTPMethod, path: string, middleware: Middleware<T>, callback: Callback<T>): this;
-    addRoute(method: HTTPMethod, path: string, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    addRoute(method: HTTPMethod, path: PathType, callback: Callback<T>): this;
+    addRoute(method: HTTPMethod, path: PathType, middleware: Middleware<T>): this;
+    addRoute(method: HTTPMethod, path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
+    addRoute(method: HTTPMethod, path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
     /**
      * Mount a sub-router at specific path prefix
      * @param path - Base path for the sub-router

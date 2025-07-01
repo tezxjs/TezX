@@ -6,6 +6,7 @@ const url_js_1 = require("../utils/url.js");
 class Request {
     url;
     method;
+    pathname;
     urlRef = {
         protocol: undefined,
         origin: undefined,
@@ -28,6 +29,7 @@ class Request {
         this.method = method;
         this.params = params;
         this.rawRequest = req;
+        this.pathname = parse.pathname;
         this.query = parse.query;
     }
     get headers() {

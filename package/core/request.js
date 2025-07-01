@@ -3,6 +3,7 @@ import { urlParse } from "../utils/url.js";
 export class Request {
     url;
     method;
+    pathname;
     urlRef = {
         protocol: undefined,
         origin: undefined,
@@ -25,6 +26,7 @@ export class Request {
         this.method = method;
         this.params = params;
         this.rawRequest = req;
+        this.pathname = parse.pathname;
         this.query = parse.query;
     }
     get headers() {

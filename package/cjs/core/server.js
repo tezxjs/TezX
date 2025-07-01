@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TezX = void 0;
 const colors_js_1 = require("../utils/colors.js");
 const httpStatusMap_js_1 = require("../utils/httpStatusMap.js");
-const params_js_1 = require("../utils/params.js");
+const regexRouter_js_1 = require("../utils/regexRouter.js");
 const config_js_1 = require("./config.js");
 const context_js_1 = require("./context.js");
 const router_js_1 = require("./router.js");
@@ -19,18 +19,14 @@ class TezX extends router_js_1.Router {
         this.#onPathResolve = onPathResolve;
         this.serve = this.serve.bind(this);
     }
-    #hashRouter(method, pathname) {
-        const routers = this.routers;
-        for (let pattern of this.routers.keys()) {
-            const { success, params } = (0, params_js_1.useParams)({
-                path: pathname,
-                urlPattern: pattern,
-            });
-            const handlers = routers.get(pattern)?.get(method) || routers.get(pattern)?.get("ALL");
-            if (success && handlers) {
+    #regexRouter(method, pathname) {
+        for (let pattern of this.routers.values()) {
+            const handler = pattern?.get(method) || pattern?.get("ALL");
+            const { success, params } = (0, regexRouter_js_1.regexMatchRoute)(handler?.regex, pathname, handler?.paramNames || []);
+            if (success && handler) {
                 return {
-                    callback: handlers.callback,
-                    middlewares: handlers.middlewares,
+                    callback: handler.callback,
+                    middlewares: handler.middlewares,
                     params: params,
                 };
             }
@@ -86,7 +82,7 @@ class TezX extends router_js_1.Router {
     }
     findRoute(method, pathname) {
         const route = this.#triRouter(method, pathname) ||
-            this.#hashRouter(method, pathname) ||
+            this.#regexRouter(method, pathname) ||
             this.#triRouter(method, pathname, "param");
         if (route) {
             return {

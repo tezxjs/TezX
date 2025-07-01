@@ -1,4 +1,4 @@
-import { UrlRef } from "../utils/url.js";
+import type { UrlRef } from "../utils/url.js";
 import { TezXServeOptions } from "./server.js";
 export type FormDataOptions = {
     maxSize?: number;
@@ -29,6 +29,11 @@ export declare class Request {
      * @type {HTTPMethod}
      */
     readonly method: HTTPMethod;
+    /**
+     * Request path without query parameters
+     * @type {string}
+     */
+    readonly pathname: string;
     /** Parsed URL reference containing components like query parameters, pathname, etc. */
     readonly urlRef: UrlRef;
     /** Query parameters extracted from the URL */

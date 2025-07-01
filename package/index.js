@@ -1,13 +1,13 @@
 import { Router } from "./core/router.js";
 import { TezX } from "./core/server.js";
-import { useParams } from "./utils/params.js";
+import { regexMatchRoute, compileRegexRoute } from "./utils/regexRouter.js";
 export { Router } from "./core/router.js";
 export { TezX } from "./core/server.js";
-export { useParams };
-export let version = "2.0.6";
+export { regexMatchRoute, compileRegexRoute };
+export let version = "2.0.7-beta";
 export default {
     Router,
+    regexMatchRoute, compileRegexRoute,
     TezX,
-    useParams,
     version,
 };

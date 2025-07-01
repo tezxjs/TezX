@@ -1,6 +1,6 @@
 import { colorText } from "../utils/colors.js";
 import { httpStatusMap } from "../utils/httpStatusMap.js";
-import { useParams } from "../utils/params.js";
+import { regexMatchRoute } from "../utils/regexRouter.js";
 import { GlobalConfig } from "./config.js";
 import { Context } from "./context.js";
 import { Router } from "./router.js";
@@ -16,18 +16,14 @@ export class TezX extends Router {
         this.#onPathResolve = onPathResolve;
         this.serve = this.serve.bind(this);
     }
-    #hashRouter(method, pathname) {
-        const routers = this.routers;
-        for (let pattern of this.routers.keys()) {
-            const { success, params } = useParams({
-                path: pathname,
-                urlPattern: pattern,
-            });
-            const handlers = routers.get(pattern)?.get(method) || routers.get(pattern)?.get("ALL");
-            if (success && handlers) {
+    #regexRouter(method, pathname) {
+        for (let pattern of this.routers.values()) {
+            const handler = pattern?.get(method) || pattern?.get("ALL");
+            const { success, params } = regexMatchRoute(handler?.regex, pathname, handler?.paramNames || []);
+            if (success && handler) {
                 return {
-                    callback: handlers.callback,
-                    middlewares: handlers.middlewares,
+                    callback: handler.callback,
+                    middlewares: handler.middlewares,
                     params: params,
                 };
             }
@@ -83,7 +79,7 @@ export class TezX extends Router {
     }
     findRoute(method, pathname) {
         const route = this.#triRouter(method, pathname) ||
-            this.#hashRouter(method, pathname) ||
+            this.#regexRouter(method, pathname) ||
             this.#triRouter(method, pathname, "param");
         if (route) {
             return {
