@@ -10,7 +10,6 @@ type Props = {
 export default function Sidebar({ content }: Props) {
   const router = useRouter();
   const params = useParams();
-
   return (
     <div className="relative ">
       {content?.map((r: any, index: number) => {

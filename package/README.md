@@ -2,6 +2,8 @@
 
 **TezX** is a cutting-edge, high-performance, and lightweight JavaScript framework designed for speed, scalability, and flexibility. Built with modern web development needs in mind, TezX enables efficient routing, middleware management, and static file serving with minimal configuration. It is fully compatible with **Node.js, Deno, and Bun**, making it a truly cross-environment framework.
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tezxjs/TezX)
+
 ---
 
 ## 🚀 Key Features

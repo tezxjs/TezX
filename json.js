@@ -12,7 +12,7 @@ function formatTitle(name) {
       ?.replace(/\s+/g, " ") // Collapse multiple spaces into a single space
       ?.replace(/^\d+[-_]/, "") // Remove leading numbers followed by hyphen, underscore, or space
       ?.trim() // Trim leading and trailing whitespace
-      ?.replace(/\b\w/g, (char) => char.toUpperCase())
+    // ?.replace(/\b\w/g, (char) => char.toUpperCase())
   ); // Capitalize each word
 }
 function formatPathname(name) {
