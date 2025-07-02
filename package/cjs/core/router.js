@@ -230,6 +230,9 @@ class Router extends MiddlewareConfigure_js_1.default {
     }
     #addRoute(method, path, callback, middlewares) {
         let finalMiddleware = middlewares;
+        if (!config_js_1.GlobalConfig.allowDuplicateMw) {
+            finalMiddleware = new Set(middlewares);
+        }
         if (path instanceof RegExp) {
             let regex = (0, regexRouter_js_1.addBaseToRegex)(this.basePath, path);
             let regexPath = `regex://${regex?.source}`;
@@ -254,9 +257,6 @@ class Router extends MiddlewareConfigure_js_1.default {
             });
         }
         const parts = (0, url_js_1.sanitizePathSplit)(this.basePath, path);
-        if (!config_js_1.GlobalConfig.allowDuplicateMw) {
-            finalMiddleware = new Set(middlewares);
-        }
         let p = parts.join("/");
         if (url_js_1.wildcardOrOptionalParamRegex.test(`/${p}`)) {
             let strPath = `string://${p}`;

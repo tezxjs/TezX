@@ -10,7 +10,7 @@ var router_js_2 = require("./core/router.js");
 Object.defineProperty(exports, "Router", { enumerable: true, get: function () { return router_js_2.Router; } });
 var server_js_2 = require("./core/server.js");
 Object.defineProperty(exports, "TezX", { enumerable: true, get: function () { return server_js_2.TezX; } });
-exports.version = "2.0.7-beta";
+exports.version = "2.0.8";
 exports.default = {
     Router: router_js_1.Router,
     regexMatchRoute: regexRouter_js_1.regexMatchRoute, compileRegexRoute: regexRouter_js_1.compileRegexRoute,
