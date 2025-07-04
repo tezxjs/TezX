@@ -250,7 +250,7 @@ class Router extends MiddlewareConfigure_js_1.default {
             if (!config_js_1.GlobalConfig.overwriteMethod && handler.has(method))
                 return;
             return handler.set(method, {
-                callback,
+                callback: callback,
                 paramNames: [],
                 regex: regex,
                 middlewares: finalMiddleware
@@ -275,7 +275,7 @@ class Router extends MiddlewareConfigure_js_1.default {
             if (!config_js_1.GlobalConfig.overwriteMethod && handler.has(method))
                 return;
             return handler.set(method, {
-                callback,
+                callback: callback,
                 regex: regex,
                 paramNames: paramNames,
                 middlewares: finalMiddleware

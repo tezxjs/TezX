@@ -33,6 +33,6 @@ declare const _default: {
     requestTimeout: (options: import("./requestTimeout.js").TimeoutOptions) => import("../index.js").Middleware;
     sanitizeHeaders: (options?: import("./sanitizeHeader.js").SanitizeHeadersOptions) => import("../index.js").Middleware;
     secureHeaders: (options?: import("./secureHeaders.js").SecurityHeaderOptions) => import("../index.js").Middleware;
-    xssProtection: (options?: import("./xssProtection.js").XSSProtectionOptions) => (ctx: import("../core/context.js").Context, next: import("../index.js").NextCallback) => Promise<any>;
+    xssProtection: (options?: import("./xssProtection.js").XSSProtectionOptions) => (ctx: import("../index.js").BaseContext, next: import("../index.js").NextCallback) => Promise<any>;
 };
 export default _default;

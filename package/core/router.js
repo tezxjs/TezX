@@ -213,7 +213,7 @@ export class Router extends MiddlewareConfigure {
             if (!GlobalConfig.overwriteMethod && handler.has(method))
                 return;
             return handler.set(method, {
-                callback,
+                callback: callback,
                 paramNames: [],
                 regex: regex,
                 middlewares: finalMiddleware
@@ -238,7 +238,7 @@ export class Router extends MiddlewareConfigure {
             if (!GlobalConfig.overwriteMethod && handler.has(method))
                 return;
             return handler.set(method, {
-                callback,
+                callback: callback,
                 regex: regex,
                 paramNames: paramNames,
                 middlewares: finalMiddleware

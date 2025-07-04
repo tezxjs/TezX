@@ -1,15 +1,16 @@
 import { Router } from "./core/router.js";
 import { TezX } from "./core/server.js";
-import { regexMatchRoute, compileRegexRoute } from "./utils/regexRouter.js";
+import { compileRegexRoute, regexMatchRoute } from "./utils/regexRouter.js";
 export { Router } from "./core/router.js";
-export type { Callback, ctx as Context, Middleware, NextCallback, RouterConfig, PathType, StaticServeOption } from "./core/router.js";
+export type { Callback, ctx as Context, Middleware, NextCallback, PathType, RouterConfig, StaticServeOption } from "./core/router.js";
+export type { Context as BaseContext } from "./core/context.js";
 export type { AdapterType } from "./core/config.js";
 export type { CookieOptions, ResponseHeaders } from "./core/context.js";
 export type { NetAddr as AddressType, ConnAddress, FormDataOptions, HTTPMethod } from "./core/request.js";
 export { TezX } from "./core/server.js";
 export type { TezXConfig, TezXServeOptions } from "./core/server.js";
 export type { UrlRef } from "./utils/url.js";
-export { regexMatchRoute, compileRegexRoute };
+export { compileRegexRoute, regexMatchRoute };
 export declare let version: string;
 declare const _default: {
     Router: typeof Router;

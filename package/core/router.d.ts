@@ -80,9 +80,9 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * // With multiple middlewares
      * app.get('/admin', [authMiddleware, adminMiddleware], (ctx) => { ... });
      */
-    get(path: PathType, callback: Callback<T>): this;
-    get(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
-    get(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    get<U extends Record<string, any> = {}>(path: PathType, callback: Callback<T & U>): this;
+    get<U extends Record<string, any> = {}>(path: PathType, middleware: Middleware<T & U>, callback: Callback<T & U>): this;
+    get<U extends Record<string, any> = {}>(path: PathType, middlewares: Middleware<T & U>[], callback: Callback<T & U>): this;
     /**
      * Registers a Server-Sent Events (SSE) route handler for the given path.
      *
@@ -115,63 +115,63 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * @param {PathType} path - The route path for SSE (e.g. `/events`).
      * @param {(ctx: Context) => any} handler - A handler function that returns a streamed response.
      */
-    sse(path: PathType, handler: (ctx: Context) => any): void;
+    sse<U extends Record<string, any> = {}>(path: PathType, handler: (ctx: Context<T & U>) => any): void;
     /**
      * Registers a POST route with optional middleware(s)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
-    post(path: PathType, callback: Callback<T>): this;
-    post(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
-    post(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    post<U extends Record<string, any> = {}>(path: PathType, callback: Callback<T & U>): this;
+    post<U extends Record<string, any> = {}>(path: PathType, middleware: Middleware<T & U>, callback: Callback<T & U>): this;
+    post<U extends Record<string, any> = {}>(path: PathType, middlewares: Middleware<T & U>[], callback: Callback<T & U>): this;
     /**
      * Registers a PUT route with optional middleware(s)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
-    put(path: PathType, callback: Callback<T>): this;
-    put(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
-    put(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    put<U extends Record<string, any> = {}>(path: PathType, callback: Callback<T & U>): this;
+    put<U extends Record<string, any> = {}>(path: PathType, middleware: Middleware<T & U>, callback: Callback<T & U>): this;
+    put<U extends Record<string, any> = {}>(path: PathType, middlewares: Middleware<T & U>[], callback: Callback<T & U>): this;
     /**
      * Registers a PATCH route with optional middleware(s)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
-    patch(path: PathType, callback: Callback<T>): this;
-    patch(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
-    patch(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    patch<U extends Record<string, any> = {}>(path: PathType, callback: Callback<T & U>): this;
+    patch<U extends Record<string, any> = {}>(path: PathType, middleware: Middleware<T & U>, callback: Callback<T & U>): this;
+    patch<U extends Record<string, any> = {}>(path: PathType, middlewares: Middleware<T & U>[], callback: Callback<T & U>): this;
     /**
      * Registers a DELETE route with optional middleware(s)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
-    delete(path: PathType, callback: Callback<T>): this;
-    delete(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
-    delete(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    delete<U extends Record<string, any> = {}>(path: PathType, callback: Callback<T & U>): this;
+    delete<U extends Record<string, any> = {}>(path: PathType, middleware: Middleware<T & U>, callback: Callback<T & U>): this;
+    delete<U extends Record<string, any> = {}>(path: PathType, middlewares: Middleware<T & U>[], callback: Callback<T & U>): this;
     /**
      * Registers an OPTIONS route (primarily for CORS preflight requests)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
-    options(path: PathType, callback: Callback<T>): this;
-    options(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
-    options(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    options<U extends Record<string, any> = {}>(path: PathType, callback: Callback<T & U>): this;
+    options<U extends Record<string, any> = {}>(path: PathType, middleware: Middleware<T & U>, callback: Callback<T & U>): this;
+    options<U extends Record<string, any> = {}>(path: PathType, middlewares: Middleware<T & U>[], callback: Callback<T & U>): this;
     /**
      * Registers a HEAD route (returns headers only)
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
-    head(path: PathType, callback: Callback<T>): this;
-    head(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
-    head(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    head<U extends Record<string, any> = {}>(path: PathType, callback: Callback<T & U>): this;
+    head<U extends Record<string, any> = {}>(path: PathType, middleware: Middleware<T & U>, callback: Callback<T & U>): this;
+    head<U extends Record<string, any> = {}>(path: PathType, middlewares: Middleware<T & U>[], callback: Callback<T & U>): this;
     /**
      * Registers a route that responds to all HTTP methods
      * @param path - URL path pattern
      * @param args - Handler callback or middleware(s) + handler
      */
-    all(path: PathType, callback: Callback<T>): this;
-    all(path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
-    all(path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    all<U extends Record<string, any> = {}>(path: PathType, callback: Callback<T & U>): this;
+    all<U extends Record<string, any> = {}>(path: PathType, middleware: Middleware<T & U>, callback: Callback<T & U>): this;
+    all<U extends Record<string, any> = {}>(path: PathType, middlewares: Middleware<T & U>[], callback: Callback<T & U>): this;
     /**
      * Generic method registration for custom HTTP methods
      * @param method - HTTP method name (e.g., 'PURGE')
@@ -182,10 +182,10 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * // Register custom method
      * server.addRoute('PURGE', '/cache', purgeHandler);
      */
-    addRoute(method: HTTPMethod, path: PathType, callback: Callback<T>): this;
-    addRoute(method: HTTPMethod, path: PathType, middleware: Middleware<T>): this;
-    addRoute(method: HTTPMethod, path: PathType, middleware: Middleware<T>, callback: Callback<T>): this;
-    addRoute(method: HTTPMethod, path: PathType, middlewares: Middleware<T>[], callback: Callback<T>): this;
+    addRoute<U extends Record<string, any> = {}>(method: HTTPMethod, path: PathType, callback: Callback<T & U>): this;
+    addRoute<U extends Record<string, any> = {}>(method: HTTPMethod, path: PathType, middleware: Middleware<T & U>): this;
+    addRoute<U extends Record<string, any> = {}>(method: HTTPMethod, path: PathType, middleware: Middleware<T & U>, callback: Callback<T & U>): this;
+    addRoute<U extends Record<string, any> = {}>(method: HTTPMethod, path: PathType, middlewares: Middleware<T & U>[], callback: Callback<T & U>): this;
     /**
      * Mount a sub-router at specific path prefix
      * @param path - Base path for the sub-router
@@ -197,7 +197,7 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * apiRouter.get('/users', () => { ... });
      * server.addRouter('/api', apiRouter);
      */
-    addRouter(path: string, router: Router<T | any>): void;
+    addRouter<U extends Record<string, any> = {}>(path: string, router: Router<T | U | any>): void;
     /**
      * Create route group with shared path prefix
      * @param prefix - Path prefix for the group
@@ -209,7 +209,7 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      *   group.get('/users', v1UserHandler);
      * });
      */
-    group(prefix: string, callback: (group: Router<T>) => void): this;
+    group<U extends Record<string, any> = {}>(prefix: string, callback: (group: Router<T & U>) => void): this;
     /**
      * Register middleware with flexible signature
      * @overload
@@ -217,14 +217,14 @@ export declare class Router<T extends Record<string, any> = {}> extends Middlewa
      * @param middlewares - Middleware(s) to register
      * @param [callback] - Optional sub-router or handler
      */
-    use(path: string, middlewares: Middleware<T>[], callback: Callback<T> | Router<T | any>): this;
-    use(path: string, middleware: Middleware<T>, callback: Callback<T> | Router<T | any>): this;
-    use(path: string, middlewares: Middleware<T>[]): this;
-    use(path: string, middlewares: Middleware<T>): this;
-    use(path: string, callback: Callback<T> | Router<T | any>): this;
-    use(middlewares: Middleware<T>[], callback: Callback<T> | Router<T | any>): this;
-    use(middleware: Middleware<T>, callback: Callback<T> | Router<T | any>): this;
-    use(middlewares: Middleware<T>[]): this;
-    use(middleware: Middleware<T>): this;
-    use(callback: Callback<T> | Router<T | any>): this;
+    use<U extends Record<string, any> = {}>(path: string, middlewares: Middleware<T & U>[], callback: Callback<T & U> | Router<T & U | any>): this;
+    use<U extends Record<string, any> = {}>(path: string, middleware: Middleware<T & U>, callback: Callback<T & U> | Router<T & U | any>): this;
+    use<U extends Record<string, any> = {}>(path: string, middlewares: Middleware<T & U>[]): this;
+    use<U extends Record<string, any> = {}>(path: string, middlewares: Middleware<T & U>): this;
+    use<U extends Record<string, any> = {}>(path: string, callback: Callback<T & U> | Router<T & U | any>): this;
+    use<U extends Record<string, any> = {}>(middlewares: Middleware<T & U>[], callback: Callback<T & U> | Router<T & U | any>): this;
+    use<U extends Record<string, any> = {}>(middleware: Middleware<T & U>, callback: Callback<T & U> | Router<T & U | any>): this;
+    use<U extends Record<string, any> = {}>(middlewares: Middleware<T & U>[]): this;
+    use<U extends Record<string, any> = {}>(middleware: Middleware<T & U>): this;
+    use<U extends Record<string, any> = {}>(callback: Callback<T & U> | Router<T & U | any>): this;
 }
