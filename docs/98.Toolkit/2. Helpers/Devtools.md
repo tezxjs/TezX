@@ -2,9 +2,6 @@
 # 📊 TezX DevTools
 
 > Developer-friendly diagnostics and inspector panel for TezX-based applications. Plug in to see routes, middlewares, env variables, cookies, and add your own custom debug tabs.
->
->
-**Latest Version:** ![npm version](https://img.shields.io/npm/v/@tezx/devtools.svg)
 
 ---
 
@@ -130,7 +127,7 @@ type Options = {
 
 **Using `tezx/router`**
 
-```
+```bash
 my-app/
 ├── routes/
 │   ├── _middleware.ts

@@ -136,7 +136,7 @@ const views = new ViewEngine("ejs", "./views", {
 
 ## 📂 Example View Structure
 
-```
+```bash
 views/
 ├── home.ejs
 ├── layout.pug
