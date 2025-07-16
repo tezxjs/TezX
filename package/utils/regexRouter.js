@@ -41,7 +41,7 @@ export function addBaseToRegex(basePath, routeRegex) {
     const finalRegex = new RegExp(`^${combined}$`);
     return finalRegex;
 }
-export function regexMatchRoute(regex, url, paramNames) {
+export function regexMatchRoute(regex, url, paramNames = []) {
     const match = url.match(regex);
     if (!match)
         return { success: false, params: {} };

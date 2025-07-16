@@ -1,5 +1,5 @@
 import { Context } from "../core/context.js";
-import { Middleware } from "../core/router.js";
+import { Middleware } from "../types/index.js";
 export type DynamicHeaderValue = string | ((ctx: Context) => string | undefined);
 export type SecurityHeaderOptions = {
     /**

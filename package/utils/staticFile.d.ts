@@ -1,4 +1,5 @@
-import { Router, StaticServeOption } from "../core/router.js";
+import { Router } from "../core/router.js";
+import { StaticServeOption } from "../types/index.js";
 export declare const mimeTypes: {
     [key: string]: string;
 };

@@ -1,6 +1,6 @@
+import { ConnAddress, HTTPMethod, Middleware } from "../types/index.js";
 import { Context } from "./context.js";
-import { ConnAddress, HTTPMethod } from "./request.js";
-import { Middleware, Router, RouterConfig } from "./router.js";
+import { Router, RouterConfig } from "./router.js";
 export type TezXServeOptions = {
     connInfo: ConnAddress;
 };

@@ -1,5 +1,4 @@
-import { Callback, ctx } from "./router.js";
-export type AdapterType = "bun" | "deno" | "node";
+import { AdapterType, Callback, ctx } from "../types/index.js";
 export declare let GlobalConfig: {
     new (): {};
     notFound: Callback;

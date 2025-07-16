@@ -1,24 +1,7 @@
+import { ExtractParamsFromPath, FormDataOptions, HTTPMethod, NetAddr, PathType } from "../types/index.js";
 import type { UrlRef } from "../utils/url.js";
 import { TezXServeOptions } from "./server.js";
-export type FormDataOptions = {
-    maxSize?: number;
-    allowedTypes?: string[];
-    sanitized?: boolean;
-    maxFiles?: number;
-};
-type TransportType = "tcp" | "udp" | "unix" | "pipe" | "unixpacket";
-export type NetAddr = {
-    transport?: TransportType;
-    family?: "IPv4" | "IPv6" | "Unix";
-    address?: string;
-    port?: number;
-};
-export type ConnAddress = {
-    remoteAddr: NetAddr;
-    localAddr: NetAddr;
-};
-export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "OPTIONS" | "PATCH" | "HEAD" | "ALL" | "TRACE" | "CONNECT" | string;
-export declare class Request {
+export declare class Request<Path extends PathType = any> {
     /**
      * Full request URL including protocol and query string
      * @type {string}
@@ -44,7 +27,7 @@ export declare class Request {
      * @param name - The parameter name.
      * @returns The parameter value if found, or undefined.
      */
-    readonly params: Record<string, any>;
+    readonly params: ExtractParamsFromPath<Path>;
     /**
      * Represents the remote address details of a connected client.
      *
@@ -151,4 +134,3 @@ export declare class Request {
      */
     formData(options?: FormDataOptions): Promise<Record<string, any>>;
 }
-export {};

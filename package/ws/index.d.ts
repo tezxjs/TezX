@@ -1,5 +1,5 @@
-import { CallbackReturn, Middleware } from "../core/router.js";
 import { Context } from "../index.js";
+import { CallbackReturn, Middleware } from "../types/index.js";
 /**
  * Type definition for WebSocket event handlers.
  * @template T - The type of data expected by the handler

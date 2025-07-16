@@ -60,7 +60,7 @@ export declare function addBaseToRegex(basePath: string, routeRegex: RegExp): Re
  * const result = regexMatchRoute(regex, url, paramNames);
  * // result = { success: true, params: { userId: "123", postId: "abc" } }
  */
-export declare function regexMatchRoute(regex: RegExp, url: string, paramNames: string[]): {
+export declare function regexMatchRoute(regex: RegExp, url: string, paramNames?: string[]): {
     params: Record<string, string | null>;
     success: boolean;
 };

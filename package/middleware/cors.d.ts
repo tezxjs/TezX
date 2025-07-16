@@ -1,4 +1,4 @@
-import { ctx as Context } from "../core/router.js";
+import { ctx as Context } from "../types/index.js";
 export type CorsOptions = {
     origin?: string | RegExp | (string | RegExp)[] | ((reqOrigin: string) => boolean);
     methods?: string[];

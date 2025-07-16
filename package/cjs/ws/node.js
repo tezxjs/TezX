@@ -44,7 +44,7 @@ class NodeTransport {
                 maxPayload: options.maxPayload ?? 1048576,
                 perMessageDeflate: options.perMessageDeflate ?? false,
             });
-            server.on("upgrade", (request, socket, head) => {
+            server?.on("upgrade", (request, socket, head) => {
                 this.wss?.handleUpgrade(request, socket, head, (ws) => {
                     this.wss?.emit("connection", ws, request);
                     this.setupHandlers(ws, event, options);

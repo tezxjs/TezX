@@ -1,5 +1,4 @@
-import { Context } from "../index.js";
-import { Middleware } from "../core/router.js";
+import { Context, Middleware } from "../index.js";
 export type PaginationOptions = {
     /**
      * 🔢 Default page number when not specified

@@ -1,7 +1,5 @@
+import { DuplicateMiddlewares, Middleware, UniqueMiddlewares } from "../types/index.js";
 import { CommonHandler } from "./common.js";
-import { Middleware } from "./router.js";
-export type DuplicateMiddlewares = Middleware<any>[];
-export type UniqueMiddlewares = Set<Middleware<any>>;
 export declare class TriMiddleware {
     children: Map<string, TriMiddleware>;
     middlewares: DuplicateMiddlewares | UniqueMiddlewares;

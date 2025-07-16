@@ -1,4 +1,5 @@
-import { Context, Middleware } from "../index.js";
+import { Context } from "../core/context.js";
+import { Middleware } from "../types/index.js";
 export type CacheRule = {
     /**
      * 🎯 Condition to determine if this rule applies.

@@ -1,6 +1,5 @@
 import { COLORS } from "./colors.js";
 export const loggerOutput = (level, message, ...args) => {
-    const timestamp = new Date().toISOString();
     const LEVEL_COLORS = {
         info: COLORS.blue,
         warn: COLORS.yellow,

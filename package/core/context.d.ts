@@ -1,17 +1,8 @@
+import { CookieOptions, HTTPMethod, PathType, ResponseHeaders } from "../types/index.js";
 import { State } from "../utils/state.js";
-import { HTTPMethod, Request as RequestParser } from "./request.js";
+import { Request as RequestParser } from "./request.js";
 import { TezXServeOptions } from "./server.js";
-export interface CookieOptions {
-    expires?: Date;
-    path?: string;
-    maxAge?: number;
-    domain?: string;
-    secure?: boolean;
-    httpOnly?: boolean;
-    sameSite?: "Strict" | "Lax" | "None";
-}
-export type ResponseHeaders = Record<string, string>;
-export declare class Context<T extends Record<string, any> = {}> {
+export declare class Context<T extends Record<string, any> = {}, Path extends PathType = any> {
     #private;
     [key: string]: any;
     rawRequest: Request;
@@ -192,7 +183,7 @@ export declare class Context<T extends Record<string, any> = {}> {
      * // Access route params
      * const id = request.params.get('id');
      */
-    get req(): RequestParser;
+    get req(): RequestParser<Path>;
     protected set params(params: Record<string, any>);
     /**
      * Set response body to be passed between middlewares or returned as final output.

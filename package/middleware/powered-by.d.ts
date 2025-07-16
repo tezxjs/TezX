@@ -1,4 +1,4 @@
-import { Middleware } from "../core/router.js";
+import { Middleware } from "../types/index.js";
 /**
  * PoweredBy Middleware
  * Adds an "X-Powered-By" header to responses.
