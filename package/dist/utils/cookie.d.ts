@@ -3,16 +3,16 @@ import { CookieOptions } from "../types/index.js";
 /**
  * Get the value of a specific cookie by name from the request context.
  *
- * @param {string} name - The name of the cookie to retrieve.
  * @param {Context} ctx - The context containing the request.
+ * @param {string} name - The name of the cookie to retrieve.
  * @returns {string | undefined} The cookie value if found, otherwise undefined.
  *
  * @example
  * ```ts
- * const sessionId = getCookie("session_id", ctx);
+ * const sessionId = getCookie(ctx,"session_id");
  * ```
  */
-export declare function getCookie(name: string, ctx: Context): string | undefined;
+export declare function getCookie(ctx: Context, name: string): string | undefined;
 /**
  * Parse all cookies from the request's "cookie" header into an object.
  *

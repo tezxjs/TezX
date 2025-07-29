@@ -130,11 +130,11 @@ export type StaticServeOption = {
     headers?: ResponseHeaders;
 };
 type ExtractParam<Path extends string> = Path extends `${infer _Start}:${infer Param}/${infer Rest}` ? Param extends `${infer Name}?` ? {
-    [K in Name]?: string;
+    [K in Name]?: string | null;
 } & ExtractParam<`/${Rest}`> : {
     [K in Param]: string;
 } & ExtractParam<`/${Rest}`> : Path extends `${infer _Start}:${infer Param}` ? Param extends `${infer Name}?` ? {
-    [K in Name]?: string;
+    [K in Name]?: string | null;
 } : {
     [K in Param]: string;
 } : {};
@@ -309,7 +309,7 @@ export interface RouteRegistry {
      * @param handlers - Array of middleware or callback handlers
      */
     addRoute<T extends Record<string, any> = any>(method: HTTPMethod, path: string, handler: HandlerType<T>): void;
-    margeRouter?(path: string, router: this): void;
+    mergeRouter?(path: string, router: this): void;
     /**
      * Find a route based on the given method and path.
      *

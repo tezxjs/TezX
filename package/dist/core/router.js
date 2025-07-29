@@ -1,13 +1,13 @@
-import { CombineRouteRegistry } from "../registry/combine.js";
 import { getFiles } from "../utils/staticFile.js";
 import { sanitizePathSplitBasePath } from "../utils/low-level.js";
+import { RadixRouter } from "../registry/RadixRouter.js";
 export class Router {
     env = {};
     router;
     route = [];
     staticFileRouter = Object.create(null);
     basePath;
-    constructor({ basePath = "/", env = {}, routeRegistry = new CombineRouteRegistry() } = {}) {
+    constructor({ basePath = "/", env = {}, routeRegistry = new RadixRouter() } = {}) {
         this.router = routeRegistry;
         this.basePath = basePath;
         this.env = { ...env };
@@ -168,19 +168,24 @@ export class Router {
     }
     #routeAddTriNode(path, router) {
         this.env = { ...this.env, ...router.env };
+        if (this.router.name &&
+            router.router.name &&
+            this.router.name !== router.router.name) {
+            throw new Error(`Router name mismatch: expected "${this.router.name}", got "${router.router.name}"`);
+        }
         if (!(router instanceof Router)) {
             throw new Error("Router instance is required.");
         }
-        if (this.router?.margeRouter) {
+        if (this.router?.mergeRouter) {
             const parts = sanitizePathSplitBasePath(this.basePath, path);
             router.route.forEach(r => {
-                this.#addRoute(r?.method, r?.pattern, r?.handlers, true);
+                this.#addRoute(r?.method, `/${sanitizePathSplitBasePath(path, r?.pattern).join("/")}`, r?.handlers, true);
             });
-            this.router.margeRouter(`/${parts.join("/")}`, router.router);
+            this.router.mergeRouter(`/${parts.join("/")}`, router.router);
         }
         else {
             router.route.forEach(r => {
-                this.#addRoute(r?.method, r?.pattern, r?.handlers);
+                this.#addRoute(r?.method, `/${sanitizePathSplitBasePath(path, r?.pattern).join("/")}`, r?.handlers);
             });
         }
         Object.assign(this.staticFileRouter, router.staticFileRouter);

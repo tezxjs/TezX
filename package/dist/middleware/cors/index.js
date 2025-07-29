@@ -23,22 +23,22 @@ function cors(option = {}) {
         else if (typeof origin === "function") {
             allowOrigin = origin(reqOrigin) ? reqOrigin : "";
         }
-        ctx.headers.set("Access-Control-Allow-Origin", allowOrigin);
-        ctx.headers.set("Access-Control-Allow-Methods", (methods || ["GET", "POST", "PUT", "DELETE"]).join(", "));
-        ctx.headers.set("Access-Control-Allow-Headers", (allowedHeaders || ["Content-Type", "Authorization"]).join(", "));
+        ctx.setHeader("Access-Control-Allow-Origin", allowOrigin);
+        ctx.setHeader("Access-Control-Allow-Methods", (methods || ["GET", "POST", "PUT", "DELETE"]).join(", "));
+        ctx.setHeader("Access-Control-Allow-Headers", (allowedHeaders || ["Content-Type", "Authorization"]).join(", "));
         if (exposedHeaders) {
-            ctx.headers.set("Access-Control-Expose-Headers", exposedHeaders.join(", "));
+            ctx.setHeader("Access-Control-Expose-Headers", exposedHeaders.join(", "));
         }
         if (credentials) {
-            ctx.headers.set("Access-Control-Allow-Credentials", "true");
+            ctx.setHeader("Access-Control-Allow-Credentials", "true");
         }
         if (maxAge) {
-            ctx.headers.set("Access-Control-Max-Age", maxAge.toString());
+            ctx.setHeader("Access-Control-Max-Age", maxAge.toString());
         }
         if (ctx.req.method === "OPTIONS") {
             return new Response(null, {
                 status: 204,
-                headers: ctx.headers,
+                headers: ctx.header(),
             });
         }
         return await next();

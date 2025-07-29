@@ -33,9 +33,9 @@ const basicAuth = (options) => {
                 credentials = { token: auth.split(" ")[1] };
             }
         }
-        else if (ctx.headers.get("x-api-key")) {
+        else if (ctx.header("x-api-key")) {
             authMethod = "api-key";
-            credentials = { apiKey: ctx.headers.get("x-api-key") };
+            credentials = { apiKey: ctx.header("x-api-key") };
         }
         if (!authMethod || !supportedMethods.includes(authMethod)) {
             config_js_1.GlobalConfig.debugging.error(`${(0, colors_js_1.colorText)("[AUTH]", "bgRed")} Unsupported or missing authentication method.`);

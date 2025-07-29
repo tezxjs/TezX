@@ -14,7 +14,7 @@ export const detectBot = (options = {}) => {
             isBot: false,
             indicators: [],
         };
-        const userAgent = ctx.headers.get("user-agent")?.toLowerCase() || "";
+        const userAgent = ctx.header("user-agent")?.toLowerCase() || "";
         const remoteAddress = `${ctx.req.remoteAddress?.address}:${ctx.req.remoteAddress?.port}` ||
             "unknown";
         const isBotQuery = ctx.req.query[queryKeyBot] === "true";

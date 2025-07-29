@@ -11,12 +11,12 @@ const xssProtection = (options = {}) => {
             return await next();
         }
         const xssHeaderValue = mode === "block" ? "1; mode=block" : "1";
-        ctx.headers.set("X-XSS-Protection", xssHeaderValue);
+        ctx.setHeader("X-XSS-Protection", xssHeaderValue);
         config_js_1.GlobalConfig.debugging.warn(`🟢 X-XSS-Protection set to: ${xssHeaderValue}`);
         if (fallbackCSP) {
             const existingCSP = ctx.req.header("content-security-policy");
             if (!existingCSP) {
-                ctx.headers.set("Content-Security-Policy", fallbackCSP);
+                ctx.setHeader("Content-Security-Policy", fallbackCSP);
                 config_js_1.GlobalConfig.debugging.warn(`🟣 Fallback CSP set to: ${fallbackCSP}`);
             }
         }

@@ -91,15 +91,15 @@ export class TezX extends Router {
                 return staticHandler(ctx);
             }
             const route = this.router.search(method, pathname);
-            if (!route) {
+            if (!route || (route.handlers.length === 0 && route.middlewares.length === 0)) {
                 return this.#notFound(ctx);
             }
             ctx.params = route.params;
-            if (route.handlers?.length === 1 && route?.middlewares?.length == 0) {
+            if (route.handlers.length === 1 && route.middlewares.length === 0) {
                 const result = await route.handlers[0](ctx);
                 if (result)
                     return result;
-                if (ctx.body)
+                if (ctx.body !== undefined)
                     return ctx.send(ctx.body);
                 return this.#notFound(ctx);
             }

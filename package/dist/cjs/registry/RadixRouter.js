@@ -38,14 +38,12 @@ class RadixRouter {
     search(method, path) {
         let params = {};
         let middlewares = [];
-        const node = this._match(method, this.root, (0, index_js_1.sanitizePathSplit)(path), 0, params, middlewares, new Set());
-        const handlers = node?.handlers?.[method] ?? [];
-        return {
-            method,
-            params: handlers ? params : {},
-            handlers: handlers,
-            middlewares: middlewares
-        };
+        const { success, node } = this._match(method, this.root, (0, index_js_1.sanitizePathSplit)(path), 0, params, middlewares, new Set());
+        if (success && node) {
+            const handlers = node.handlers?.[method] ?? [];
+            return { method, params, handlers, middlewares };
+        }
+        return { method, params: {}, handlers: [], middlewares };
     }
     _match(method, node, segments, index, params, middlewares, seen) {
         if (node.handlers?.ALL) {
@@ -58,13 +56,13 @@ class RadixRouter {
         }
         if (index === segments.length) {
             if (node.isEndpoint && node.handlers?.[method])
-                return node;
+                return { success: true, node };
             const opt = node.children[':'];
             if (opt?.isOptional) {
                 params[opt.paramName] = null;
                 return this._match(method, opt, segments, index, params, middlewares, seen);
             }
-            return;
+            return { success: false, node: node };
         }
         const wc = node.children["*"];
         if (wc?.handlers?.ALL) {
@@ -78,19 +76,19 @@ class RadixRouter {
         const seg = segments[index];
         if (node.children[seg]) {
             const res = this._match(method, node.children[seg], segments, index + 1, params, middlewares, seen);
-            if (res)
+            if (res.success)
                 return res;
         }
         const dyn = node.children[':'];
         if (dyn) {
             params[dyn.paramName] = seg;
             const res = this._match(method, dyn, segments, index + 1, params, middlewares, seen);
-            if (res)
+            if (res.success)
                 return res;
             if (dyn.isOptional) {
                 params[dyn.paramName] = null;
                 const skip = this._match(method, dyn, segments, index, params, middlewares, seen);
-                if (skip)
+                if (skip.success)
                     return skip;
             }
         }
@@ -98,10 +96,10 @@ class RadixRouter {
             let wildcard = segments.slice(index).join('/');
             if (wildcard) {
                 params[wc.paramName] = wildcard;
-                return wc;
+                return { node: wc, success: true };
             }
         }
-        return;
+        return { success: false, node };
     }
     mergeRouter(basePath, childRouter) {
         const segments = (0, index_js_1.sanitizePathSplit)(basePath);
@@ -129,7 +127,7 @@ class RadixRouter {
                 break;
             }
             else if (segment.startsWith('*')) {
-                const paramName = segment.slice(1) || 'wildcard';
+                const paramName = segment.slice(1) || '*';
                 result.push({ type: 'wildcard', paramName });
                 break;
             }

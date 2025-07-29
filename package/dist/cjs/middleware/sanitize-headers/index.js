@@ -1,44 +1,46 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = exports.sanitizeHeaders = void 0;
+exports.sanitizeHeaders = exports.default = void 0;
 const config_js_1 = require("../../core/config.js");
 const sanitizeHeaders = (options = {}) => {
-    const { whitelist = [], blacklist = [], normalizeKeys = true, allowUnsafeCharacters = false, } = options;
+    const { whitelist = [], blacklist = [], allowUnsafeCharacters = false, } = options;
+    const normalizedWhitelist = whitelist.map(h => h.toLowerCase());
+    const normalizedBlacklist = blacklist.map(h => h.toLowerCase());
     return async function sanitizeHeaders(ctx, next) {
-        const sanitizedHeaders = new Map();
-        for (const [key, values] of ctx.headers.entries()) {
-            if (!Array.isArray(values) || values.length === 0) {
+        const sanitizedHeaders = {};
+        for (const key in ctx.header()) {
+            let value = ctx.header(key);
+            const normalizedKey = key.toLowerCase();
+            if (normalizedWhitelist.length > 0 && !normalizedWhitelist.includes(normalizedKey)) {
+                config_js_1.GlobalConfig.debugging.warn(`🚫 Header "${key}" not in whitelist - removed`);
                 continue;
             }
-            const normalizedKey = normalizeKeys ? key.toLowerCase() : key;
-            if (whitelist.length > 0 &&
-                !whitelist.some((r) => r?.toLowerCase() === normalizedKey)) {
-                config_js_1.GlobalConfig.debugging.warn(`🚫 Header "${normalizedKey}" not in whitelist - removed`);
-                continue;
-            }
-            if (blacklist.some((r) => r.toLowerCase() === normalizedKey)) {
-                config_js_1.GlobalConfig.debugging.warn(`🚫 Header "${normalizedKey}" in blacklist - removed`);
+            if (normalizedBlacklist.includes(normalizedKey)) {
+                config_js_1.GlobalConfig.debugging.warn(`🚫 Header "${key}" in blacklist - removed`);
                 continue;
             }
             if (!isValidHeaderName(normalizedKey)) {
                 config_js_1.GlobalConfig.debugging.warn(`⚠️ Invalid header name: "${normalizedKey}" - removed`);
                 continue;
             }
-            const sanitizedValues = values
-                .map((value) => sanitizeHeaderValue(value, allowUnsafeCharacters))
-                .filter(Boolean);
-            if (sanitizedValues.length === 0) {
-                config_js_1.GlobalConfig.debugging.warn(`⚠️ All values for "${normalizedKey}" invalid - removed`);
+            const sanitizedValue = sanitizeHeaderValue(value, allowUnsafeCharacters);
+            if (!sanitizedValue) {
+                config_js_1.GlobalConfig.debugging.warn(`⚠️ Header "${key}" has invalid/empty value - removed`);
                 continue;
             }
-            sanitizedHeaders.set(normalizedKey, sanitizedValues?.join(", "));
+            sanitizedHeaders[normalizedKey] = sanitizedValue;
         }
-        ctx.headers = new Headers(sanitizedHeaders);
+        for (const k in sanitizedHeaders) {
+            let v = sanitizedHeaders[k];
+            ctx.setHeader(k, v);
+        }
+        ;
+        ctx.clearHeader = sanitizedHeaders;
         return await next();
     };
 };
-exports.sanitizeHeaders = sanitizeHeaders;
 exports.default = sanitizeHeaders;
+exports.sanitizeHeaders = sanitizeHeaders;
 const isValidHeaderName = (name) => {
     const HEADER_NAME_REGEX = /^[a-zA-Z0-9\-_]+$/;
     return HEADER_NAME_REGEX.test(name);

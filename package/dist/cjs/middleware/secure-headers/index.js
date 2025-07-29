@@ -16,25 +16,25 @@ const secureHeaders = (options = {}) => {
         const permissionsPolicy = resolveValue(options.permissionsPolicy) ||
             "geolocation=(), microphone=(), camera=()";
         if (contentSecurityPolicy) {
-            ctx.headers.set("Content-Security-Policy", contentSecurityPolicy);
+            ctx.setHeader("Content-Security-Policy", contentSecurityPolicy);
         }
         if (frameGuard) {
-            ctx.headers.set("X-Frame-Options", "DENY");
+            ctx.setHeader("X-Frame-Options", "DENY");
         }
         if (hsts) {
-            ctx.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains");
+            ctx.setHeader("Strict-Transport-Security", "max-age=63072000; includeSubDomains");
         }
         if (xssProtection) {
-            ctx.headers.set("X-XSS-Protection", "1; mode=block");
+            ctx.setHeader("X-XSS-Protection", "1; mode=block");
         }
         if (noSniff) {
-            ctx.headers.set("X-Content-Type-Options", "nosniff");
+            ctx.setHeader("X-Content-Type-Options", "nosniff");
         }
         if (referrerPolicy) {
-            ctx.headers.set("Referrer-Policy", referrerPolicy);
+            ctx.setHeader("Referrer-Policy", referrerPolicy);
         }
         if (permissionsPolicy) {
-            ctx.headers.set("Permissions-Policy", permissionsPolicy);
+            ctx.setHeader("Permissions-Policy", permissionsPolicy);
         }
         return await next();
     };

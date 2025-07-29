@@ -4,7 +4,7 @@ exports.getCookie = getCookie;
 exports.allCookies = allCookies;
 exports.setCookie = setCookie;
 exports.deleteCookie = deleteCookie;
-function getCookie(name, ctx) {
+function getCookie(ctx, name) {
     return allCookies(ctx)?.[name];
 }
 function allCookies(ctx) {

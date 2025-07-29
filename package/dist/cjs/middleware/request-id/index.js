@@ -4,8 +4,7 @@ exports.default = exports.requestID = void 0;
 const index_js_1 = require("../../helper/index.js");
 const requestID = (headerName = "X-Request-ID", contextKey = "requestID") => {
     return function requestID(ctx, next) {
-        let requestId = ctx.headers?.get(headerName.toLowerCase()) ||
-            ctx.headers?.get(headerName);
+        let requestId = ctx.header(headerName);
         if (!requestId) {
             requestId = `req-${(0, index_js_1.generateUUID)()}`;
         }

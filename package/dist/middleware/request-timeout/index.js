@@ -4,7 +4,7 @@ const requestTimeout = (options) => {
         ctx.setStatus = 504;
         ctx.body = { error: "Request timed out." };
     }, logTimeoutEvent = (ctx, error) => {
-        GlobalConfig.debugging.warn(`[TIMEOUT] ${error.message}: ${ctx.method} ${ctx.path}`);
+        GlobalConfig.debugging.warn(`[TIMEOUT] ${error.message}: ${ctx.method} ${ctx.pathname}`);
     }, cleanup = () => {
     }, } = options;
     return async function requestTimeout(ctx, next) {

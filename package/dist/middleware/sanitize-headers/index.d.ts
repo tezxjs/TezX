@@ -15,13 +15,6 @@ export type SanitizeHeadersOptions = {
      */
     blacklist?: string[];
     /**
-     * 🔵 Normalize header keys to lowercase
-     * @default true
-     * @example
-     * normalizeKeys: false // Preserve original header case
-     */
-    normalizeKeys?: boolean;
-    /**
      * 🟠 Allow potentially unsafe characters in header values
      * @default false
      * @warning Enabling this may reduce security
@@ -50,4 +43,4 @@ export type SanitizeHeadersOptions = {
  * }));
  */
 declare const sanitizeHeaders: (options?: SanitizeHeadersOptions) => Middleware;
-export { sanitizeHeaders, sanitizeHeaders as default, };
+export { sanitizeHeaders as default, sanitizeHeaders };

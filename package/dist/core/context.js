@@ -36,6 +36,9 @@ export class Context {
         }
         return this.#headers;
     }
+    set clearHeader(header) {
+        this.#headers = header || {};
+    }
     setHeader(key, value, options) {
         let _key = key.toLowerCase();
         if (!this.res) {

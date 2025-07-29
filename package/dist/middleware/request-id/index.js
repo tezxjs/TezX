@@ -1,8 +1,7 @@
 import { generateUUID } from "../../helper/index.js";
 const requestID = (headerName = "X-Request-ID", contextKey = "requestID") => {
     return function requestID(ctx, next) {
-        let requestId = ctx.headers?.get(headerName.toLowerCase()) ||
-            ctx.headers?.get(headerName);
+        let requestId = ctx.header(headerName);
         if (!requestId) {
             requestId = `req-${generateUUID()}`;
         }

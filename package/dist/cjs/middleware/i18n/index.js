@@ -8,7 +8,7 @@ const i18n = (options) => {
         if (ctx.req.query.lang) {
             return ctx.req.query.lang;
         }
-        else if ((0, cookie_js_1.getCookie)('lang', ctx)) {
+        else if ((0, cookie_js_1.getCookie)(ctx, 'lang')) {
             return ctx.cookies?.['lang'];
         }
         else if (ctx.req.header("accept-language")) {

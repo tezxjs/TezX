@@ -74,6 +74,7 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
      */
     header(): ResponseHeaders;
     header(header: HeaderKey): string | undefined;
+    protected set clearHeader(header: ResponseHeaders);
     /**
     * Sets or appends a header to the response.
     *

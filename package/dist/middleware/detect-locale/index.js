@@ -1,4 +1,5 @@
 import { GlobalConfig } from "../../core/config.js";
+import { getCookie } from "../../utils/cookie.js";
 const detectLocale = (options) => {
     const { supportedLocales, defaultLocale = "en", queryKeyLocale = "lang", cookieKeyLocale = "locale", localeContextKey = "locale", customLocaleDetector, } = options;
     return async function detectLocale(ctx, next) {
@@ -8,7 +9,7 @@ const detectLocale = (options) => {
             detectedLocale = queryLocale;
         }
         if (!detectedLocale) {
-            const cookieLocale = ctx.cookies.get(cookieKeyLocale);
+            const cookieLocale = getCookie(ctx, cookieKeyLocale);
             if (cookieLocale && supportedLocales.includes(cookieLocale)) {
                 detectedLocale = cookieLocale;
             }

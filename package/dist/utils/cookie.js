@@ -1,4 +1,4 @@
-export function getCookie(name, ctx) {
+export function getCookie(ctx, name) {
     return allCookies(ctx)?.[name];
 }
 export function allCookies(ctx) {
