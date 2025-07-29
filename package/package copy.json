@@ -27,6 +27,7 @@
       "require": "./dist/cjs/middleware/index.js",
       "types": "./dist/middleware/index.d.ts"
     },
+    // ! ******************** env *************************
     "./node": {
       "import": "./dist/node/index.js",
       "require": "./dist/cjs/node/index.js",
@@ -42,11 +43,13 @@
       "require": "./dist/cjs/deno/index.js",
       "types": "./dist/deno/index.d.ts"
     },
+    // ! ******************** helper *************************
     "./helper": {
       "import": "./dist/helper/index.js",
       "require": "./dist/cjs/helper/index.js",
       "types": "./dist/helper/index.d.ts"
     },
+    // middleware
     "./basic-auth": {
       "import": "./dist/middleware/basic-auth/index.js",
       "require": "./dist/cjs/middleware/basic-auth/index.js",
@@ -77,10 +80,10 @@
       "require": "./dist/cjs/middleware/i18n/index.js",
       "types": "./dist/middleware/i18n/index.d.ts"
     },
-    "./lazy-load-modules": {
-      "import": "./dist/middleware/lazy-load-modules/index.js",
-      "require": "./dist/cjs/middleware/lazy-load-modules/index.js",
-      "types": "./dist/middleware/lazy-load-modules/index.d.ts"
+    "./lazy-loader": {
+      "import": "./dist/middleware/lazy-loader/index.js",
+      "require": "./dist/cjs/middleware/lazy-loader/index.js",
+      "types": "./dist/middleware/lazy-loader/index.d.ts"
     },
     "./logger": {
       "import": "./dist/middleware/logger/index.js",

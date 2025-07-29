@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.lazyLoadModules = void 0;
+exports.lazyLoader = void 0;
 const config_js_1 = require("../core/config.js");
-const lazyLoadModules = (options) => {
+const lazyLoader = (options) => {
     const { moduleKey = (ctx) => ctx.req.params[queryKeyModule] || ctx.req.query[queryKeyModule], getModuleLoader, queryKeyModule = "module", moduleContextKey = "module", cacheTTL = 3600000, enableCache = true, cacheStorage, lifecycleHooks = {}, validateModule, } = options;
     let storage = cacheStorage;
     if (enableCache && !cacheStorage) {
         storage = new Map();
     }
-    return async function lazyLoadModules(ctx, next) {
+    return async function lazyLoader(ctx, next) {
         let moduleName = moduleKey(ctx) ||
             ctx.req.params[queryKeyModule] ||
             ctx.req.query[queryKeyModule];
@@ -70,4 +70,4 @@ const lazyLoadModules = (options) => {
         return await next();
     };
 };
-exports.lazyLoadModules = lazyLoadModules;
+exports.lazyLoader = lazyLoader;

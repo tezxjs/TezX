@@ -69,4 +69,4 @@ export interface LazyLoadOptions<T> {
  * @param options - Custom options for lazy loading, including caching, hooks, and module validation.
  * @returns A middleware function to use in your application.
  */
-export declare const lazyLoadModules: <T = any>(options: LazyLoadOptions<T>) => Middleware;
+export declare const lazyLoader: <T = any>(options: LazyLoadOptions<T>) => Middleware;

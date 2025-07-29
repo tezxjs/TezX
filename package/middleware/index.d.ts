@@ -7,7 +7,7 @@ export { detectBot } from "./detectBot.js";
 export type { DetectBotReason } from "./detectBot.js";
 export * from "./detectLocale.js";
 export * from "./i18n.js";
-export * from "./lazyLoadModules.js";
+export * from "./lazyLoader.js";
 export * from "./logger.js";
 export * from "./pagination.js";
 export * from "./powered-by.js";
@@ -24,7 +24,7 @@ declare const _default: {
     detectBot: (options?: import("./detectBot.js").DetectBotOptions) => import("../index.js").Middleware;
     detectLocale: (options: import("./detectLocale.js").DetectLocaleOptions) => import("../index.js").Middleware;
     i18n: (options: import("./i18n.js").I18nOptions) => import("../index.js").Middleware;
-    lazyLoadModules: <T = any>(options: import("./lazyLoadModules.js").LazyLoadOptions<T>) => import("../index.js").Middleware;
+    lazyLoader: <T = any>(options: import("./lazyLoader.js").LazyLoadOptions<T>) => import("../index.js").Middleware;
     logger: typeof logger;
     paginationHandler: (options?: import("./pagination.js").PaginationOptions) => import("../index.js").Middleware;
     poweredBy: (serverName?: string) => import("../index.js").Middleware;

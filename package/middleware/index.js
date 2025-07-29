@@ -4,7 +4,7 @@ import { cors } from "./cors.js";
 import { detectBot } from "./detectBot.js";
 import { detectLocale } from "./detectLocale.js";
 import { i18n } from "./i18n.js";
-import { lazyLoadModules } from "./lazyLoadModules.js";
+import { lazyLoader } from "./lazyLoader.js";
 import { logger } from "./logger.js";
 import { paginationHandler } from "./pagination.js";
 import { poweredBy } from "./powered-by.js";
@@ -20,7 +20,7 @@ export * from "./cors.js";
 export { detectBot } from "./detectBot.js";
 export * from "./detectLocale.js";
 export * from "./i18n.js";
-export * from "./lazyLoadModules.js";
+export * from "./lazyLoader.js";
 export * from "./logger.js";
 export * from "./pagination.js";
 export * from "./powered-by.js";
@@ -37,7 +37,7 @@ export default {
     detectBot,
     detectLocale,
     i18n,
-    lazyLoadModules,
+    lazyLoader,
     logger,
     paginationHandler,
     poweredBy,
