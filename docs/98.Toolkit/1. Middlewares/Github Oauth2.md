@@ -56,7 +56,7 @@ const client = GitHubOauthClient({
 app.get('github', getGithubOAuthURL({
   authClient: client,
 }), (ctx) => {
-  return ctx.redirect(ctx.state.get('github_oauth_url'));
+  return ctx.redirect(ctx.github_oauth_url);
 });
 
 // Step 2: Verify GitHub token and handle user session

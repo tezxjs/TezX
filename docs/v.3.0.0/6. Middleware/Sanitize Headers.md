@@ -40,7 +40,6 @@ app.use(
   sanitizeHeaders({
     whitelist: ["accept", "content-type", "authorization"],
     blacklist: ["x-powered-by", "server"],
-    normalizeKeys: true,
     allowUnsafeCharacters: false,
   }),
 );
@@ -69,17 +68,6 @@ whitelist: ["content-type", "authorization"];
 
 ```ts
 blacklist: ["x-powered-by", "server"];
-```
-
----
-
-### `normalizeKeys: boolean`
-
-* **Default:** `true`
-* Converts header names to lowercase (RFC standard).
-
-```ts
-normalizeKeys: false; // Preserve original casing
 ```
 
 ---
@@ -174,7 +162,6 @@ whitelist: ["content-type", "authorization"].map((h) => h.toLowerCase());
 | Threat                  | Protection                                                            |
 | ----------------------- | --------------------------------------------------------------------- |
 | Header Injection (CRLF) | Stripped by default                                                   |
-| Case manipulation       | Normalized with `normalizeKeys`                                       |
 | Technology exposure     | Use `blacklist` to hide `"x-powered-by"`, `"server"` headers          |
 | Unsafe values           | Control characters removed (unless `allowUnsafeCharacters` is `true`) |
 
