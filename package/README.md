@@ -164,11 +164,9 @@ Access: [http://localhost:3000](http://localhost:3000)
 ```json
 {
   "scripts": {
-    "clean": "rm -rf dist",
-    "build:cjs": "tsc --module CommonJS --outDir dist/cjs --removeComments",
-    "build:esm": "tsc --module ESNext --outDir dist/mjs --removeComments",
-    "build:dts": "tsc --module ESNext --outDir dist/types --declaration --emitDeclarationOnly",
-    "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:dts",
+    "build:esm": "tsc --outDir dist/mjs --removeComments",
+    "build:dts": "tsc --outDir dist/types --declaration --emitDeclarationOnly",
+    "build": "npm run build:esm && npm run build:dts",
     "start": "node dist/index.js",
     "nodemon": "nodemon src/index.ts",
     "dev": "tsx watch src/index.ts"
