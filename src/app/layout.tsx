@@ -13,6 +13,7 @@ import { IoMdClose } from "react-icons/io";
 import docs from "./docs.json";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
+import Link from "next/link";
 
 type Props = {
   children: React.ReactNode;
@@ -46,6 +47,12 @@ export default function PackageLayout({ children }: Props) {
                 </div>
                 <nav className="py-4 w-full px-2">
                   <Sidebar content={docs.structure} />
+                  <Link
+                    href={`/llm-docs.txt`}
+                    className={`btn-ghost w-full flex items-center px-2.5 py-2 rounded text-primary font-bold text-base sm:text-lg`}
+                  >
+                    LLM docs
+                  </Link>
                 </nav>
               </aside>
             </div>
