@@ -22,20 +22,15 @@
       "require": "./dist/cjs/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./middleware": {
-      "import": "./dist/middleware/index.js",
-      "require": "./dist/cjs/middleware/index.js",
-      "types": "./dist/middleware/index.d.ts"
+    "./bun": {
+      "import": "./dist/bun/index.js",
+      "require": "./dist/cjs/bun/index.js",
+      "types": "./dist/bun/index.d.ts"
     },
     "./node": {
       "import": "./dist/node/index.js",
       "require": "./dist/cjs/node/index.js",
       "types": "./dist/node/index.d.ts"
-    },
-    "./bun": {
-      "import": "./dist/bun/index.js",
-      "require": "./dist/cjs/bun/index.js",
-      "types": "./dist/bun/index.d.ts"
     },
     "./deno": {
       "import": "./dist/deno/index.js",
@@ -46,6 +41,11 @@
       "import": "./dist/helper/index.js",
       "require": "./dist/cjs/helper/index.js",
       "types": "./dist/helper/index.d.ts"
+    },
+    "./registry": {
+      "import": "./dist/registry/index.js",
+      "require": "./dist/cjs/registry/index.js",
+      "types": "./dist/registry/index.d.ts"
     },
     "./basic-auth": {
       "import": "./dist/middleware/basic-auth/index.js",
@@ -77,10 +77,10 @@
       "require": "./dist/cjs/middleware/i18n/index.js",
       "types": "./dist/middleware/i18n/index.d.ts"
     },
-    "./lazy-load-modules": {
-      "import": "./dist/middleware/lazy-load-modules/index.js",
-      "require": "./dist/cjs/middleware/lazy-load-modules/index.js",
-      "types": "./dist/middleware/lazy-load-modules/index.d.ts"
+    "./lazy-loader": {
+      "import": "./dist/middleware/lazy-loader/index.js",
+      "require": "./dist/cjs/middleware/lazy-loader/index.js",
+      "types": "./dist/middleware/lazy-loader/index.d.ts"
     },
     "./logger": {
       "import": "./dist/middleware/logger/index.js",
