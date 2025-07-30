@@ -1,4 +1,3 @@
-import { WebSocketServer } from "ws";
 export function upgradeWebSocket(callback, options = {}) {
     const { onUpgradeError = (error, ctx) => {
         ctx.setStatus = 401;
@@ -22,6 +21,7 @@ export function upgradeWebSocket(callback, options = {}) {
             ctx.setStatus = 500;
             return onUpgradeError(new Error("Node server instance missing for WebSocket"), ctx);
         }
+        const { WebSocketServer } = await import("ws");
         const wss = new WebSocketServer({
             noServer: true,
             maxPayload: options.maxPayload ?? 1048576,

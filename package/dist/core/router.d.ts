@@ -1,4 +1,4 @@
-import { Callback, HandlerType, HTTPMethod, Middleware, RouteRegistry, StaticServeOption } from "../types/index.js";
+import { Callback, HandlerType, HTTPMethod, Middleware, RouteRegistry, ServeStatic } from "../types/index.js";
 export type RouterConfig = {
     /**
      * Custom route registry instance used internally to store routes.
@@ -49,26 +49,29 @@ export declare class Router<T extends Record<string, any> = {}> {
     */
     constructor({ basePath, env, routeRegistry }?: RouterConfig);
     /**
-    * Serve static files from a directory with optional route prefix.
-    *
-    * Overloads:
-    * - `static(route: string, folder: string, option?: StaticServeOption): this`
-    * - `static(folder: string, option?: StaticServeOption): this`
-    *
-    * @param args - Variable arguments depending on overload
-    * @returns The Router instance for chaining
-    *
-    * @throws Error if invalid arguments are passed
-    *
-    * @example
-    * // Serve static files at "/assets" route from "./public" folder
-    * router.static("/assets", "./public");
-    *
-    * // Serve static files from "./public" at root "/"
-    * router.static("./public");
-    */
-    static(route: string, folder: string, option?: StaticServeOption): this;
-    static(folder: string, Option?: StaticServeOption): this;
+     * Registers static file routes to the application for serving files like HTML, CSS, JS, images, etc.
+     *
+     * This method maps routes to files defined in the `ServeStatic` object,
+     * and sets appropriate HTTP headers like `Cache-Control` and custom headers.
+     *
+     * @example
+     * ```ts
+     * import { serveStatic } from "tezx/bun"; // or "tezx/node" or "tezx/deno"
+     *
+     * app.static(
+     *   serveStatic("public", {
+     *     cacheControl: "max-age=86400",
+     *     headers: {
+     *       "X-Powered-By": "TezX"
+     *     }
+     *   })
+     * );
+     * ```
+     *
+     * @param serveStatic - An object containing static file definitions and optional configuration.
+     * @returns The current instance for chaining.
+     */
+    static(serveStatic: ServeStatic): this;
     /**
      * Registers a GET route with optional middleware(s)
      * @param path - URL path pattern (supports route parameters)

@@ -1,4 +1,4 @@
-import { PerMessageDeflateOptions } from "ws";
+import type { PerMessageDeflateOptions } from "ws";
 import { Middleware, WebSocketCallback, WebSocketOptions } from "../types/index.js";
 export type nodeWebSocketOptions = {
     /**

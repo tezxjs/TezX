@@ -1,7 +1,7 @@
 import { fileExists, fileSize, getFileBuffer, readStream } from "../utils/file.js";
 import { extensionExtract } from "../utils/low-level.js";
 import { determineContentTypeBody } from "../utils/response.js";
-import { defaultMimeType, mimeTypes } from "../utils/staticFile.js";
+import { defaultMimeType, mimeTypes } from "../utils/mimeTypes.js";
 import { TezXRequest } from "./request.js";
 export class Context {
     #status = 200;

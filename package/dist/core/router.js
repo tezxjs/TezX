@@ -1,4 +1,3 @@
-import { getFiles } from "../utils/staticFile.js";
 import { sanitizePathSplitBasePath } from "../utils/low-level.js";
 import { RadixRouter } from "../registry/RadixRouter.js";
 export class Router {
@@ -19,29 +18,24 @@ export class Router {
         this.addRouter = this.addRouter.bind(this);
         this.group = this.group.bind(this);
     }
-    static(...args) {
-        let route = "";
-        let dir;
-        let options = {};
-        switch (args.length) {
-            case 3:
-                [route, dir, options] = args;
-                break;
-            case 2:
-                if (typeof args[1] === "object") {
-                    [dir, options] = args;
-                }
-                else {
-                    [route, dir] = args;
-                }
-                break;
-            case 1:
-                [dir] = args;
-                break;
-            default:
-                throw new Error(`\x1b[1;31m404 Not Found\x1b[0m \x1b[1;32mInvalid arguments\x1b[0m`);
+    static(serveStatic) {
+        if (Array.isArray(serveStatic?.files)) {
+            serveStatic?.files.forEach((r) => {
+                this.staticFileRouter[`GET ${r?.route}`] = (ctx) => {
+                    if (serveStatic?.options?.cacheControl) {
+                        ctx.setHeader("Cache-Control", serveStatic?.options.cacheControl);
+                    }
+                    let headers = serveStatic?.options?.headers;
+                    if (headers) {
+                        for (const key in headers) {
+                            let value = headers?.[key];
+                            ctx.setHeader(key, value);
+                        }
+                    }
+                    return ctx.sendFile(r.fileSource);
+                };
+            });
         }
-        getFiles(dir, route, this, options);
         return this;
     }
     get(path, ...args) {

@@ -65,9 +65,9 @@ export function createApp() {
 3. Waits for `await next()` to execute downstream logic.
 4. After response: calculates duration and logs:
 
-   ```
+```bash
    <-- METHOD PATH STATUS_CODE TIMEms
-   ```
+```
 
 5. On error: logs the error stack in red and rethrows it.
 

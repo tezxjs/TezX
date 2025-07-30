@@ -151,7 +151,7 @@ curl -I http://localhost:3000/admin
 
 Expected:
 
-```
+```bash
 Content-Security-Policy: default-src 'self'; script-src 'self';
 ```
 

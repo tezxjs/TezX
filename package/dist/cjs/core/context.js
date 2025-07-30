@@ -4,7 +4,7 @@ exports.Context = void 0;
 const file_js_1 = require("../utils/file.js");
 const low_level_js_1 = require("../utils/low-level.js");
 const response_js_1 = require("../utils/response.js");
-const staticFile_js_1 = require("../utils/staticFile.js");
+const mimeTypes_js_1 = require("../utils/mimeTypes.js");
 const request_js_1 = require("./request.js");
 class Context {
     #status = 200;
@@ -156,7 +156,7 @@ class Context {
             throw Error("File not found");
         let size = await (0, file_js_1.fileSize)(filePath);
         const ext = (0, low_level_js_1.extensionExtract)(filePath) || "";
-        const mimeType = staticFile_js_1.mimeTypes[ext] || staticFile_js_1.defaultMimeType;
+        const mimeType = mimeTypes_js_1.mimeTypes[ext] || mimeTypes_js_1.defaultMimeType;
         let fileStream = await (0, file_js_1.readStream)(filePath);
         let headers = {
             "Content-Type": mimeType,

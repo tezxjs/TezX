@@ -32,7 +32,7 @@ Deno.serve({ port: Number(Deno.env.get("PORT") || 5000) }, (req, connInfo) => {
 
 ## 📁 Project Structure
 
-```
+```bash
 my-tezx-project/
 ├── src/
 │   └── index.ts        # Your TezX app instance

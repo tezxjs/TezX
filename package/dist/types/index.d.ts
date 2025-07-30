@@ -128,6 +128,34 @@ export type StaticServeOption = {
     cacheControl?: string;
     /** Additional HTTP headers to set on static file responses. */
     headers?: ResponseHeaders;
+    /**
+     * Allowed file extensions to serve.
+     * If provided, only files with these extensions will be served.
+     * Example: ["html", "css", "js", "png"]
+     */
+    extensions?: string[];
+};
+/**
+ * Represents the list of static files and their corresponding route paths.
+ */
+export type StaticFileArray = {
+    /** Absolute path to the static file on the file system. */
+    fileSource: string;
+    /** Public route (URL path) where the file will be served. */
+    route: string;
+}[];
+/**
+ * Represents a static file configuration to be served by the server.
+ */
+export type ServeStatic = {
+    /**
+     * Array of static files and their corresponding route paths.
+     */
+    files: StaticFileArray;
+    /**
+     * Optional settings to control caching, headers, and allowed extensions.
+     */
+    options?: StaticServeOption;
 };
 type ExtractParam<Path extends string> = Path extends `${infer _Start}:${infer Param}/${infer Rest}` ? Param extends `${infer Name}?` ? {
     [K in Name]?: string | null;
