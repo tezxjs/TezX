@@ -31,14 +31,14 @@ bun add tezx
 ### 1. Import the Middleware
 
 ```ts
-import { logger } from "tezx/logger";
+import { logger } from "tezx/middleware/logger";
 ```
 
 ### 2. Apply to Your App
 
 ```ts
 import { TezX } from "tezx";
-import { logger } from "tezx/logger";
+import { logger } from "tezx/middleware/logger";
 
 const app = new TezX();
 app.use(logger());
@@ -104,7 +104,7 @@ Returns a `Middleware` function compatible with `.use()` or `addRoute()`.
 
 ```ts
 import { TezX } from "tezx";
-import { logger } from "tezx/logger";
+import { logger } from "tezx/middleware/logger";
 import { CustomRouter } from "./router";
 
 const app = new TezX({

@@ -23,7 +23,7 @@ It also supports:
 ### Basic Setup
 
 ```ts
-import {basicAuth} from "tezx/basic-auth";
+import {basicAuth} from "tezx/middleware/basic-auth";
 app.use(
   basicAuth({
     validateCredentials: async (method, credentials, ctx) => {

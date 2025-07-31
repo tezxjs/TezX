@@ -10,7 +10,7 @@ To enable accurate IP detection (used for IP blacklisting and rate limiting), yo
 
 ```ts
 import { getConnInfo } from "tezx/node"; // or "tezx/bun", "tezx/deno" depending on runtime
-import { detectBot } from "tezx/detect-bot";
+import { detectBot } from "tezx/middleware/detect-bot";
 
 app.use(getConnInfo()); // <-- Injects IP info into ctx.req.remoteAddress
 app.use(detectBot());
@@ -31,7 +31,7 @@ npm install tezx
 ## Import
 
 ```ts
-import { detectBot } from "tezx/detect-bot";
+import { detectBot } from "tezx/middleware/detect-bot";
 import { getConnInfo } from "tezx/node"; // or bun / deno
 ```
 
@@ -86,7 +86,7 @@ import { getConnInfo } from "tezx/node"; // or bun / deno
 
 ```ts
 import { getConnInfo } from "tezx/node";
-import { detectBot } from "tezx/detect-bot";
+import { detectBot } from "tezx/middleware/detect-bot";
 
 app.use(getConnInfo());
 app.use(detectBot());

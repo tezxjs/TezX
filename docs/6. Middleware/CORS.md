@@ -9,7 +9,7 @@ The `cors` middleware enables Cross-Origin Resource Sharing (CORS) by managing r
 ## **Installation & Basic Usage**
 
 ```ts
-import { cors } from "tezx/cors";
+import { cors } from "tezx/middleware/cors";
 
 // Allow all origins (basic setup)
 app.use(cors());

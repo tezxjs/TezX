@@ -21,7 +21,7 @@ The `cacheControl` middleware manages HTTP caching headers intelligently, improv
 ## 📦 Installation
 
 ```ts
-import { cacheControl } from "tezx/cache-control";
+import { cacheControl } from "tezx/middleware/cache-control";
 ```
 
 > ⚠️ Requires **Node.js**, as it uses `node:crypto` for hashing.

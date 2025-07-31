@@ -20,7 +20,7 @@ Ensure your project is set up to use this middleware in an Express-like environm
 ### Import the `requestID` Middleware
 
 ```ts
-import { requestID } from "tezx/request-id";
+import { requestID } from "tezx/middleware/request-id";
 ```
 
 ### Apply the Middleware

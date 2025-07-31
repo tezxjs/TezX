@@ -45,7 +45,7 @@ The `requestTimeout` middleware is designed for frameworks using a `Context`-bas
 ### ✅ Basic Timeout
 
 ```ts
-import { requestTimeout } from "tezx/request-timeout";
+import { requestTimeout } from "tezx/middleware/request-timeout";
 
 app.use(requestTimeout({
   getTimeout: () => 5000, // 5 seconds
@@ -149,7 +149,7 @@ app.use(requestTimeout({
 import type {
   TimeoutOptions,
   requestTimeout,
-} from "tezx/request-timeout";
+} from "tezx/middleware/request-timeout";
 ```
 
 ---

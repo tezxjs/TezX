@@ -10,7 +10,7 @@ To detect client IPs correctly (`ctx.req.remoteAddress`), **always register `get
 
 ```ts
 import { getConnInfo } from "tezx/node"; // or "tezx/bun" / "tezx/deno"
-import { rateLimiter } from "tezx/middleware";
+import { rateLimiter } from "tezx/middleware/middleware";
 
 app.use(getConnInfo()); // REQUIRED for IP detection
 app.use(rateLimiter({ maxRequests: 100, windowMs: 60_000 }));
@@ -27,7 +27,7 @@ npm install tezx
 Import:
 
 ```ts
-import { rateLimiter } from "tezx/middleware";
+import { rateLimiter } from "tezx/middleware/middleware";
 ```
 
 ---
@@ -50,7 +50,7 @@ import { rateLimiter } from "tezx/middleware";
 
 ```ts
 import { getConnInfo } from "tezx/node";
-import { rateLimiter } from "tezx/middleware";
+import { rateLimiter } from "tezx/middleware/middleware";
 
 app.use(getConnInfo());
 app.use(rateLimiter({

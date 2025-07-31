@@ -18,7 +18,7 @@ The `sanitizeHeaders` middleware provides a powerful mechanism to:
 ## 📦 Installation
 
 ```ts
-import { sanitizeHeaders } from "tezx/sanitize-headers";
+import { sanitizeHeaders } from "tezx/middleware/sanitize-headers";
 ```
 
 ---

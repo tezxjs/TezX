@@ -18,7 +18,7 @@ The `lazyLoader` middleware enables dynamic, lazy loading of modules in a `tezx/
 Import the middleware and related types:
 
 ```typescript
-import { lazyLoader } from "tezx/lazy-loader";
+import { lazyLoader } from "tezx/middleware/lazy-loader";
 ```
 
 ### Type Definitions
@@ -190,7 +190,7 @@ project/
 
 ```typescript
 import { Context } from "tezx";
-import { lazyLoader, CacheItem } from "tezx/lazy-loader";
+import { lazyLoader, CacheItem } from "tezx/middleware/lazy-loader";
 
 // Custom cache storage
 const customCache = new Map<string, CacheItem>();

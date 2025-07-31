@@ -18,7 +18,7 @@ The `paginationHandler` middleware simplifies adding pagination support to your 
 ## Installation
 
 ```ts
-import { paginationHandler } from "tezx/pagination";
+import { paginationHandler } from "tezx/middleware/pagination";
 ```
 
 ---

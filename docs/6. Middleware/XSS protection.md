@@ -7,7 +7,7 @@ The `xssProtection` middleware provides robust cross-site scripting (XSS) protec
 ## Installation
 
 ```ts
-import { xssProtection } from "tezx/xss-protection";
+import { xssProtection } from "tezx/middleware/xss-protection";
 ```
 
 ## Basic Usage

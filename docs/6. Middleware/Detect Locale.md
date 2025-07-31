@@ -39,7 +39,7 @@ Finally, the detected locale is assigned to `ctx[localeContextKey]`, and the mid
 ### 1. Query Parameter Detection
 
 ```ts
-import { detectLocale } from "tezx/detect-locale";
+import { detectLocale } from "tezx/middleware/detect-locale";
 
 app.get(
   "/welcome",

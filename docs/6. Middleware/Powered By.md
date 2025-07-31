@@ -25,7 +25,7 @@ Make sure your app supports middleware (e.g., Express, Koa, TezX).
 ### Import
 
 ```ts
-import { poweredBy } from "tezx/powered-by";
+import { poweredBy } from "tezx/middleware/powered-by";
 ```
 
 ### Apply Middleware

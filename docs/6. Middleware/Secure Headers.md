@@ -22,7 +22,7 @@ The `secureHeaders` middleware dynamically sets HTTP security headers, applying 
 ## 📦 Installation
 
 ```ts
-import { secureHeaders } from "tezx/secure-headers";
+import { secureHeaders } from "tezx/middleware/secure-headers";
 ```
 
 ---
@@ -103,7 +103,7 @@ secureHeaders({
 ## 🌐 Example
 
 ```ts
-import { secureHeaders } from "tezx/secure-headers";
+import { secureHeaders } from "tezx/middleware/secure-headers";
 
 app.use(
   secureHeaders({
