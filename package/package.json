@@ -3,10 +3,10 @@
   "version": "3.0.1-beta",
   "description": "TezX is a high-performance, lightweight JavaScript framework designed for speed, scalability, and flexibility. It enables efficient routing, middleware management, and static file serving with minimal configuration. Fully compatible with Node.js, Deno, and Bun.",
   "type": "module",
-  "main": "dist/cjs/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "typings": "dist/index.d.ts",
+  "main": "cjs/index.js",
+  "module": "index.js",
+  "types": "index.d.ts",
+  "typings": "index.d.ts",
   "scripts": {},
   "repository": {
     "type": "git",
@@ -18,118 +18,129 @@
   "homepage": "https://github.com/tezxjs/TezX/issues#readme",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/index.d.ts"
+      "import": "./index.js",
+      "require": "./cjs/index.js",
+      "types": "./index.d.ts"
     },
     "./bun": {
-      "import": "./dist/bun/index.js",
-      "require": "./dist/cjs/bun/index.js",
-      "types": "./dist/bun/index.d.ts"
+      "import": "./bun/index.js",
+      "require": "./cjs/bun/index.js",
+      "types": "./bun/index.d.ts"
     },
     "./node": {
-      "import": "./dist/node/index.js",
-      "require": "./dist/cjs/node/index.js",
-      "types": "./dist/node/index.d.ts"
+      "import": "./node/index.js",
+      "require": "./cjs/node/index.js",
+      "types": "./node/index.d.ts"
     },
     "./deno": {
-      "import": "./dist/deno/index.js",
-      "require": "./dist/cjs/deno/index.js",
-      "types": "./dist/deno/index.d.ts"
+      "import": "./deno/index.js",
+      "require": "./cjs/deno/index.js",
+      "types": "./deno/index.d.ts"
     },
     "./helper": {
-      "import": "./dist/helper/index.js",
-      "require": "./dist/cjs/helper/index.js",
-      "types": "./dist/helper/index.d.ts"
+      "import": "./helper/index.js",
+      "require": "./cjs/helper/index.js",
+      "types": "./helper/index.d.ts"
     },
     "./registry": {
-      "import": "./dist/registry/index.js",
-      "require": "./dist/cjs/registry/index.js",
-      "types": "./dist/registry/index.d.ts"
+      "import": "./registry/index.js",
+      "require": "./cjs/registry/index.js",
+      "types": "./registry/index.d.ts"
     },
-    "./basic-auth": {
-      "import": "./dist/middleware/basic-auth/index.js",
-      "require": "./dist/cjs/middleware/basic-auth/index.js",
-      "types": "./dist/middleware/basic-auth/index.d.ts"
+    "./middleware/basic-auth": {
+      "import": "./middleware/basic-auth.js",
+      "require": "./cjs/middleware/basic-auth.js",
+      "types": "./middleware/basic-auth.d.ts"
     },
-    "./cache-control": {
-      "import": "./dist/middleware/cache-control/index.js",
-      "require": "./dist/cjs/middleware/cache-control/index.js",
-      "types": "./dist/middleware/cache-control/index.d.ts"
+    "./middleware/cache-control": {
+      "import": "./middleware/cache-control.js",
+      "require": "./cjs/middleware/cache-control.js",
+      "types": "./middleware/cache-control.d.ts"
     },
-    "./cors": {
-      "import": "./dist/middleware/cors/index.js",
-      "require": "./dist/cjs/middleware/cors/index.js",
-      "types": "./dist/middleware/cors/index.d.ts"
+    "./middleware/cors": {
+      "import": "./middleware/cors.js",
+      "require": "./cjs/middleware/cors.js",
+      "types": "./middleware/cors.d.ts"
     },
-    "./detect-bot": {
-      "import": "./dist/middleware/detect-bot/index.js",
-      "require": "./dist/cjs/middleware/detect-bot/index.js",
-      "types": "./dist/middleware/detect-bot/index.d.ts"
+    "./middleware/detect-bot": {
+      "import": "./middleware/detect-bot.js",
+      "require": "./cjs/middleware/detect-bot.js",
+      "types": "./middleware/detect-bot.d.ts"
     },
-    "./detect-locale": {
-      "import": "./dist/middleware/detect-locale/index.js",
-      "require": "./dist/cjs/middleware/detect-locale/index.js",
-      "types": "./dist/middleware/detect-locale/index.d.ts"
+    "./middleware/detect-locale": {
+      "import": "./middleware/detect-locale.js",
+      "require": "./cjs/middleware/detect-locale.js",
+      "types": "./middleware/detect-locale.d.ts"
     },
-    "./i18n": {
-      "import": "./dist/middleware/i18n/index.js",
-      "require": "./dist/cjs/middleware/i18n/index.js",
-      "types": "./dist/middleware/i18n/index.d.ts"
+    "./middleware/i18n": {
+      "import": "./middleware/i18n.js",
+      "require": "./cjs/middleware/i18n.js",
+      "types": "./middleware/i18n.d.ts"
     },
-    "./lazy-loader": {
-      "import": "./dist/middleware/lazy-loader/index.js",
-      "require": "./dist/cjs/middleware/lazy-loader/index.js",
-      "types": "./dist/middleware/lazy-loader/index.d.ts"
+    "./middleware/lazy-loader": {
+      "import": "./middleware/lazy-loader.js",
+      "require": "./cjs/middleware/lazy-loader.js",
+      "types": "./middleware/lazy-loader.d.ts"
     },
-    "./logger": {
-      "import": "./dist/middleware/logger/index.js",
-      "require": "./dist/cjs/middleware/logger/index.js",
-      "types": "./dist/middleware/logger/index.d.ts"
+    "./middleware/logger": {
+      "import": "./middleware/logger.js",
+      "require": "./cjs/middleware/logger.js",
+      "types": "./middleware/logger.d.ts"
     },
-    "./pagination": {
-      "import": "./dist/middleware/pagination/index.js",
-      "require": "./dist/cjs/middleware/pagination/index.js",
-      "types": "./dist/middleware/pagination/index.d.ts"
+    "./middleware/pagination": {
+      "import": "./middleware/pagination.js",
+      "require": "./cjs/middleware/pagination.js",
+      "types": "./middleware/pagination.d.ts"
     },
-    "./powered-by": {
-      "import": "./dist/middleware/powered-by/index.js",
-      "require": "./dist/cjs/middleware/powered-by/index.js",
-      "types": "./dist/middleware/powered-by/index.d.ts"
+    "./middleware/powered-by": {
+      "import": "./middleware/powered-by.js",
+      "require": "./cjs/middleware/powered-by.js",
+      "types": "./middleware/powered-by.d.ts"
     },
-    "./rate-limiter": {
-      "import": "./dist/middleware/rate-limiter/index.js",
-      "require": "./dist/cjs/middleware/rate-limiter/index.js",
-      "types": "./dist/middleware/rate-limiter/index.d.ts"
+    "./middleware/rate-limiter": {
+      "import": "./middleware/rate-limiter.js",
+      "require": "./cjs/middleware/rate-limiter.js",
+      "types": "./middleware/rate-limiter.d.ts"
     },
-    "./request-id": {
-      "import": "./dist/middleware/request-id/index.js",
-      "require": "./dist/cjs/middleware/request-id/index.js",
-      "types": "./dist/middleware/request-id/index.d.ts"
+    "./middleware/request-id": {
+      "import": "./middleware/request-id.js",
+      "require": "./cjs/middleware/request-id.js",
+      "types": "./middleware/request-id.d.ts"
     },
-    "./request-timeout": {
-      "import": "./dist/middleware/request-timeout/index.js",
-      "require": "./dist/cjs/middleware/request-timeout/index.js",
-      "types": "./dist/middleware/request-timeout/index.d.ts"
+    "./middleware/request-timeout": {
+      "import": "./middleware/request-timeout.js",
+      "require": "./cjs/middleware/request-timeout.js",
+      "types": "./middleware/request-timeout.d.ts"
     },
-    "./sanitize-headers": {
-      "import": "./dist/middleware/sanitize-headers/index.js",
-      "require": "./dist/cjs/middleware/sanitize-headers/index.js",
-      "types": "./dist/middleware/sanitize-headers/index.d.ts"
+    "./middleware/sanitize-headers": {
+      "import": "./middleware/sanitize-headers.js",
+      "require": "./cjs/middleware/sanitize-headers.js",
+      "types": "./middleware/sanitize-headers.d.ts"
     },
-    "./secure-headers": {
-      "import": "./dist/middleware/secure-headers/index.js",
-      "require": "./dist/cjs/middleware/secure-headers/index.js",
-      "types": "./dist/middleware/secure-headers/index.d.ts"
+    "./middleware/secure-headers": {
+      "import": "./middleware/secure-headers.js",
+      "require": "./cjs/middleware/secure-headers.js",
+      "types": "./middleware/secure-headers.d.ts"
     },
-    "./xss-protection": {
-      "import": "./dist/middleware/xss-protection/index.js",
-      "require": "./dist/cjs/middleware/xss-protection/index.js",
-      "types": "./dist/middleware/xss-protection/index.d.ts"
+    "./middleware/xss-protection": {
+      "import": "./middleware/xss-protection.js",
+      "require": "./cjs/middleware/xss-protection.js",
+      "types": "./middleware/xss-protection.d.ts"
     }
   },
   "files": [
-    "dist/"
+    "bun/",
+    "cjs/",
+    "core/",
+    "deno/",
+    "helper/",
+    "middleware/",
+    "node/",
+    "registry/",
+    "types/",
+    "utils/",
+    "index.d.ts",
+    "index.js"
   ],
   "keywords": [
     "server",
