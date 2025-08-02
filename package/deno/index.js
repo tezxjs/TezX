@@ -7,5 +7,5 @@ export default {
     serveStatic,
     getConnInfo,
     loadEnv,
-    upgradeWebSocket
+    upgradeWebSocket,
 };

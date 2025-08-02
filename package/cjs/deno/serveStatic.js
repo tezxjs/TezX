@@ -27,7 +27,7 @@ function serveStatic(...args) {
     }
     return {
         files: getFiles(dir, route, options),
-        options
+        options,
     };
 }
 function getFiles(dir, basePath = "/", option = {}) {
@@ -35,7 +35,7 @@ function getFiles(dir, basePath = "/", option = {}) {
     for (const entry of Deno.readDirSync(dir)) {
         const path = `${dir}/${entry.name}`;
         if (entry.isDirectory) {
-            files.push(...(getFiles(path, `${basePath}/${entry.name}`, option)));
+            files.push(...getFiles(path, `${basePath}/${entry.name}`, option));
         }
         else {
             const ext = (0, low_level_js_1.extensionExtract)(entry.name);
@@ -44,7 +44,7 @@ function getFiles(dir, basePath = "/", option = {}) {
             }
             files.push({
                 fileSource: path,
-                route: `/${(0, low_level_js_1.sanitizePathSplitBasePath)(basePath, entry.name).join("/")}`
+                route: `/${(0, low_level_js_1.sanitizePathSplitBasePath)(basePath, entry.name).join("/")}`,
             });
         }
     }

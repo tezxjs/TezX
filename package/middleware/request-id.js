@@ -10,4 +10,4 @@ const requestID = (headerName = "X-Request-ID", contextKey = "requestID") => {
         return next();
     };
 };
-export { requestID, requestID as default, };
+export { requestID, requestID as default };

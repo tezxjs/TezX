@@ -36,4 +36,4 @@ const secureHeaders = (options = {}) => {
         return await next();
     };
 };
-export { secureHeaders, secureHeaders as default, };
+export { secureHeaders, secureHeaders as default };

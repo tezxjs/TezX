@@ -70,4 +70,4 @@ export interface LazyLoadOptions<T> {
  * @returns A middleware function to use in your application.
  */
 declare const lazyLoader: <T = any>(options: LazyLoadOptions<T>) => Middleware;
-export { lazyLoader, lazyLoader as default, };
+export { lazyLoader, lazyLoader as default };

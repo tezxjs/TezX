@@ -7,12 +7,12 @@ let getPathname = (url) => {
     const len = url.length;
     if (len === 0)
         return "/";
-    const start = url.indexOf('/', url.charCodeAt(9) === 58 ? 13 : 8);
+    const start = url.indexOf("/", url.charCodeAt(9) === 58 ? 13 : 8);
     if (start === -1)
         return "/";
-    let end = url.indexOf('?', start);
+    let end = url.indexOf("?", start);
     if (end === -1)
-        end = url.indexOf('#', start);
+        end = url.indexOf("#", start);
     if (end === -1)
         end = len;
     return start === end ? "/" : url.slice(start, end);
@@ -35,7 +35,7 @@ function queryParser(qs) {
         else if (ch === 38 || i === len) {
             const keyEnd = valStart === -1 ? i : valStart - 1;
             const key = qs.slice(keyStart, keyEnd);
-            const val = valStart === -1 ? '' : qs.slice(valStart, i);
+            const val = valStart === -1 ? "" : qs.slice(valStart, i);
             const existing = query[key];
             if (existing !== undefined) {
                 if (Array.isArray(existing)) {
@@ -58,10 +58,10 @@ function queryParser(qs) {
     return query;
 }
 function url2query(url) {
-    let pathStart = url.indexOf('/', url.charCodeAt(9) === 58 ? 13 : 8);
+    let pathStart = url.indexOf("/", url.charCodeAt(9) === 58 ? 13 : 8);
     if (pathStart === -1)
         pathStart = url.length;
-    let queryStart = url.indexOf('?', pathStart);
+    let queryStart = url.indexOf("?", pathStart);
     if (queryStart === -1) {
         return {};
     }

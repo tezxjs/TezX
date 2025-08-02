@@ -66,17 +66,21 @@ export type WebSocketOptions = {
 /**
  * Represents a string key used for HTTP headers.
  */
-export type HeaderKey = string;
+export type ReqHeaderKey = RequestHeader | (string & {});
+/**
+ * Represents a string key used for HTTP headers.
+ */
+export type ResHeaderKey = ResponseHeader | (string & {});
 /**
  * Represents a collection of HTTP response headers as key-value pairs.
  * Keys and values are strings.
  */
-export type ResponseHeaders = Record<HeaderKey, string>;
+export type ResponseHeaders = Record<ResHeaderKey, string>;
 /**
  * Represents a collection of HTTP request headers as key-value pairs.
  * Keys and values are strings.
  */
-export type RequestHeaders = Record<HeaderKey, string>;
+export type RequestHeaders = Record<ReqHeaderKey, string>;
 /**
  * Options for initializing a Response object.
  */
@@ -120,6 +124,7 @@ export interface CookieOptions {
  */
 export type Runtime = "bun" | "deno" | "node";
 import { Context } from "../core/context.js";
+import { RequestHeader, ResponseHeader } from "./headers.js";
 /**
  * Options to customize static file serving behavior.
  */

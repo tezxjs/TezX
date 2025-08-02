@@ -53,4 +53,4 @@ export type DetectLocaleOptions = {
  * @returns Middleware function that attaches locale to the context.
  */
 declare const detectLocale: (options: DetectLocaleOptions) => Middleware;
-export { detectLocale, detectLocale as default, };
+export { detectLocale, detectLocale as default };

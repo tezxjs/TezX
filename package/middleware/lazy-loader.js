@@ -67,4 +67,4 @@ const lazyLoader = (options) => {
         return await next();
     };
 };
-export { lazyLoader, lazyLoader as default, };
+export { lazyLoader, lazyLoader as default };

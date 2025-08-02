@@ -1,5 +1,5 @@
 import { GlobalConfig } from "../core/config.js";
-import { createRateLimitDefaultStorage, isRateLimit } from "../utils/rateLimit.js";
+import { createRateLimitDefaultStorage, isRateLimit, } from "../utils/rateLimit.js";
 export const detectBot = (options = {}) => {
     const { botUserAgents = ["bot", "spider", "crawl", "slurp"], maxRequests = 30, windowMs = 60000, isBlacklisted = async () => false, queryKeyBot = "bot", onBotDetected = "block", enableRateLimiting = false, customBotDetector = async () => false, customBlockedResponse = (ctx, { reason }) => {
         ctx.setStatus = 403;

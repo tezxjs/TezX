@@ -4,9 +4,9 @@ exports.notFoundResponse = void 0;
 exports.handleErrorResponse = handleErrorResponse;
 exports.determineContentTypeBody = determineContentTypeBody;
 let notFoundResponse = (ctx) => {
-    const { method, pathname, } = ctx;
+    const { method, pathname } = ctx;
     return ctx.text(`${method}: '${pathname}' could not find\n`, {
-        status: 404
+        status: 404,
     });
 };
 exports.notFoundResponse = notFoundResponse;
@@ -16,11 +16,13 @@ async function handleErrorResponse(message = new Error("Internal Server Error"),
         error = message.stack;
     }
     return ctx.text(error, {
-        status: 500
+        status: 500,
     });
 }
 function determineContentTypeBody(body) {
-    if (typeof body === "string" || typeof body === "number" || typeof body === "boolean") {
+    if (typeof body === "string" ||
+        typeof body === "number" ||
+        typeof body === "boolean") {
         return { type: "text/plain; charset=utf-8", body: String(body) };
     }
     if (body instanceof Uint8Array || body instanceof ArrayBuffer) {
@@ -39,7 +41,10 @@ function determineContentTypeBody(body) {
         return { type: "application/octet-stream", body };
     }
     if (typeof body === "object") {
-        return { type: "application/json; charset=utf-8", body: JSON.stringify(body) };
+        return {
+            type: "application/json; charset=utf-8",
+            body: JSON.stringify(body),
+        };
     }
     return { type: "text/plain; charset=utf-8", body: String(body ?? "") };
 }

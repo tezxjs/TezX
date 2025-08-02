@@ -4,7 +4,7 @@ import { mountTezXOnNode } from "./mount-node.js";
 import { serveStatic } from "./serveStatic.js";
 import { toWebRequest } from "./toWebRequest.js";
 import { upgradeWebSocket } from "./ws.js";
-export { serveStatic, upgradeWebSocket, getConnInfo, toWebRequest, loadEnv, mountTezXOnNode };
+export { serveStatic, upgradeWebSocket, getConnInfo, toWebRequest, loadEnv, mountTezXOnNode, };
 export default {
     serveStatic,
     upgradeWebSocket,

@@ -16,4 +16,4 @@ function logger() {
         }
     };
 }
-export { logger, logger as default, };
+export { logger, logger as default };

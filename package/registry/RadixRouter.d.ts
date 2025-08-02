@@ -38,10 +38,10 @@ export declare class RadixRouter implements RouteRegistry {
      */
     mergeRouter(basePath: string, childRouter: this): void;
     /**
-      * Parses a route pattern into structured segments.
-      *
-      * @param pattern - The route string (e.g., "/users/:id?")
-      * @returns Parsed segments containing type, value, paramName, and optionality
-      */
+     * Parses a route pattern into structured segments.
+     *
+     * @param pattern - The route string (e.g., "/users/:id?")
+     * @returns Parsed segments containing type, value, paramName, and optionality
+     */
     private parsePattern;
 }

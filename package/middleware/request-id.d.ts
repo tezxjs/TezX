@@ -14,4 +14,4 @@ import { Middleware } from "../types/index.js";
  * ```
  */
 declare const requestID: (headerName?: string, contextKey?: string) => Middleware;
-export { requestID, requestID as default, };
+export { requestID, requestID as default };

@@ -37,7 +37,7 @@ class TezXRequest {
         return this.#headersCache;
     }
     get query() {
-        return this.#queryCache ??= (0, url_js_1.url2query)(this.url);
+        return (this.#queryCache ??= (0, url_js_1.url2query)(this.url));
     }
     async #ensureRawBuffer() {
         if (this.#bodyConsumed)
@@ -84,11 +84,12 @@ class TezXRequest {
         const ct = this.#contentType;
         if (!ct)
             throw new Error("Missing Content-Type");
-        if (ct === "application/x-www-form-urlencoded" || ct === "multipart/form-data") {
+        if (ct === "application/x-www-form-urlencoded" ||
+            ct === "multipart/form-data") {
             if (this.#bodyConsumed) {
                 throw new Error("Multipart body already consumed elsewhere");
             }
-            this.#cachedFormObject = await this.#rawRequest.formData();
+            this.#cachedFormObject = (await this.#rawRequest.formData());
             this.#bodyConsumed = true;
             return this.#cachedFormObject;
         }

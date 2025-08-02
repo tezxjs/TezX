@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rateLimiter = void 0;
+exports.default = exports.rateLimiter = void 0;
 const rateLimit_js_1 = require("../utils/rateLimit.js");
 const rateLimiter = (options) => {
     const { maxRequests, windowMs, keyGenerator = (ctx) => `${ctx.req.remoteAddress.address}:${ctx.req.remoteAddress.port}`, storage = (0, rateLimit_js_1.createRateLimitDefaultStorage)(), onError = (ctx, retryAfter, error) => {
@@ -22,3 +22,4 @@ const rateLimiter = (options) => {
     };
 };
 exports.rateLimiter = rateLimiter;
+exports.default = rateLimiter;

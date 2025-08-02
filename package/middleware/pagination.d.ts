@@ -101,4 +101,4 @@ export type PaginationBodyType = {
  * }));
  */
 declare const paginationHandler: (options?: PaginationOptions) => Middleware;
-export { paginationHandler, paginationHandler as default, };
+export { paginationHandler, paginationHandler as default };

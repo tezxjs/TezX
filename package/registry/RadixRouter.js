@@ -10,19 +10,20 @@ export class RadixRouter {
         let node = this.root;
         for (let i = 0; i < segments.length; i++) {
             const { type, value, paramName, isOptional } = segments[i];
-            if (type === 'static') {
+            if (type === "static") {
                 node = node.children[value] ??= { children: {} };
             }
-            else if (type === 'dynamic') {
+            else if (type === "dynamic") {
                 if (!node.children[":"]) {
                     node.children[":"] = { children: {}, paramName, isOptional };
                 }
-                else if (node.children[":"]?.paramName !== paramName || node.children[":"]?.isOptional !== isOptional) {
+                else if (node.children[":"]?.paramName !== paramName ||
+                    node.children[":"]?.isOptional !== isOptional) {
                     throw new Error(`Conflicting param definition for ${paramName}`);
                 }
                 node = node.children[":"];
             }
-            else if (type === 'wildcard') {
+            else if (type === "wildcard") {
                 node = node.children["*"] ??= { children: {}, paramName };
                 break;
             }
@@ -30,7 +31,7 @@ export class RadixRouter {
         node.isEndpoint = true;
         node.handlers ??= {};
         node.handlers[method] ??= [];
-        node.handlers[method].push(...handlers || []);
+        node.handlers[method].push(...(handlers || []));
     }
     search(method, path) {
         let params = {};
@@ -54,7 +55,7 @@ export class RadixRouter {
         if (index === segments.length) {
             if (node.isEndpoint && node.handlers?.[method])
                 return { success: true, node };
-            const opt = node.children[':'];
+            const opt = node.children[":"];
             if (opt?.isOptional) {
                 params[opt.paramName] = null;
                 return this._match(method, opt, segments, index, params, middlewares, seen);
@@ -76,7 +77,7 @@ export class RadixRouter {
             if (res.success)
                 return res;
         }
-        const dyn = node.children[':'];
+        const dyn = node.children[":"];
         if (dyn) {
             params[dyn.paramName] = seg;
             const res = this._match(method, dyn, segments, index + 1, params, middlewares, seen);
@@ -90,7 +91,7 @@ export class RadixRouter {
             }
         }
         if (wc) {
-            let wildcard = segments.slice(index).join('/');
+            let wildcard = segments.slice(index).join("/");
             if (wildcard) {
                 params[wc.paramName] = wildcard;
                 return { node: wc, success: true };
@@ -110,7 +111,7 @@ export class RadixRouter {
             node.handlers ??= {};
             for (const method in childRouter.root.handlers) {
                 node.handlers[method] ??= [];
-                node.handlers[method].push(...childRouter.root.handlers?.[method] || []);
+                node.handlers[method].push(...(childRouter.root.handlers?.[method] || []));
             }
         }
         Object.assign(node.children, childRouter.root.children);
@@ -119,22 +120,22 @@ export class RadixRouter {
         const segments = sanitizePathSplit(pattern);
         const result = [];
         for (const segment of segments) {
-            if (segment === '*') {
-                result.push({ type: 'wildcard', paramName: '*' });
+            if (segment === "*") {
+                result.push({ type: "wildcard", paramName: "*" });
                 break;
             }
-            else if (segment.startsWith('*')) {
-                const paramName = segment.slice(1) || '*';
-                result.push({ type: 'wildcard', paramName });
+            else if (segment.startsWith("*")) {
+                const paramName = segment.slice(1) || "*";
+                result.push({ type: "wildcard", paramName });
                 break;
             }
-            else if (segment.startsWith(':')) {
-                const isOptional = segment.endsWith('?');
+            else if (segment.startsWith(":")) {
+                const isOptional = segment.endsWith("?");
                 const paramName = isOptional ? segment.slice(1, -1) : segment.slice(1);
-                result.push({ type: 'dynamic', paramName, isOptional });
+                result.push({ type: "dynamic", paramName, isOptional });
             }
             else {
-                result.push({ type: 'static', value: segment });
+                result.push({ type: "static", value: segment });
             }
         }
         return result;

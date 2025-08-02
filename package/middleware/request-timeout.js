@@ -36,4 +36,4 @@ const requestTimeout = (options) => {
         }
     };
 };
-export { requestTimeout, requestTimeout as default, };
+export { requestTimeout, requestTimeout as default };

@@ -1,7 +1,8 @@
 export function generateID() {
     const timestamp = Date.now().toString(16);
     let randomHex = "";
-    if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+    if (typeof crypto !== "undefined" &&
+        typeof crypto.getRandomValues === "function") {
         const array = new Uint8Array(6);
         crypto.getRandomValues(array);
         for (let i = 0; i < array.length; i++) {

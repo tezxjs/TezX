@@ -1,7 +1,7 @@
 import { Buffer } from "node:buffer";
 import { GlobalConfig } from "../core/config.js";
 import { colorText } from "../utils/colors.js";
-import { createRateLimitDefaultStorage, isRateLimit } from "../utils/rateLimit.js";
+import { createRateLimitDefaultStorage, isRateLimit, } from "../utils/rateLimit.js";
 const basicAuth = (options) => {
     const { validateCredentials, getRealm = () => "Restricted Area", onUnauthorized = (ctx, error) => {
         const realm = getRealm(ctx);

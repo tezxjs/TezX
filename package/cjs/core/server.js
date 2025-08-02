@@ -40,7 +40,7 @@ class TezX extends router_js_1.Router {
     }
     #chain(middlewares) {
         if (!Array.isArray(middlewares)) {
-            throw new TypeError('Middleware stack must be an array!');
+            throw new TypeError("Middleware stack must be an array!");
         }
         const len = middlewares.length;
         return async function (ctx) {
@@ -76,7 +76,7 @@ class TezX extends router_js_1.Router {
             pathname,
             method,
             env: this.env,
-            args
+            args,
         });
         try {
             if (method === "HEAD") {
@@ -89,12 +89,13 @@ class TezX extends router_js_1.Router {
                 });
             }
             const staticKey = `${method} ${pathname}`;
-            const staticHandler = this.staticFileRouter?.[staticKey];
+            const staticHandler = this.staticFile?.[staticKey];
             if (staticHandler) {
                 return staticHandler(ctx);
             }
             const route = this.router.search(method, pathname);
-            if (!route || (route.handlers.length === 0 && route.middlewares.length === 0)) {
+            if (!route ||
+                (route.handlers.length === 0 && route.middlewares.length === 0)) {
                 return this.#notFound(ctx);
             }
             ctx.params = route.params;
@@ -106,7 +107,10 @@ class TezX extends router_js_1.Router {
                     return ctx.send(ctx.body);
                 return this.#notFound(ctx);
             }
-            let res = await this.#chain([...route.middlewares, ...route.handlers])(ctx);
+            let res = await this.#chain([
+                ...route.middlewares,
+                ...route.handlers,
+            ])(ctx);
             if (!res && ctx.body !== undefined) {
                 res = ctx.send(ctx.body);
             }

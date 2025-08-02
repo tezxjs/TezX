@@ -29,7 +29,7 @@ function serveStatic(...args) {
     }
     return {
         files: getFiles(dir, route, options),
-        options
+        options,
     };
 }
 function getFiles(dir, basePath = "/", option = {}) {
@@ -47,7 +47,7 @@ function getFiles(dir, basePath = "/", option = {}) {
             }
             files.push({
                 fileSource: fullPath,
-                route: `/${(0, low_level_js_1.sanitizePathSplitBasePath)(basePath, entry.name).join("/")}`
+                route: `/${(0, low_level_js_1.sanitizePathSplitBasePath)(basePath, entry.name).join("/")}`,
             });
         }
     }

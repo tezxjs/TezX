@@ -4,4 +4,4 @@ const poweredBy = (serverName) => {
         return next();
     };
 };
-export { poweredBy, poweredBy as default, };
+export { poweredBy, poweredBy as default };

@@ -1,9 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defaultMimeType = exports.mimeTypes = void 0;
-exports.getFiles = getFiles;
-const low_level_js_1 = require("./low-level.js");
-const runtime_js_1 = require("./runtime.js");
 exports.mimeTypes = {
     html: "text/html",
     htm: "text/html",
@@ -108,52 +105,3 @@ exports.mimeTypes = {
     gcode: "text/x.gcode",
 };
 exports.defaultMimeType = "application/octet-stream";
-function getFiles(dir, basePath = "/", ref, option) {
-    const files = [];
-    if (runtime_js_1.runtime === "deno") {
-        for (const entry of Deno.readFileSync(dir)) {
-            const path = `${dir}/${entry.name}`;
-            if (entry.isDirectory) {
-                files.push(...(getFiles(path, `${basePath}/${entry.name}`, ref, option)));
-            }
-            else {
-                files.push({
-                    file: path,
-                    path: `/${(0, low_level_js_1.sanitizePathSplitBasePath)(basePath, entry.name)?.join("/")}`
-                });
-            }
-        }
-    }
-    else {
-        const fs = require("node:fs");
-        const path = require("node:path");
-        const entries = fs.readdirSync(dir, { withFileTypes: true });
-        for (const entry of entries) {
-            const fullPath = path.join(dir, entry.name);
-            if (entry.isDirectory()) {
-                files.push(...(getFiles(fullPath, `${basePath}/${entry.name}`, ref, option)));
-            }
-            else {
-                files.push({
-                    file: fullPath,
-                    path: `/${(0, low_level_js_1.sanitizePathSplitBasePath)(basePath, entry.name)?.join("/")}`
-                });
-            }
-        }
-    }
-    files.forEach((r) => {
-        ref.staticFileRouter[`GET ${r?.path}`] = (ctx) => {
-            if (option.cacheControl) {
-                ctx.setHeader("Cache-Control", option.cacheControl);
-            }
-            if (option.headers) {
-                for (const key in option.headers) {
-                    let value = option.headers?.[key];
-                    ctx.setHeader(key, value);
-                }
-            }
-            return ctx.sendFile(r.file);
-        };
-    });
-    return files;
-}

@@ -8,11 +8,14 @@ export async function useFormData(ctx, options) {
         if (val instanceof File && options) {
             val = await processFile(val, key, options, () => totalFileBytes);
             totalFileBytes += val.size;
-            if (typeof options.maxTotalSize === "number" && totalFileBytes > options.maxTotalSize) {
+            if (typeof options.maxTotalSize === "number" &&
+                totalFileBytes > options.maxTotalSize) {
                 throw new Error(`Total file bytes exceeded maxTotalSize=${options.maxTotalSize}`);
             }
         }
-        else if (typeof val === "string" && options?.maxFieldSize && val.length > options.maxFieldSize) {
+        else if (typeof val === "string" &&
+            options?.maxFieldSize &&
+            val.length > options.maxFieldSize) {
             throw new Error(`Field "${key}" length ${val.length} exceeds maxFieldSize=${options.maxFieldSize}`);
         }
         if (key in result) {
@@ -26,8 +29,10 @@ export async function useFormData(ctx, options) {
         }
         if (val instanceof File && typeof options?.maxFiles === "number") {
             const filesForKey = Array.isArray(result[key])
-                ? result[key].filter(v => v instanceof File).length
-                : (result[key] instanceof File ? 1 : 0);
+                ? result[key].filter((v) => v instanceof File).length
+                : result[key] instanceof File
+                    ? 1
+                    : 0;
             if (filesForKey > options.maxFiles) {
                 throw new Error(`Field "${key}" exceeds maxFiles (${options.maxFiles})`);
             }
@@ -40,7 +45,8 @@ export async function processFile(file, key, options, totalGetter) {
     if (options.sanitized) {
         name = `${Date.now()}-${sanitized(name)}`;
     }
-    if (Array.isArray(options.allowedTypes) && !options.allowedTypes.includes(file.type)) {
+    if (Array.isArray(options.allowedTypes) &&
+        !options.allowedTypes.includes(file.type)) {
         throw new Error(`Field "${key}": invalid file type "${file.type}". Allowed: ${options.allowedTypes.join(", ")}`);
     }
     if (typeof options.maxSize === "number" && file.size > options.maxSize) {

@@ -1,8 +1,8 @@
 import { Middleware, WebSocketCallback, WebSocketOptions } from "../types/index.js";
 export type DenoWebsocketOptions = {
     /**
-   * Supported WebSocket subprotocols. (Deno only)
-   */
+     * Supported WebSocket subprotocols. (Deno only)
+     */
     protocol?: string;
     /**
      * Time (in seconds) after which the WebSocket connection will be closed if idle. (Deno only)

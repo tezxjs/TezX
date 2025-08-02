@@ -24,7 +24,7 @@ export function upgradeWebSocket(callback, options = {}) {
             return onUpgradeError(new Error("Bun server instance missing for WebSocket"), ctx);
         }
         const success = args.upgrade(ctx.rawRequest, {
-            data: callback(ctx)
+            data: callback(ctx),
         });
         if (success)
             return undefined;

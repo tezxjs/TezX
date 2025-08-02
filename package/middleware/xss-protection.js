@@ -20,4 +20,4 @@ const xssProtection = (options = {}) => {
         return await next();
     };
 };
-export { xssProtection, xssProtection as default, };
+export { xssProtection, xssProtection as default };

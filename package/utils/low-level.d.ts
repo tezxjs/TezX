@@ -48,11 +48,11 @@ export declare function sanitizePathSplitBasePath(basePath: string, path: string
  */
 export declare function sanitizePathSplit(path: string, out?: string[]): string[];
 /**
-* Ultra-fast string slugifier.
-* Uses low-level string operations to reduce RegExp overhead.
-* Falls back to minimal replacements if environment lacks full RegExp support.
-*
-* @param {string} title - Input string to slugify
-* @returns {string} - Slugified, URL-safe string
-*/
+ * Ultra-fast string slugifier.
+ * Uses low-level string operations to reduce RegExp overhead.
+ * Falls back to minimal replacements if environment lacks full RegExp support.
+ *
+ * @param {string} title - Input string to slugify
+ * @returns {string} - Slugified, URL-safe string
+ */
 export declare function sanitized(title: string): string;

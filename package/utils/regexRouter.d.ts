@@ -6,24 +6,24 @@
  *   or an array of segments (`['user', ':id']`).
  *
  * @returns {{
-*   regex: RegExp,
-*   paramNames: string[]
-* }}
-* @example
-* const { regex, paramNames } = compileRegexRoute('/user/:id/post/:slug?');
-* // regex: /^\/user\/([^\/]+)\/(?:([^\/]+))?\/?$/
-* // paramNames: ['id', 'slug']
-*
-* regex.test('/user/123/post/hello'); // ✅ true
-* regex.test('/user/123/post');       // ✅ true (because :slug? is optional)
-*
-* @example
-* const { regex, paramNames } = compileRegexRoute('/files/*path');
-* // regex: /^\/files\/(.+)\/?$/
-* // paramNames: ['path']
-*
-* regex.test('/files/images/cat.jpg'); // ✅ true
-*/
+ *   regex: RegExp,
+ *   paramNames: string[]
+ * }}
+ * @example
+ * const { regex, paramNames } = compileRegexRoute('/user/:id/post/:slug?');
+ * // regex: /^\/user\/([^\/]+)\/(?:([^\/]+))?\/?$/
+ * // paramNames: ['id', 'slug']
+ *
+ * regex.test('/user/123/post/hello'); // ✅ true
+ * regex.test('/user/123/post');       // ✅ true (because :slug? is optional)
+ *
+ * @example
+ * const { regex, paramNames } = compileRegexRoute('/files/*path');
+ * // regex: /^\/files\/(.+)\/?$/
+ * // paramNames: ['path']
+ *
+ * regex.test('/files/images/cat.jpg'); // ✅ true
+ */
 export declare function compileRegexRoute(seg: string | string[]): {
     regex: RegExp;
     paramNames: string[];
