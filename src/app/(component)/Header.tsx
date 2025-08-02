@@ -6,11 +6,13 @@ import { useEffect, useRef, useState } from "react";
 import { CgMenuRightAlt } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
 import { IoMdSearch } from "react-icons/io";
-import DocsViewerSearch from "./DocsViewerSearch";
-import { version } from "../../package/package.json";
-type Props = {};
+import { version } from "../../../package/package.json";
+import DocsViewerSearch from "../DocsViewerSearch";
+type Props = {
+  openCloseHandle: any
+};
 
-export default function Header({}: Props) {
+export default function Header({ openCloseHandle }: Props) {
   const [theme, setTheme] = useState<"dark" | "light">("light");
   // const params: ParamsType = useParams();
   // const { content, name, type } = params;
@@ -73,8 +75,8 @@ export default function Header({}: Props) {
 
   // const info = documentation?.[type]?.find(r => r?.name == name);
   return (
-    <>
-      <header className="bg-base-100 border-b-2 p-4 sticky top-0 h-16 z-50 flex items-center justify-between">
+    <header className="bg-base-100 border-b sticky top-0 h-16 z-50 p-4">
+      <header className="flex items-center justify-between w-full max-w-7xl mx-auto h-full">
         <div className="flex items-center gap-2">
           <Link href="/">
             <img src="/favicon.ico" className="h-8" alt={SiteTitle} />
@@ -97,8 +99,8 @@ export default function Header({}: Props) {
             className="sm:border gap-2 px-0 sm:px-4 items-center flex input-bordered h-11 hover:bg-base-200 rounded-md pr-0 sm:pr-1 cursor-pointer"
             onClick={() => setIsSearchOpen(true)}
           >
-            <p className="hidden sm:block">Search (Ctrl+k)</p>
-            <button className="flex items-center justify-center text-3xl rounded-md transition-all">
+            <p className="hidden sm:block xl:text-base text-sm">Search (Ctrl+k)</p>
+            <button className="flex items-center justify-center text-xl xl:text-2xl rounded-md transition-all">
               <IoMdSearch />
             </button>
           </div>
@@ -129,7 +131,7 @@ export default function Header({}: Props) {
           </label>
 
           <label
-            htmlFor="content-sidebar"
+            onClick={() => openCloseHandle()}
             className="cursor-pointer h-14 border-b flex items-center w-full bg-base-100 bg-opacity-80 md:hidden z-50"
           >
             <CgMenuRightAlt size={28} />
@@ -142,6 +144,6 @@ export default function Header({}: Props) {
           setIsSearchOpen={setIsSearchOpen}
         />
       )}
-    </>
+    </header>
   );
 }
