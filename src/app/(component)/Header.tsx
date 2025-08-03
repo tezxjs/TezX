@@ -81,31 +81,26 @@ export default function Header({ openCloseHandle }: Props) {
           <Link href="/">
             <img src="/favicon.ico" className="h-8" alt={SiteTitle} />
           </Link>
-          <h1 className="text-xl font-bold capitalize flex flex-col">
+          <h1 className="text-xl font-bold flex flex-col">
             <span>{SiteTitle}</span>
             <span className="text-xs text-primary font-extrabold">
-              V{version}
+              v{version}
             </span>
           </h1>
-
-          {
-            // Boolean(info?.version?.image) &&
-            // <img src={info?.version?.image} alt={info?.title} className="h-5" />
-          }
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 whitespace-nowrap">
           <div
             ref={searchRef}
             className="sm:border gap-2 px-0 sm:px-4 items-center flex input-bordered h-11 hover:bg-base-200 rounded-md pr-0 sm:pr-1 cursor-pointer"
             onClick={() => setIsSearchOpen(true)}
           >
             <p className="hidden sm:block xl:text-base text-sm">Search (Ctrl+k)</p>
-            <button className="flex items-center justify-center text-xl xl:text-2xl rounded-md transition-all">
+            <button className="flex items-center justify-center text-2xl rounded-md transition-all">
               <IoMdSearch />
             </button>
           </div>
-          <Link href={"https://github.com/srakib17/TezX"}>
-            <FaGithub size={24} />
+          <Link href={"https://github.com/srakib17/TezX"} className="text-xl">
+            <FaGithub />
           </Link>
           <label className="swap swap-rotate">
             {/* this hidden checkbox controls the state */}
@@ -113,7 +108,7 @@ export default function Header({ openCloseHandle }: Props) {
             {/* sun icon */}
             <svg
               onClick={() => setThemeHandle("dark")}
-              className="swap-on h-7 w-7 fill-current"
+              className="swap-on h-6 w-6 fill-current"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
             >
@@ -122,7 +117,7 @@ export default function Header({ openCloseHandle }: Props) {
             {/* moon icon */}
             <svg
               onClick={() => setThemeHandle("light")}
-              className="swap-off  h-7 w-7 fill-current"
+              className="swap-off  h-6 w-6 fill-current"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
             >
@@ -132,7 +127,7 @@ export default function Header({ openCloseHandle }: Props) {
 
           <label
             onClick={() => openCloseHandle()}
-            className="cursor-pointer h-14 border-b flex items-center w-full bg-base-100 bg-opacity-80 md:hidden z-50"
+            className="cursor-pointer h-14 border-b flex items-center w-full bg-base-100 bg-opacity-80 lg:hidden z-50"
           >
             <CgMenuRightAlt size={28} />
           </label>
