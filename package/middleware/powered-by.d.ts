@@ -14,4 +14,4 @@ import { Middleware } from "../types/index.js";
  * ```
  */
 declare const poweredBy: (serverName?: string) => Middleware;
-export { poweredBy, poweredBy as default, };
+export { poweredBy, poweredBy as default };

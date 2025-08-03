@@ -1,4 +1,4 @@
-import { fileExists, fileSize, getFileBuffer, readStream } from "../utils/file.js";
+import { fileExists, fileSize, getFileBuffer, readStream, } from "../utils/file.js";
 import { extensionExtract } from "../utils/low-level.js";
 import { determineContentTypeBody } from "../utils/response.js";
 import { defaultMimeType, mimeTypes } from "../utils/mimeTypes.js";
@@ -72,8 +72,12 @@ export class Context {
         }
         return this.#req;
     }
-    get body() { return this.#body; }
-    set body(value) { this.#body = value; }
+    get body() {
+        return this.#body;
+    }
+    set body(value) {
+        this.#body = value;
+    }
     status = (status) => {
         this.#status = status;
         return this;
@@ -87,7 +91,10 @@ export class Context {
     text(content, init) {
         return this.createResponse(content, {
             ...init,
-            headers: { "Content-Type": "text/plain; charset=utf-8", ...init?.headers }
+            headers: {
+                "Content-Type": "text/plain; charset=utf-8",
+                ...init?.headers,
+            },
         });
     }
     html(strings, ...args) {
@@ -98,35 +105,51 @@ export class Context {
                 return result + str + value;
             }, "");
             return this.createResponse(html, {
-                headers: { "Content-Type": "text/html; charset=utf-8" }
+                headers: {
+                    "Content-Type": "text/html; charset=utf-8",
+                },
             });
         }
         else {
             let init = args?.[0];
             return this.createResponse(html, {
                 ...init,
-                headers: { "Content-Type": "text/html; charset=utf-8", ...init?.headers }
+                headers: {
+                    "Content-Type": "text/html; charset=utf-8",
+                    ...init?.headers,
+                },
             });
         }
     }
     xml(xml, init) {
         return this.createResponse(xml, {
             ...init,
-            headers: { "Content-Type": "application/xml; charset=utf-8", ...init?.headers }
+            headers: {
+                "Content-Type": "application/xml; charset=utf-8",
+                ...init?.headers,
+            },
         });
     }
     json(json, init) {
         return this.createResponse(JSON.stringify(json), {
             ...init,
-            headers: { "Content-Type": "application/json; charset=utf-8", ...init?.headers }
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                ...init?.headers,
+            },
         });
     }
     send(body, init) {
         let { body: _body, type } = determineContentTypeBody(body);
-        const contentType = init?.headers?.["Content-Type"] || init?.headers?.["content-type"] || type;
+        const contentType = init?.headers?.["Content-Type"] ||
+            init?.headers?.["content-type"] ||
+            type;
         return this.createResponse(_body, {
             ...init,
-            headers: { "Content-Type": contentType, ...init?.headers }
+            headers: {
+                "Content-Type": contentType,
+                ...init?.headers,
+            },
         });
     }
     redirect(url, status = 302) {
@@ -136,7 +159,7 @@ export class Context {
         });
     }
     async download(filePath, filename) {
-        if (!await fileExists(filePath))
+        if (!(await fileExists(filePath)))
             throw Error("File not found");
         let buf = await getFileBuffer(filePath);
         return this.createResponse(buf, {
@@ -149,7 +172,7 @@ export class Context {
         });
     }
     async sendFile(filePath, init) {
-        if (!await fileExists(filePath))
+        if (!(await fileExists(filePath)))
             throw Error("File not found");
         let size = await fileSize(filePath);
         const ext = extensionExtract(filePath) || "";

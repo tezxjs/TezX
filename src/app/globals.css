@@ -57,32 +57,16 @@ code {
   display: none;
 }
 
-.submenu:checked ~ [role="content-sidebar"] {
-  display: flex;
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  height: 100%;
-}
-
-@media (min-width: 768px) {
-  .submenu:checked ~ [role="content-sidebar"] {
-    position: sticky;
-    top: 4rem;
-    height: calc(100vh - 64px);
-  }
-}
-
 .submenu-content {
   max-height: 0px;
   overflow: hidden;
 }
 
-.submenu:checked ~ .submenu-content {
+.submenu:checked~.submenu-content {
   max-height: 100%;
 }
 
-.submenu:checked ~ label svg {
+.submenu:checked~label svg {
   transform: rotate(90deg);
 }
 

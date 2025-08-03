@@ -1,6 +1,6 @@
 import { sanitizePathSplitBasePath } from "./low-level.js";
 export function compileRegexRoute(seg) {
-    const segments = typeof seg == 'string' ? seg.split("/").filter(Boolean) : seg;
+    const segments = typeof seg == "string" ? seg.split("/").filter(Boolean) : seg;
     let regexStr = "^";
     const paramNames = [];
     for (let seg of segments) {
@@ -8,9 +8,7 @@ export function compileRegexRoute(seg) {
             const isOptional = seg.endsWith("?");
             const name = seg.replace(":", "").replace("?", "");
             paramNames.push(name);
-            regexStr += isOptional
-                ? `(?:\\/([^\\/]+))?`
-                : `\\/([^\\/]+)`;
+            regexStr += isOptional ? `(?:\\/([^\\/]+))?` : `\\/([^\\/]+)`;
         }
         else if (seg.startsWith("*")) {
             const name = seg.slice(1) || "*";
@@ -31,7 +29,7 @@ export function addBaseToRegex(basePath, routeRegex) {
     basePath = "/" + sanitizePathSplitBasePath("/", basePath)?.join("/");
     if (basePath === "/")
         basePath = "";
-    let body = routeRegex.source.replace(/^(\^)/, '').replace(/(\$)$/, '');
+    let body = routeRegex.source.replace(/^(\^)/, "").replace(/(\$)$/, "");
     body = body.replace(/\\\//g, "/");
     if (body.startsWith("/")) {
         body = body.slice(1);

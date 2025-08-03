@@ -41,4 +41,4 @@ export type XSSProtectionOptions = {
  * }));
  */
 declare const xssProtection: (options?: XSSProtectionOptions) => (ctx: Context, next: NextCallback) => Promise<void>;
-export { xssProtection, xssProtection as default, };
+export { xssProtection, xssProtection as default };

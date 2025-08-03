@@ -4,9 +4,9 @@ export class Router {
     env = {};
     router;
     route = [];
-    staticFileRouter = Object.create(null);
+    staticFile = Object.create(null);
     basePath;
-    constructor({ basePath = "/", env = {}, routeRegistry = new RadixRouter() } = {}) {
+    constructor({ basePath = "/", env = {}, routeRegistry = new RadixRouter(), } = {}) {
         this.router = routeRegistry;
         this.basePath = basePath;
         this.env = { ...env };
@@ -21,7 +21,7 @@ export class Router {
     static(serveStatic) {
         if (Array.isArray(serveStatic?.files)) {
             serveStatic?.files.forEach((r) => {
-                this.staticFileRouter[`GET ${r?.route}`] = (ctx) => {
+                this.staticFile[`GET ${r?.route}`] = (ctx) => {
                     if (serveStatic?.options?.cacheControl) {
                         ctx.setHeader("Cache-Control", serveStatic?.options.cacheControl);
                     }
@@ -66,8 +66,11 @@ export class Router {
         this.#registerRoute("ALL", path, ...args);
         return this;
     }
-    addRoute(method, path, ...args) {
-        this.#registerRoute(method, path, ...args);
+    when(methods, path, ...args) {
+        const methodList = Array.isArray(methods) ? methods : [methods];
+        for (const method of methodList) {
+            this.#registerRoute(method.toUpperCase(), path, ...args);
+        }
         return this;
     }
     addRouter(path, router) {
@@ -131,7 +134,7 @@ export class Router {
         this.route.push({
             method: method,
             pattern: pattern,
-            handlers: handlers
+            handlers: handlers,
         });
     }
     #registerRoute(method, path, ...args) {
@@ -172,16 +175,16 @@ export class Router {
         }
         if (this.router?.mergeRouter) {
             const parts = sanitizePathSplitBasePath(this.basePath, path);
-            router.route.forEach(r => {
+            router.route.forEach((r) => {
                 this.#addRoute(r?.method, `/${sanitizePathSplitBasePath(path, r?.pattern).join("/")}`, r?.handlers, true);
             });
             this.router.mergeRouter(`/${parts.join("/")}`, router.router);
         }
         else {
-            router.route.forEach(r => {
+            router.route.forEach((r) => {
                 this.#addRoute(r?.method, `/${sanitizePathSplitBasePath(path, r?.pattern).join("/")}`, r?.handlers);
             });
         }
-        Object.assign(this.staticFileRouter, router.staticFileRouter);
+        Object.assign(this.staticFile, router.staticFile);
     }
 }

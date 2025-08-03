@@ -23,4 +23,4 @@ export type TimeoutOptions = {
  * @param options - Custom options for dynamic timeout handling.
  */
 declare const requestTimeout: (options: TimeoutOptions) => Middleware;
-export { requestTimeout, requestTimeout as default, };
+export { requestTimeout, requestTimeout as default };

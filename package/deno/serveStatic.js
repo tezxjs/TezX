@@ -1,4 +1,4 @@
-import { extensionExtract, sanitizePathSplitBasePath } from "../utils/low-level.js";
+import { extensionExtract, sanitizePathSplitBasePath, } from "../utils/low-level.js";
 export function serveStatic(...args) {
     let route = "";
     let dir;
@@ -23,7 +23,7 @@ export function serveStatic(...args) {
     }
     return {
         files: getFiles(dir, route, options),
-        options
+        options,
     };
 }
 export function getFiles(dir, basePath = "/", option = {}) {
@@ -31,7 +31,7 @@ export function getFiles(dir, basePath = "/", option = {}) {
     for (const entry of Deno.readDirSync(dir)) {
         const path = `${dir}/${entry.name}`;
         if (entry.isDirectory) {
-            files.push(...(getFiles(path, `${basePath}/${entry.name}`, option)));
+            files.push(...getFiles(path, `${basePath}/${entry.name}`, option));
         }
         else {
             const ext = extensionExtract(entry.name);
@@ -40,7 +40,7 @@ export function getFiles(dir, basePath = "/", option = {}) {
             }
             files.push({
                 fileSource: path,
-                route: `/${sanitizePathSplitBasePath(basePath, entry.name).join("/")}`
+                route: `/${sanitizePathSplitBasePath(basePath, entry.name).join("/")}`,
             });
         }
     }

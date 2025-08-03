@@ -1,6 +1,6 @@
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
-import { extensionExtract, sanitizePathSplitBasePath } from "../utils/low-level.js";
+import { extensionExtract, sanitizePathSplitBasePath, } from "../utils/low-level.js";
 export function serveStatic(...args) {
     let route = "";
     let dir;
@@ -25,7 +25,7 @@ export function serveStatic(...args) {
     }
     return {
         files: getFiles(dir, route, options),
-        options
+        options,
     };
 }
 export function getFiles(dir, basePath = "/", option = {}) {
@@ -43,7 +43,7 @@ export function getFiles(dir, basePath = "/", option = {}) {
             }
             files.push({
                 fileSource: fullPath,
-                route: `/${sanitizePathSplitBasePath(basePath, entry.name).join("/")}`
+                route: `/${sanitizePathSplitBasePath(basePath, entry.name).join("/")}`,
             });
         }
     }

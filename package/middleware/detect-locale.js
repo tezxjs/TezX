@@ -38,4 +38,4 @@ const detectLocale = (options) => {
         return await next();
     };
 };
-export { detectLocale, detectLocale as default, };
+export { detectLocale, detectLocale as default };

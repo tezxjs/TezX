@@ -1,4 +1,4 @@
-import { ExtractParamsFromPath, HeaderKey, HTTPMethod, NetAddr, RequestHeaders } from "../types/index.js";
+import { ExtractParamsFromPath, ReqHeaderKey, HTTPMethod, NetAddr, RequestHeaders } from "../types/index.js";
 /**
  * A wrapper around the raw HTTP request that provides convenient access to URL, headers, body parsing, and route parameters.
  *
@@ -48,13 +48,13 @@ export declare class TezXRequest<Path extends string = any> {
      */
     constructor(req: Request, method: string, pathname: string, params: ExtractParamsFromPath<Path>);
     /**
-    * Gets a single header value by name, or all headers as an object if no name is provided.
-    *
-    * @param {HeaderKey} [header] - The header name.
-    * @returns {string | undefined | RequestHeaders} The header value or map of all headers.
-    */
+     * Gets a single header value by name, or all headers as an object if no name is provided.
+     *
+     * @param {ReqHeaderKey} [header] - The header name.
+     * @returns {string | undefined | RequestHeaders} The header value or map of all headers.
+     */
     header(): RequestHeaders;
-    header(header: HeaderKey): string | undefined;
+    header(header: ReqHeaderKey): string | undefined;
     /**
      * Parses the query string from the URL into a key-value object.
      *
@@ -62,10 +62,10 @@ export declare class TezXRequest<Path extends string = any> {
      */
     get query(): Record<string, any>;
     /**
-    * Parses the request body as plain text.
-    *
-    * @returns {Promise<string>} The text content of the request body.
-    */
+     * Parses the request body as plain text.
+     *
+     * @returns {Promise<string>} The text content of the request body.
+     */
     text(): Promise<string>;
     /**
      * Parses the request body as JSON.

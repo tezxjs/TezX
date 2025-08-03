@@ -1,14 +1,15 @@
 import { GlobalConfig } from "../core/config.js";
 const sanitizeHeaders = (options = {}) => {
     const { whitelist = [], blacklist = [], allowUnsafeCharacters = false, } = options;
-    const normalizedWhitelist = whitelist.map(h => h.toLowerCase());
-    const normalizedBlacklist = blacklist.map(h => h.toLowerCase());
+    const normalizedWhitelist = whitelist.map((h) => h.toLowerCase());
+    const normalizedBlacklist = blacklist.map((h) => h.toLowerCase());
     return async function sanitizeHeaders(ctx, next) {
         const sanitizedHeaders = {};
         for (const key in ctx.header()) {
             let value = ctx.header(key);
             const normalizedKey = key.toLowerCase();
-            if (normalizedWhitelist.length > 0 && !normalizedWhitelist.includes(normalizedKey)) {
+            if (normalizedWhitelist.length > 0 &&
+                !normalizedWhitelist.includes(normalizedKey)) {
                 GlobalConfig.debugging.warn(`🚫 Header "${key}" not in whitelist - removed`);
                 continue;
             }
@@ -31,7 +32,6 @@ const sanitizeHeaders = (options = {}) => {
             let v = sanitizedHeaders[k];
             ctx.setHeader(k, v);
         }
-        ;
         ctx.clearHeader = sanitizedHeaders;
         return await next();
     };

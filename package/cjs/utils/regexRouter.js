@@ -5,7 +5,7 @@ exports.addBaseToRegex = addBaseToRegex;
 exports.regexMatchRoute = regexMatchRoute;
 const low_level_js_1 = require("./low-level.js");
 function compileRegexRoute(seg) {
-    const segments = typeof seg == 'string' ? seg.split("/").filter(Boolean) : seg;
+    const segments = typeof seg == "string" ? seg.split("/").filter(Boolean) : seg;
     let regexStr = "^";
     const paramNames = [];
     for (let seg of segments) {
@@ -13,9 +13,7 @@ function compileRegexRoute(seg) {
             const isOptional = seg.endsWith("?");
             const name = seg.replace(":", "").replace("?", "");
             paramNames.push(name);
-            regexStr += isOptional
-                ? `(?:\\/([^\\/]+))?`
-                : `\\/([^\\/]+)`;
+            regexStr += isOptional ? `(?:\\/([^\\/]+))?` : `\\/([^\\/]+)`;
         }
         else if (seg.startsWith("*")) {
             const name = seg.slice(1) || "*";
@@ -36,7 +34,7 @@ function addBaseToRegex(basePath, routeRegex) {
     basePath = "/" + (0, low_level_js_1.sanitizePathSplitBasePath)("/", basePath)?.join("/");
     if (basePath === "/")
         basePath = "";
-    let body = routeRegex.source.replace(/^(\^)/, '').replace(/(\$)$/, '');
+    let body = routeRegex.source.replace(/^(\^)/, "").replace(/(\$)$/, "");
     body = body.replace(/\\\//g, "/");
     if (body.startsWith("/")) {
         body = body.slice(1);

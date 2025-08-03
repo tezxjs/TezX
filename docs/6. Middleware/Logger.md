@@ -96,7 +96,7 @@ export function createApp() {
 function logger(): Middleware;
 ```
 
-Returns a `Middleware` function compatible with `.use()` or `addRoute()`.
+Returns a `Middleware` function compatible with `.use()` or `when()`.
 
 ---
 
@@ -115,14 +115,10 @@ const app = new TezX({
 app.use(logger());
 ```
 
-You can also attach it to all methods using `addRoute`:
+You can also attach it to all methods using `when`:
 
 ```ts
-app.addRoute({
-  method: "ALL",
-  path: "*",
-  handler: logger(),
-});
+app.when( "ALL", "*", logger());
 ```
 
 ---

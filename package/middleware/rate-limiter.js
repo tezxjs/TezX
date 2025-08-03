@@ -1,5 +1,5 @@
-import { createRateLimitDefaultStorage, isRateLimit } from "../utils/rateLimit.js";
-export const rateLimiter = (options) => {
+import { createRateLimitDefaultStorage, isRateLimit, } from "../utils/rateLimit.js";
+const rateLimiter = (options) => {
     const { maxRequests, windowMs, keyGenerator = (ctx) => `${ctx.req.remoteAddress.address}:${ctx.req.remoteAddress.port}`, storage = createRateLimitDefaultStorage(), onError = (ctx, retryAfter, error) => {
         ctx.setStatus = 429;
         throw new Error(`Rate limit exceeded. Try again in ${retryAfter} seconds.`);
@@ -18,3 +18,4 @@ export const rateLimiter = (options) => {
         return await next();
     };
 };
+export { rateLimiter, rateLimiter as default };

@@ -75,8 +75,12 @@ class Context {
         }
         return this.#req;
     }
-    get body() { return this.#body; }
-    set body(value) { this.#body = value; }
+    get body() {
+        return this.#body;
+    }
+    set body(value) {
+        this.#body = value;
+    }
     status = (status) => {
         this.#status = status;
         return this;
@@ -90,7 +94,10 @@ class Context {
     text(content, init) {
         return this.createResponse(content, {
             ...init,
-            headers: { "Content-Type": "text/plain; charset=utf-8", ...init?.headers }
+            headers: {
+                "Content-Type": "text/plain; charset=utf-8",
+                ...init?.headers,
+            },
         });
     }
     html(strings, ...args) {
@@ -101,35 +108,51 @@ class Context {
                 return result + str + value;
             }, "");
             return this.createResponse(html, {
-                headers: { "Content-Type": "text/html; charset=utf-8" }
+                headers: {
+                    "Content-Type": "text/html; charset=utf-8",
+                },
             });
         }
         else {
             let init = args?.[0];
             return this.createResponse(html, {
                 ...init,
-                headers: { "Content-Type": "text/html; charset=utf-8", ...init?.headers }
+                headers: {
+                    "Content-Type": "text/html; charset=utf-8",
+                    ...init?.headers,
+                },
             });
         }
     }
     xml(xml, init) {
         return this.createResponse(xml, {
             ...init,
-            headers: { "Content-Type": "application/xml; charset=utf-8", ...init?.headers }
+            headers: {
+                "Content-Type": "application/xml; charset=utf-8",
+                ...init?.headers,
+            },
         });
     }
     json(json, init) {
         return this.createResponse(JSON.stringify(json), {
             ...init,
-            headers: { "Content-Type": "application/json; charset=utf-8", ...init?.headers }
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                ...init?.headers,
+            },
         });
     }
     send(body, init) {
         let { body: _body, type } = (0, response_js_1.determineContentTypeBody)(body);
-        const contentType = init?.headers?.["Content-Type"] || init?.headers?.["content-type"] || type;
+        const contentType = init?.headers?.["Content-Type"] ||
+            init?.headers?.["content-type"] ||
+            type;
         return this.createResponse(_body, {
             ...init,
-            headers: { "Content-Type": contentType, ...init?.headers }
+            headers: {
+                "Content-Type": contentType,
+                ...init?.headers,
+            },
         });
     }
     redirect(url, status = 302) {
@@ -139,7 +162,7 @@ class Context {
         });
     }
     async download(filePath, filename) {
-        if (!await (0, file_js_1.fileExists)(filePath))
+        if (!(await (0, file_js_1.fileExists)(filePath)))
             throw Error("File not found");
         let buf = await (0, file_js_1.getFileBuffer)(filePath);
         return this.createResponse(buf, {
@@ -152,7 +175,7 @@ class Context {
         });
     }
     async sendFile(filePath, init) {
-        if (!await (0, file_js_1.fileExists)(filePath))
+        if (!(await (0, file_js_1.fileExists)(filePath)))
             throw Error("File not found");
         let size = await (0, file_js_1.fileSize)(filePath);
         const ext = (0, low_level_js_1.extensionExtract)(filePath) || "";

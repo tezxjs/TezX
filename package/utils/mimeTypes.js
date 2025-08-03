@@ -1,5 +1,3 @@
-import { sanitizePathSplitBasePath } from "./low-level.js";
-import { runtime } from "./runtime.js";
 export const mimeTypes = {
     html: "text/html",
     htm: "text/html",
@@ -104,52 +102,3 @@ export const mimeTypes = {
     gcode: "text/x.gcode",
 };
 export const defaultMimeType = "application/octet-stream";
-export function getFiles(dir, basePath = "/", ref, option) {
-    const files = [];
-    if (runtime === "deno") {
-        for (const entry of Deno.readFileSync(dir)) {
-            const path = `${dir}/${entry.name}`;
-            if (entry.isDirectory) {
-                files.push(...(getFiles(path, `${basePath}/${entry.name}`, ref, option)));
-            }
-            else {
-                files.push({
-                    file: path,
-                    path: `/${sanitizePathSplitBasePath(basePath, entry.name)?.join("/")}`
-                });
-            }
-        }
-    }
-    else {
-        const fs = require("node:fs");
-        const path = require("node:path");
-        const entries = fs.readdirSync(dir, { withFileTypes: true });
-        for (const entry of entries) {
-            const fullPath = path.join(dir, entry.name);
-            if (entry.isDirectory()) {
-                files.push(...(getFiles(fullPath, `${basePath}/${entry.name}`, ref, option)));
-            }
-            else {
-                files.push({
-                    file: fullPath,
-                    path: `/${sanitizePathSplitBasePath(basePath, entry.name)?.join("/")}`
-                });
-            }
-        }
-    }
-    files.forEach((r) => {
-        ref.staticFileRouter[`GET ${r?.path}`] = (ctx) => {
-            if (option.cacheControl) {
-                ctx.setHeader("Cache-Control", option.cacheControl);
-            }
-            if (option.headers) {
-                for (const key in option.headers) {
-                    let value = option.headers?.[key];
-                    ctx.setHeader(key, value);
-                }
-            }
-            return ctx.sendFile(r.file);
-        };
-    });
-    return files;
-}

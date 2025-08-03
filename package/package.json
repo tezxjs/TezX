@@ -1,6 +1,6 @@
 {
   "name": "tezx",
-  "version": "3.0.2-beta",
+  "version": "3.0.5-beta",
   "description": "TezX is a high-performance, lightweight JavaScript framework designed for speed, scalability, and flexibility. It enables efficient routing, middleware management, and static file serving with minimal configuration. Fully compatible with Node.js, Deno, and Bun.",
   "type": "module",
   "main": "cjs/index.js",
@@ -47,85 +47,10 @@
       "require": "./cjs/registry/index.js",
       "types": "./registry/index.d.ts"
     },
-    "./middleware/basic-auth": {
-      "import": "./middleware/basic-auth.js",
-      "require": "./cjs/middleware/basic-auth.js",
-      "types": "./middleware/basic-auth.d.ts"
-    },
-    "./middleware/cache-control": {
-      "import": "./middleware/cache-control.js",
-      "require": "./cjs/middleware/cache-control.js",
-      "types": "./middleware/cache-control.d.ts"
-    },
-    "./middleware/cors": {
-      "import": "./middleware/cors.js",
-      "require": "./cjs/middleware/cors.js",
-      "types": "./middleware/cors.d.ts"
-    },
-    "./middleware/detect-bot": {
-      "import": "./middleware/detect-bot.js",
-      "require": "./cjs/middleware/detect-bot.js",
-      "types": "./middleware/detect-bot.d.ts"
-    },
-    "./middleware/detect-locale": {
-      "import": "./middleware/detect-locale.js",
-      "require": "./cjs/middleware/detect-locale.js",
-      "types": "./middleware/detect-locale.d.ts"
-    },
-    "./middleware/i18n": {
-      "import": "./middleware/i18n.js",
-      "require": "./cjs/middleware/i18n.js",
-      "types": "./middleware/i18n.d.ts"
-    },
-    "./middleware/lazy-loader": {
-      "import": "./middleware/lazy-loader.js",
-      "require": "./cjs/middleware/lazy-loader.js",
-      "types": "./middleware/lazy-loader.d.ts"
-    },
-    "./middleware/logger": {
-      "import": "./middleware/logger.js",
-      "require": "./cjs/middleware/logger.js",
-      "types": "./middleware/logger.d.ts"
-    },
-    "./middleware/pagination": {
-      "import": "./middleware/pagination.js",
-      "require": "./cjs/middleware/pagination.js",
-      "types": "./middleware/pagination.d.ts"
-    },
-    "./middleware/powered-by": {
-      "import": "./middleware/powered-by.js",
-      "require": "./cjs/middleware/powered-by.js",
-      "types": "./middleware/powered-by.d.ts"
-    },
-    "./middleware/rate-limiter": {
-      "import": "./middleware/rate-limiter.js",
-      "require": "./cjs/middleware/rate-limiter.js",
-      "types": "./middleware/rate-limiter.d.ts"
-    },
-    "./middleware/request-id": {
-      "import": "./middleware/request-id.js",
-      "require": "./cjs/middleware/request-id.js",
-      "types": "./middleware/request-id.d.ts"
-    },
-    "./middleware/request-timeout": {
-      "import": "./middleware/request-timeout.js",
-      "require": "./cjs/middleware/request-timeout.js",
-      "types": "./middleware/request-timeout.d.ts"
-    },
-    "./middleware/sanitize-headers": {
-      "import": "./middleware/sanitize-headers.js",
-      "require": "./cjs/middleware/sanitize-headers.js",
-      "types": "./middleware/sanitize-headers.d.ts"
-    },
-    "./middleware/secure-headers": {
-      "import": "./middleware/secure-headers.js",
-      "require": "./cjs/middleware/secure-headers.js",
-      "types": "./middleware/secure-headers.d.ts"
-    },
-    "./middleware/xss-protection": {
-      "import": "./middleware/xss-protection.js",
-      "require": "./cjs/middleware/xss-protection.js",
-      "types": "./middleware/xss-protection.d.ts"
+    "./middleware/*": {
+      "import": "./middleware/*.js",
+      "require": "./cjs/middleware/*.js",
+      "types": "./middleware/*.d.ts"
     }
   },
   "files": [

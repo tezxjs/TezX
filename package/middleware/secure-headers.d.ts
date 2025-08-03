@@ -75,4 +75,4 @@ export type SecurityHeaderOptions = {
  * }));
  */
 declare const secureHeaders: (options?: SecurityHeaderOptions) => Middleware<any>;
-export { secureHeaders, secureHeaders as default, };
+export { secureHeaders, secureHeaders as default };

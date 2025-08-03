@@ -26,7 +26,7 @@ function normalizeHeaderKey(key) {
 function extensionExtract(filePath) {
     let lastDot = -1;
     for (let i = filePath.length - 1; i >= 0; i--) {
-        if (filePath[i] === '.') {
+        if (filePath[i] === ".") {
             lastDot = i;
             break;
         }

@@ -21,9 +21,9 @@ export type RateLimiterOptions = {
      */
     keyGenerator?: (ctx: Context) => string;
     /**
-      //  * ⚠️ (Future) Storage backend - currently memory only
-      //  * @todo Implement Redis storage
-      //  */
+        //  * ⚠️ (Future) Storage backend - currently memory only
+        //  * @todo Implement Redis storage
+        //  */
     /**
      * 🔄 Custom cache storage implementation (e.g., using `Map`, `Redis`, etc.).
      * By default, it uses a `Map<string, { count: number; resetTime: number }>`.
@@ -81,4 +81,5 @@ export type RateLimiterOptions = {
  *   keyGenerator: (ctx) => ctx.user?.id || ctx.ip
  * }));
  */
-export declare const rateLimiter: (options: RateLimiterOptions) => Middleware;
+declare const rateLimiter: (options: RateLimiterOptions) => Middleware;
+export { rateLimiter, rateLimiter as default };

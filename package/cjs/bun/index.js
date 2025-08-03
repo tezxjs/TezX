@@ -16,5 +16,5 @@ exports.default = {
     getConnInfo: getConnInfo_js_1.getConnInfo,
     loadEnv: env_js_1.loadEnv,
     upgradeWebSocket: ws_js_1.default,
-    serveStatic: serveStatic_js_1.serveStatic
+    serveStatic: serveStatic_js_1.serveStatic,
 };

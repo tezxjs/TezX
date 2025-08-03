@@ -13,4 +13,4 @@ import { Middleware } from "../types/index.js";
  * ```
  */
 declare function logger(): Middleware;
-export { logger, logger as default, };
+export { logger, logger as default };

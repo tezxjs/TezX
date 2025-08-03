@@ -1,4 +1,4 @@
-import { HeaderKey, HttpBaseResponse, ResponseHeaders, ResponseInit } from "../types/index.js";
+import { ResHeaderKey, HttpBaseResponse, ResponseHeaders, ResponseInit } from "../types/index.js";
 import { TezXRequest } from "./request.js";
 export type ContextOptions<T> = {
     pathname: string;
@@ -47,9 +47,9 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
      */
     constructor(req: Request, options: ContextOptions<T>);
     /**
-    * Returns the full URL string of the request, including query parameters.
-    * @type {string}
-    */
+     * Returns the full URL string of the request, including query parameters.
+     * @type {string}
+     */
     get url(): string;
     /**
      * Gets the current HTTP status code.
@@ -64,7 +64,7 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
     /**
      * Retrieves a specific header value or all headers.
      *
-     * @param {HeaderKey} [header] - Optional header name (case-insensitive, internally lowercased).
+     * @param {ResHeaderKey} [header] - Optional header name (case-insensitive, internally lowercased).
      * @returns {string | undefined | ResponseHeaders} - Returns the header value if key is provided,
      * or the entire headers object if no key is passed.
      *
@@ -73,61 +73,61 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
      * ctx.header(); // → { 'content-type': 'application/json' }
      */
     header(): ResponseHeaders;
-    header(header: HeaderKey): string | undefined;
+    header(header: ResHeaderKey): string | undefined;
     protected set clearHeader(header: ResponseHeaders);
     /**
-    * Sets or appends a header to the response.
-    *
-    * @param {string} key - Header name (e.g., "Content-Type").
-    * @param {string} value - Header value to set or append.
-    * @param {Object} [options] - Options to modify behavior.
-    * @param {boolean} [options.append=false] - If true, appends instead of overwriting.
-    * @returns {this} The context instance for chaining.
-    *
-    * @example
-    * ctx.setHeader("X-Custom", "Value");
-    * ctx.setHeader("Cache-Control", "no-cache", { append: true });
-    */
-    setHeader(key: string, value: string, options?: {
+     * Sets or appends a header to the response.
+     *
+     * @param {string} key - Header name (e.g., "Content-Type").
+     * @param {string} value - Header value to set or append.
+     * @param {Object} [options] - Options to modify behavior.
+     * @param {boolean} [options.append=false] - If true, appends instead of overwriting.
+     * @returns {this} The context instance for chaining.
+     *
+     * @example
+     * ctx.setHeader("X-Custom", "Value");
+     * ctx.setHeader("Cache-Control", "no-cache", { append: true });
+     */
+    setHeader(key: ResHeaderKey, value: string, options?: {
         append?: boolean;
     }): this;
     /**
-    * Gets the route parameters extracted from the URL.
-    *
-    * @returns {Record<string, any>} An object containing key-value pairs of route parameters.
-    *
-    * @example
-    * // For route `/user/:id` and URL `/user/123`, it returns: { id: "123" }
-    */
+     * Gets the route parameters extracted from the URL.
+     *
+     * @returns {Record<string, any>} An object containing key-value pairs of route parameters.
+     *
+     * @example
+     * // For route `/user/:id` and URL `/user/123`, it returns: { id: "123" }
+     */
     get params(): Record<string, any>;
     protected set params(params: Record<string, any>);
     /**
-    * Gets the wrapped request object (`TezXRequest`).
-    *
-    * Lazily initializes the wrapped request on first access.
-    *
-    * @returns {TezXRequest<Path>} The wrapped request.
-    */
+     * Gets the wrapped request object (`TezXRequest`).
+     *
+     * Lazily initializes the wrapped request on first access.
+     *
+     * @returns {TezXRequest<Path>} The wrapped request.
+     */
     get req(): TezXRequest<Path>;
     /**
-    * Gets the response body.
-    * @returns {*} The response body.
-    */
+     * Gets the response body.
+     * @returns {*} The response body.
+     */
     get body(): any;
     /**
-    * Sets the response body.
-    * @param {*} value - The response body.
-    */
+     * Sets the response body.
+     * @param {*} value - The response body.
+     */
     set body(value: any);
     /**
-    * Sets the HTTP response status code.
-    *
-    * @param {number} status - HTTP status code to set (e.g., 200, 404).
-    * @returns {this} The current context instance for method chaining.
-    *
-    * @example
-    * ctx.status(404).text("Not found");
-    */
+     * Sets the HTTP response status code.
+     *
+     * @param {number} status - HTTP status code to set (e.g., 200, 404).
+     * @returns {this} The current context instance for method chaining.
+     *
+     * @example
+     * ctx.status(404).text("Not found");
+     */
     status: (status: number) => this;
     /**
      * Protected helper method to create a Response or PlainResponse
@@ -140,14 +140,14 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
      */
     createResponse(body: BodyInit | null, init?: ResponseInit): HttpBaseResponse;
     /**
-    * Sends a plain text response.
-    *
-    * Automatically sets Content-Type to `text/plain; charset=utf-8`.
-    *
-    * @param {string} content - The plain text content.
-    * @param {ResponseInit} [init] - Optional response init.
-    * @returns {HttpBaseResponse} The response object.
-    */
+     * Sends a plain text response.
+     *
+     * Automatically sets Content-Type to `text/plain; charset=utf-8`.
+     *
+     * @param {string} content - The plain text content.
+     * @param {ResponseInit} [init] - Optional response init.
+     * @returns {HttpBaseResponse} The response object.
+     */
     text(content: string, init?: ResponseInit): HttpBaseResponse;
     /**
      * Sends an HTML response.

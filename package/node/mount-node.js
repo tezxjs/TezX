@@ -24,14 +24,16 @@ function readableStreamToNodeStream(stream) {
     });
 }
 export function mountTezXOnNode(app, server) {
-    server.on('request', async (req, res) => {
+    server.on("request", async (req, res) => {
         try {
             const request = toWebRequest(req, req.method);
             const response = await app.serve(request, req, res, server);
             if (res.writableEnded || res.headersSent)
                 return;
-            const { status = 200, statusText = '', headers = {}, body } = response;
-            const nodeHeaders = Object.fromEntries(headers instanceof Headers ? headers.entries() : Object.entries(headers));
+            const { status = 200, statusText = "", headers = {}, body } = response;
+            const nodeHeaders = Object.fromEntries(headers instanceof Headers
+                ? headers.entries()
+                : Object.entries(headers));
             res.writeHead(status, statusText, nodeHeaders);
             if (!body) {
                 return res.end();
@@ -39,15 +41,16 @@ export function mountTezXOnNode(app, server) {
             if (body instanceof Readable) {
                 return body.pipe(res);
             }
-            if (typeof body.getReader === 'function') {
-                return Readable.fromWeb?.(body)?.pipe?.(res) ?? readableStreamToNodeStream(body).pipe(res);
+            if (typeof body.getReader === "function") {
+                return (Readable.fromWeb?.(body)?.pipe?.(res) ??
+                    readableStreamToNodeStream(body).pipe(res));
             }
             res.end(body);
         }
         catch (err) {
             res.statusCode = 500;
-            GlobalConfig.debugging?.error?.(err?.message || 'Unknown error');
-            res.end(err?.message || 'Internal Server Error');
+            GlobalConfig.debugging?.error?.(err?.message || "Unknown error");
+            res.end(err?.message || "Internal Server Error");
         }
     });
 }

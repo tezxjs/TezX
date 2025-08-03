@@ -36,18 +36,18 @@ export declare class Router<T extends Record<string, any> = {}> {
         handlers: HandlerType;
     }[];
     /** Static file routes mapping */
-    protected staticFileRouter: Record<string, Callback<any>>;
+    protected staticFile: Record<string, Callback<any>>;
     /** Base path prefix for all routes */
     protected basePath: string;
     /**
-    * Creates a new Router instance.
-    *
-    * @param config - Router configuration options
-    * @param config.basePath - Base path prefix for the router
-    * @param config.env - Environment variables for router
-    * @param config.routeRegistry - Custom route registry instance
-    */
-    constructor({ basePath, env, routeRegistry }?: RouterConfig);
+     * Creates a new Router instance.
+     *
+     * @param config - Router configuration options
+     * @param config.basePath - Base path prefix for the router
+     * @param config.env - Environment variables for router
+     * @param config.routeRegistry - Custom route registry instance
+     */
+    constructor({ basePath, env, routeRegistry, }?: RouterConfig);
     /**
      * Registers static file routes to the application for serving files like HTML, CSS, JS, images, etc.
      *
@@ -133,28 +133,41 @@ export declare class Router<T extends Record<string, any> = {}> {
      * @param args - Handler callback or middleware(s) + handler
      */
     /**
-    * Register a route that responds to all HTTP methods.
-    *
-    * @param path - URL path pattern
-    * @param args - Handler callback or middleware(s) + handler
-    * @returns The Router instance for chaining
-    */
+     * Register a route that responds to all HTTP methods.
+     *
+     * @param path - URL path pattern
+     * @param args - Handler callback or middleware(s) + handler
+     * @returns The Router instance for chaining
+     */
     all<U extends Record<string, any> = {}, Path extends string = any>(path: Path, callback: Callback<T & U, Path>): this;
     all<U extends Record<string, any> = {}, Path extends string = any>(path: Path, middleware: Middleware<T & U, Path>, callback: Callback<T & U, Path>): this;
     all<U extends Record<string, any> = {}, Path extends string = any>(path: Path, middlewares: Middleware<T & U, Path>[], callback: Callback<T & U, Path>): this;
     /**
-     * Generic method registration for custom HTTP methods
-     * @param method - HTTP method name (e.g., 'PURGE')
-     * @param path - URL path pattern
-     * @param args - Handler callback or middleware(s) + handler
+     * Registers one or more HTTP method handlers for a given path.
      *
-     * @example
-     * // Register custom method
-     * server.addRoute('PURGE', '/cache', purgeHandler);
+     * Supports three overloads:
+     *
+     * 1. A single callback:
+     *    app.when("GET", "/path", callback)
+     *
+     * 2. A middleware and a callback:
+     *    app.when("GET", "/path", middleware, callback)
+     *
+     * 3. An array of middlewares and a callback:
+     *    app.when("GET", "/path", [middleware1, middleware2], callback)
+     *
+     * @template U - Additional context to be merged into the main context
+     * @template Path - The string literal type of the route path
+     *
+     * @param {HTTPMethod | HTTPMethod[]} methods - One or more HTTP methods like 'GET', 'POST', etc.
+     * @param {Path} path - The route path (e.g., '/login')
+     * @param {...(Middleware<T & U, Path> | Middleware<T & U, Path>[] | Callback<T & U, Path>)} args - Middleware(s) and final callback
+     *
+     * @returns {this} Returns the app instance for chaining
      */
-    addRoute<U extends Record<string, any> = {}, Path extends string = any>(method: HTTPMethod, path: Path, callback: Callback<T & U, Path>): this;
-    addRoute<U extends Record<string, any> = {}, Path extends string = any>(method: HTTPMethod, path: Path, middleware: Middleware<T & U, Path>, callback: Callback<T & U, Path>): this;
-    addRoute<U extends Record<string, any> = {}, Path extends string = any>(method: HTTPMethod, path: Path, middlewares: Middleware<T & U, Path>[], callback: Callback<T & U, Path>): this;
+    when<U extends Record<string, any> = {}, Path extends string = any>(methods: HTTPMethod | HTTPMethod[], path: Path, callback: Callback<T & U, Path>): this;
+    when<U extends Record<string, any> = {}, Path extends string = any>(methods: HTTPMethod | HTTPMethod[], path: Path, middleware: Middleware<T & U, Path>, callback: Callback<T & U, Path>): this;
+    when<U extends Record<string, any> = {}, Path extends string = any>(methods: HTTPMethod | HTTPMethod[], path: Path, middlewares: Middleware<T & U, Path>[], callback: Callback<T & U, Path>): this;
     /**
      * Mount another Router instance at a given base path.
      *
@@ -171,19 +184,19 @@ export declare class Router<T extends Record<string, any> = {}> {
      */
     addRouter<U extends Record<string, any> = {}, Path extends string = any>(path: Path, router: Router<T | U | any>): void;
     /**
-    * Create a route group with shared path prefix.
-    *
-    * Provides a scoped Router instance to define routes under a common prefix.
-    *
-    * @param prefix - Path prefix for the group
-    * @param callback - Function receiving the scoped Router
-    * @returns The current Router instance for chaining
-    *
-    * @example
-    * router.group('/v1', (group) => {
-    *   group.get('/users', v1UserHandler);
-    * });
-    */
+     * Create a route group with shared path prefix.
+     *
+     * Provides a scoped Router instance to define routes under a common prefix.
+     *
+     * @param prefix - Path prefix for the group
+     * @param callback - Function receiving the scoped Router
+     * @returns The current Router instance for chaining
+     *
+     * @example
+     * router.group('/v1', (group) => {
+     *   group.get('/users', v1UserHandler);
+     * });
+     */
     group<U extends Record<string, any> = {}, Prefix extends string = any>(prefix: Prefix, callback: (group: Router<T & U>) => void): this;
     /**
      * Register middleware(s) optionally scoped by path.
@@ -198,14 +211,14 @@ export declare class Router<T extends Record<string, any> = {}> {
      * @param args - Path (optional), middleware(s), and optional handler or sub-router
      * @returns The current Router instance for chaining
      */
-    use<U extends Record<string, any> = {}, Path extends string = any>(path: Path, middlewares: Middleware<T & U, Path>[], callback: Callback<T & U, Path> | Router<T & U | any>): this;
-    use<U extends Record<string, any> = {}, Path extends string = any>(path: Path, middleware: Middleware<T & U, Path>, callback: Callback<T & U, Path> | Router<T & U | any>): this;
+    use<U extends Record<string, any> = {}, Path extends string = any>(path: Path, middlewares: Middleware<T & U, Path>[], callback: Callback<T & U, Path> | Router<(T & U) | any>): this;
+    use<U extends Record<string, any> = {}, Path extends string = any>(path: Path, middleware: Middleware<T & U, Path>, callback: Callback<T & U, Path> | Router<(T & U) | any>): this;
     use<U extends Record<string, any> = {}, Path extends string = any>(path: Path, middlewares: Middleware<T & U, Path>[]): this;
     use<U extends Record<string, any> = {}, Path extends string = any>(path: Path, middlewares: Middleware<T & U, Path>): this;
-    use<U extends Record<string, any> = {}, Path extends string = any>(path: Path, callback: Callback<T & U, Path> | Router<T & U | any>): this;
-    use<U extends Record<string, any> = {}, Path extends string = any>(middlewares: Middleware<T & U, Path>[], callback: Callback<T & U, Path> | Router<T & U | any>): this;
-    use<U extends Record<string, any> = {}, Path extends string = any>(middleware: Middleware<T & U, Path>, callback: Callback<T & U, Path> | Router<T & U | any>): this;
+    use<U extends Record<string, any> = {}, Path extends string = any>(path: Path, callback: Callback<T & U, Path> | Router<(T & U) | any>): this;
+    use<U extends Record<string, any> = {}, Path extends string = any>(middlewares: Middleware<T & U, Path>[], callback: Callback<T & U, Path> | Router<(T & U) | any>): this;
+    use<U extends Record<string, any> = {}, Path extends string = any>(middleware: Middleware<T & U, Path>, callback: Callback<T & U, Path> | Router<(T & U) | any>): this;
     use<U extends Record<string, any> = {}, Path extends string = any>(middlewares: Middleware<T & U, Path>[]): this;
     use<U extends Record<string, any> = {}, Path extends string = any>(middleware: Middleware<T & U, Path>): this;
-    use<U extends Record<string, any> = {}, Path extends string = any>(callback: Callback<T & U, Path> | Router<T & U | any>): this;
+    use<U extends Record<string, any> = {}, Path extends string = any>(callback: Callback<T & U, Path> | Router<(T & U) | any>): this;
 }

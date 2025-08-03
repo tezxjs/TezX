@@ -6,11 +6,13 @@ import { useEffect, useRef, useState } from "react";
 import { CgMenuRightAlt } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
 import { IoMdSearch } from "react-icons/io";
-import DocsViewerSearch from "./DocsViewerSearch";
-import { version } from "../../package/package.json";
-type Props = {};
+import { version } from "../../../package/package.json";
+import DocsViewerSearch from "../DocsViewerSearch";
+type Props = {
+  openCloseHandle: any
+};
 
-export default function Header({}: Props) {
+export default function Header({ openCloseHandle }: Props) {
   const [theme, setTheme] = useState<"dark" | "light">("light");
   // const params: ParamsType = useParams();
   // const { content, name, type } = params;
@@ -73,37 +75,32 @@ export default function Header({}: Props) {
 
   // const info = documentation?.[type]?.find(r => r?.name == name);
   return (
-    <>
-      <header className="bg-base-100 border-b-2 p-4 sticky top-0 h-16 z-50 flex items-center justify-between">
+    <header className="bg-base-100 border-b sticky top-0 h-16 z-50 p-4">
+      <header className="flex items-center justify-between w-full max-w-7xl mx-auto h-full">
         <div className="flex items-center gap-2">
           <Link href="/">
             <img src="/favicon.ico" className="h-8" alt={SiteTitle} />
           </Link>
-          <h1 className="text-xl font-bold capitalize flex flex-col">
+          <h1 className="text-xl font-bold flex flex-col">
             <span>{SiteTitle}</span>
             <span className="text-xs text-primary font-extrabold">
-              V{version}
+              v{version}
             </span>
           </h1>
-
-          {
-            // Boolean(info?.version?.image) &&
-            // <img src={info?.version?.image} alt={info?.title} className="h-5" />
-          }
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 whitespace-nowrap">
           <div
             ref={searchRef}
             className="sm:border gap-2 px-0 sm:px-4 items-center flex input-bordered h-11 hover:bg-base-200 rounded-md pr-0 sm:pr-1 cursor-pointer"
             onClick={() => setIsSearchOpen(true)}
           >
-            <p className="hidden sm:block">Search (Ctrl+k)</p>
-            <button className="flex items-center justify-center text-3xl rounded-md transition-all">
+            <p className="hidden sm:block xl:text-base text-sm">Search (Ctrl+k)</p>
+            <button className="flex items-center justify-center text-2xl rounded-md transition-all">
               <IoMdSearch />
             </button>
           </div>
-          <Link href={"https://github.com/srakib17/TezX"}>
-            <FaGithub size={24} />
+          <Link href={"https://github.com/srakib17/TezX"} className="text-xl">
+            <FaGithub />
           </Link>
           <label className="swap swap-rotate">
             {/* this hidden checkbox controls the state */}
@@ -111,7 +108,7 @@ export default function Header({}: Props) {
             {/* sun icon */}
             <svg
               onClick={() => setThemeHandle("dark")}
-              className="swap-on h-7 w-7 fill-current"
+              className="swap-on h-6 w-6 fill-current"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
             >
@@ -120,7 +117,7 @@ export default function Header({}: Props) {
             {/* moon icon */}
             <svg
               onClick={() => setThemeHandle("light")}
-              className="swap-off  h-7 w-7 fill-current"
+              className="swap-off  h-6 w-6 fill-current"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
             >
@@ -129,8 +126,8 @@ export default function Header({}: Props) {
           </label>
 
           <label
-            htmlFor="content-sidebar"
-            className="cursor-pointer h-14 border-b flex items-center w-full bg-base-100 bg-opacity-80 md:hidden z-50"
+            onClick={() => openCloseHandle()}
+            className="cursor-pointer h-14 border-b flex items-center w-full bg-base-100 bg-opacity-80 lg:hidden z-50"
           >
             <CgMenuRightAlt size={28} />
           </label>
@@ -142,6 +139,6 @@ export default function Header({}: Props) {
           setIsSearchOpen={setIsSearchOpen}
         />
       )}
-    </>
+    </header>
   );
 }

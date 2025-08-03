@@ -47,4 +47,4 @@ const paginationHandler = (options = {}) => {
         return await next();
     };
 };
-export { paginationHandler, paginationHandler as default, };
+export { paginationHandler, paginationHandler as default };
