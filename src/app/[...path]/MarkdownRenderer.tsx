@@ -2,8 +2,8 @@
 "use client";
 import ClipboardJS from "clipboard";
 import hljs from "highlight.js";
-import "highlight.js/styles/night-owl.css"; // Syntax highlighting theme
-// import "highlight.js/styles/github.css"; // Syntax highlighting theme
+// import "highlight.js/styles/docco.css"; // Syntax highlighting theme
+import "highlight.js/styles/github-dark.css"; // Syntax highlighting theme
 
 // import "highlight.js/styles/atom-one-light.css"; // Syntax highlighting theme
 
@@ -117,7 +117,7 @@ export default function MarkdownRenderer({ markdown }: { markdown: string }) {
 
   return (
     <div
-      className="prose lg:prose-lg max-w-full"
+      className="prose xl:prose-lg max-w-full"
       dangerouslySetInnerHTML={{
         __html: updatedHtmlContent,
       }}

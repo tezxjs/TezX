@@ -132,7 +132,7 @@ curl -I http://localhost:3000/
 
 Expected:
 
-```
+```bash
 Content-Security-Policy: default-src 'self';
 X-Frame-Options: DENY
 X-XSS-Protection: 1; mode=block

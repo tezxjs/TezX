@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { IoIosArrowForward } from "react-icons/io";
 
 type Props = {
@@ -9,13 +9,24 @@ type Props = {
 
 export default function Sidebar({ content }: Props) {
   const params = useParams();
+  const pathname = usePathname();
   return (
     <div className="relative ">
       {content?.map((r: any, index: number) => {
         let path = Array.isArray(params?.path)
           ? params?.path.join("/")
           : params?.path;
-        const check = (path || "").replace(/^\/+|\/+$/g, "").includes(r?.path);
+
+        function Check(children: any[]): boolean {
+          return children?.some((r: { path: string, children: any[] }) => {
+            if (pathname == `/${r?.path}`) {
+              return true;
+            }
+            return Check(r?.children);
+          })
+        }
+        const check = Check(r?.children);
+
         if (r.type == "folder" && r.children?.length) {
           return (
             <div className="w-full" key={r.id}>
@@ -50,7 +61,7 @@ export default function Sidebar({ content }: Props) {
             <Link
               key={r?.id}
               href={`/${r?.path}` || ""}
-              className={`${check ? "text-primary" : "hover:text-primary "} w-full flex items-center px-2.5 py-2 rounded transition-all`}
+              className={`${pathname == `/${r?.path}` ? "text-primary" : "hover:text-primary "} w-full flex items-center px-2.5 py-2 rounded transition-all`}
             >
               {r?.name}
             </Link>

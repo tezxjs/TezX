@@ -294,3 +294,27 @@ Your support helps improve and maintain TezX for everyone.
 ## 📜 License
 
 This project is licensed under the [MIT License](./package/LICENSE).
+
+ /**
+     *Registers one or more HTTP method handlers for a given path.
+     *
+     *Supports three overloads:
+     *
+     *1. A single callback:
+     *    app.when("GET", "/path", callback)
+     *
+     * 2. A middleware and a callback:
+     *app.when("GET", "/path", middleware, callback)
+     *
+     *3. An array of middlewares and a callback:
+     *    app.when("GET", "/path", [middleware1, middleware2], callback)
+     *
+     * @template U - Additional context to be merged into the main context
+     *@template Path - The string literal type of the route path
+     *
+     *@param {HTTPMethod | HTTPMethod[]} methods - One or more HTTP methods like 'GET', 'POST', etc.
+     * @param {Path} path - The route path (e.g., '/login')
+     *@param {...(Middleware<T & U, Path> | Middleware<T & U, Path>[] | Callback<T & U, Path>)} args - Middleware(s) and final callback
+     *
+     *@returns {this} Returns the app instance for chaining
+     */
