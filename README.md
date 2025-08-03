@@ -1,19 +1,21 @@
-# TezX - High-Performance JavaScript Framework
+# ⚡ TezX – High-Performance JavaScript Framework
 
-**TezX** is a cutting-edge, high-performance, and lightweight JavaScript framework designed for speed, scalability, and flexibility. Built with modern web development needs in mind, TezX enables efficient routing, middleware management, and static file serving with minimal configuration. It is fully compatible with **Node.js, Deno, and Bun**, making it a truly cross-environment framework.
+**TezX** is a modern, high-performance, and lightweight JavaScript framework designed for speed, scalability, and cross-environment compatibility. It offers an intuitive API for routing, middleware management, and static file serving—making it ideal for building web applications with **Node.js**, **Deno**, and **Bun**.
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tezxjs/TezX)
 
 ---
 
-## 🚀 Key Features
+## 🚀 Features at a Glance
 
-- ⚡ **High Performance** – Optimized for speed and scalability.
-- 🔥 **Minimal & Intuitive API** – Simple yet powerful.
-- 🗂️ **Built-in Static File Serving** – No additional setup required.
-- 🔌 **Robust Middleware Support** – Easily extend functionality.
-- 🧭 **Dynamic & Flexible Routing** – Define routes with ease.
-- 🔐 **Security First** – Designed with security best practices.
-- 📡 **Efficient HTTP Handling** – Built for high concurrency.
-- 🌍 **Cross-Environment Support** – Node.js, Deno, and Bun ready.
+- ⚡ **Ultra-Fast Performance** – Built for speed and concurrency.
+- 🧩 **Minimal & Intuitive API** – Clean and easy to use.
+- 🗂 **Static File Serving** – Serve files with a single command.
+- 🔌 **Middleware Support** – Stack and compose custom logic.
+- 🧭 **Flexible Routing** – Dynamic and pattern-based routing.
+- 🔐 **Security-First Design** – Secure by default.
+- 📡 **Efficient HTTP Engine** – High-concurrency request handling.
+- 🌍 **Cross-Environment** – Works with Node.js, Deno, and Bun.
 
 ---
 
@@ -23,11 +25,9 @@
 
 ```bash
 npm install tezx
-```
-
-```bash
+# or
 yarn add tezx
-````
+```
 
 ### Bun
 
@@ -40,7 +40,7 @@ bun add tezx
 
 ```ts
 import { TezX } from "https://deno.land/x/tezx/mod.ts";
-``` 
+```
 -->
 
 ---
@@ -49,47 +49,41 @@ import { TezX } from "https://deno.land/x/tezx/mod.ts";
 
 ```ts
 import { TezX } from "tezx";
-import { logger } from "tezx/middleware";
-import { nodeAdapter } from "tezx/node";
+import { logger } from "tezx/logger";
+import { createServer } from "node:http";
+import { mountTezXOnNode } from "tezx/node";
 
 const app = new TezX();
 app.use(logger());
-
 app.static("/", "./static");
 
-app.get("/", (ctx) => {
-  return ctx.html(`
+app.get("/", (ctx) =>
+  ctx.html(`
     <h1>Welcome to TezX</h1>
-    <p>A modern, high-performance cross-environment framework.</p>
-  `);
-});
+    <p>A modern, high-performance, cross-runtime JavaScript framework.</p>
+  `)
+);
 
-nodeAdapter(app).listen(3001, (message) => {
-  console.log(message);
+const server = createServer();
+mountTezXOnNode(app, server);
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`🚀 TezX is running at http://localhost:${PORT}`);
 });
 ```
 
 ---
 
-## ▶ Running the Server
+## ▶ Starting the Server
 
 ### Node.js
 
 ```bash
 node server.js
-```
-
-For development:
-
-```bash
+# or
 npm install -g nodemon
 nodemon server.js
-```
-
-### Deno
-
-```bash
-deno run --allow-net server.ts
 ```
 
 ### Bun
@@ -98,9 +92,15 @@ deno run --allow-net server.ts
 bun run server.js
 ```
 
+### Deno
+
+```bash
+deno run --allow-all server.ts
+```
+
 ---
 
-## 🛠 Middleware Support
+## 🔌 Middleware Usage
 
 ```ts
 app.use((ctx, next) => {
@@ -111,22 +111,24 @@ app.use((ctx, next) => {
 
 ---
 
-## 📂 Static File Serving
+## 🗂 Static File Serving
 
 ```ts
 app.static("/public", "./public");
 ```
 
-Files are accessible via `/public/filename.ext`.
+Accessible via: `http://localhost:3000/public/filename.ext`
 
 ---
 
-## 🔀 Routing
+## 🧭 Routing
 
 ```ts
 app.get("/about", (ctx) => ctx.html("<h1>About Us</h1>"));
 
-app.post("/submit", (ctx) => ctx.json({ message: "Form submitted successfully" }));
+app.post("/submit", (ctx) =>
+  ctx.json({ message: "Form submitted successfully" })
+);
 ```
 
 ---
@@ -143,72 +145,99 @@ app.onError((err, ctx) => {
 
 ## 🧪 Development Setup
 
-### Clone and Install
-
-```bash
-git clone https://github.com/tezxjs/tezx-app-example
-cd tezx-app-example
-npm install tezx@latest
-```
-
 ### Run Dev Server
 
 ```bash
 npm run dev
+# or
+bun run dev
 ```
 
-> Access at: [http://localhost:3000](http://localhost:3000)
+Access: [http://localhost:3000](http://localhost:3000)
 
 ---
 
 ## ⚙️ Platform-Specific Scripts
 
-### Node.js (Add to `package.json`)
+### Node.js – `package.json`
 
 ```json
-"scripts": {
-  "clean": "rm -rf dist",
-  "build:cjs": "tsc --module CommonJS --outDir dist/cjs --removeComments",
-  "build:esm": "tsc --module ESNext --outDir dist/mjs --removeComments",
-  "build:dts": "tsc --module ESNext --outDir dist/types --declaration --emitDeclarationOnly",
-  "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:dts",
-  "start": "node dist/index.js",
-  "nodemon": "nodemon src/index.ts",
-  "dev": "tsx watch src/index.ts"
+{
+  "scripts": {
+    "build:esm": "tsc --outDir dist/mjs --removeComments",
+    "build:dts": "tsc --outDir dist/types --declaration --emitDeclarationOnly",
+    "build": "npm run build:esm && npm run build:dts",
+    "start": "node dist/index.js",
+    "nodemon": "nodemon src/index.ts",
+    "dev": "tsx watch src/index.ts"
+  }
 }
 ```
 
-### Bun
+---
+
+### Bun – `package.json`
 
 ```json
-"scripts": {
-  "dev": "bun run --hot --watch src/index.ts"
+{
+  "scripts": {
+    "dev": "bun run --hot --watch src/index.ts"
+  }
 }
 ```
 
-`src/index.ts`:
+#### Example: `src/index.ts`
 
 ```ts
-import { bunAdapter } from "tezx/bun";
-bunAdapter(app).listen(3000, (message) => {
-  console.log(message);
+Bun.serve({
+  port: 3001,
+  reusePort: true,
+  fetch(req, server) {
+    return app.serve(req, server);
+  },
+  websocket: {
+    open(ws) {
+      console.log("WebSocket connected");
+      return ws.data?.open?.(ws);
+    },
+    message(ws, msg) {
+      return ws.data?.message?.(ws, msg);
+    },
+    close(ws, code, reason) {
+      return ws.data?.close?.(ws, { code, reason });
+    },
+    ping(ws, data) {
+      return ws.data?.ping?.(ws, data);
+    },
+    pong(ws, data) {
+      return ws.data?.pong?.(ws, data);
+    },
+    drain(ws) {
+      return ws.data?.drain?.(ws);
+    }
+  }
 });
+
+console.log(`🚀 Server running at http://localhost:${process.env.PORT}`);
 ```
 
-### Deno
+---
+
+### Deno – `package.json`
 
 ```json
-"scripts": {
-  "dev": "deno run --watch --allow-net --allow-read --allow-env --unstable-sloppy-imports src/index.ts"
+{
+  "scripts": {
+    "dev": "deno run --watch --allow-all --unstable-sloppy-imports src/index.ts"
+  }
 }
 ```
 
-`src/index.ts`:
+#### Example: `src/index.ts`
 
 ```ts
-import { denoAdapter } from "tezx/bun";
-denoAdapter(app).listen(3000, (message) => {
-  console.log(message);
+Deno.serve({ port: Number(Deno.env.get("PORT") || 5000) }, (req, connInfo) => {
+  return app.serve(req, connInfo);
 });
 ```
 
@@ -216,39 +245,47 @@ denoAdapter(app).listen(3000, (message) => {
 
 ## 🏗 Build & Deployment
 
-### Compile TypeScript to JavaScript
-
-Using `tsc`:
+### Compile TypeScript
 
 ```bash
 npm run build
 ```
 
+Outputs:
+
+- CommonJS (`dist/cjs`)
+- ESM (`dist/mjs`)
+- Type Declarations (`dist/types`)
+
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Feel free to:
+We welcome all contributions! Here's how to get started:
 
 - Fork the repository
+- Create a new branch
 - Submit a pull request
-- Open an issue for bugs or suggestions
+- Open issues for bugs or ideas
 
-GitHub: [https://github.com/tezxjs](https://github.com/tezxjs)
+👉 GitHub: [https://github.com/tezxjs](https://github.com/tezxjs)
 
 ---
 
-## 💖 Sponsor TezX
+## 💖 Support TezX
 
-TezX is an open-source project built with love and passion. If you find it helpful, consider supporting its development:
+TezX is open-source and developed with love. If you find it helpful:
 
-- 🌟 [Star on GitHub](https://github.com/tezxjs/TezX)
+- 🌟 Star the project on [GitHub](https://github.com/tezxjs/TezX)
+- 💸 [Sponsor on GitHub](https://github.com/sponsors/srakib17)
+
 <!-- - ☕ [Buy Me a Coffee](https://www.buymeacoffee.com/srakib17) -->
-- 💸 Become a sponsor on [GitHub Sponsors](https://github.com/sponsors/srakib17)
 
-Your support helps us maintain and improve TezX for developers around the world. Thank you!
+Your support helps improve and maintain TezX for everyone.
 
-## Our Sponsor
+---
+
+## 🙌 Sponsor
 
 [![papernxt](https://papernxt.com/favicon.ico)](https://papernxt.com)
 
@@ -256,6 +293,4 @@ Your support helps us maintain and improve TezX for developers around the world.
 
 ## 📜 License
 
-TezX is open-source software licensed under the [MIT License](./package/LICENSE).
-
----
+This project is licensed under the [MIT License](./package/LICENSE).
