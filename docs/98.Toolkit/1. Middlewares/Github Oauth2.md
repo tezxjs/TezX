@@ -3,8 +3,6 @@
 
 GitHub OAuth2.0 middleware for the [TezX](https://github.com/tezxjs/TezX) web framework. Securely authenticate users via GitHub, and define custom sign-in, session, and token handling logic.
 
-**Latest Version:** ![npm version](https://img.shields.io/npm/v/@tezx/github-oauth2.svg)
-
 ---
 
 ## ✅ Setup GitHub OAuth App
@@ -26,7 +24,7 @@ npm install @tezx/github-oauth2
 #### **Template**
 
 ```bash
-npm create tezx github-auth -- --template github-oauth2 --y
+npm create tezx@latest github-auth -- --template github-oauth2 --y
 ```
 
 ---
@@ -56,7 +54,7 @@ const client = GitHubOauthClient({
 app.get('github', getGithubOAuthURL({
   authClient: client,
 }), (ctx) => {
-  return ctx.redirect(ctx.github_oauth_url);
+  return ctx.redirect(ctx.github.oauth_url);
 });
 
 // Step 2: Verify GitHub token and handle user session
@@ -72,7 +70,7 @@ app.get('/', verifyGithubToken({
     };
   }
 }), async (ctx) => {
-  return ctx.json({ success: true });
+  return ctx.json({ success: ctx.github.user });
 });
 ```
 
@@ -96,7 +94,7 @@ Creates an OAuth client instance.
 
 ### `getGithubOAuthURL(options: OAuthURLParams)`
 
-Generates the GitHub OAuth URL and stores it in `ctx.state.get('github_oauth_url')`.
+Generates the GitHub OAuth URL and stores it in `ctx.github.oauth_url`.
 
 #### Parameters
 
@@ -129,11 +127,5 @@ Middleware to validate the token returned from GitHub and handle user info.
 | `signIn(user)`           | Called after user is authenticated. Return `true` to allow login. |
 | `jwt(token, user?)`      | Customize JWT token if applicable.                                |
 | `session(session, user)` | Customize the session object before sending to client.            |
-
----
-
-## 🛡 Security Tip
-
-Always validate the `state` returned from GitHub against a CSRF token stored on your server before accepting the response.
 
 ---
