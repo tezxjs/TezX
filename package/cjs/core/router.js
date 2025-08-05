@@ -168,9 +168,7 @@ class Router {
     }
     #routeAddTriNode(path, router) {
         this.env = { ...this.env, ...router.env };
-        if (this.router.name &&
-            router.router.name &&
-            this.router.name !== router.router.name) {
+        if (this.router?.name && router.router?.name && this.router?.name !== router.router?.name) {
             throw new Error(`Router name mismatch: expected "${this.router.name}", got "${router.router.name}"`);
         }
         if (!(router instanceof Router)) {

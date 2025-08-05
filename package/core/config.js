@@ -2,7 +2,6 @@ import { loggerOutput } from "../utils/debugging.js";
 import { runtime } from "../utils/runtime.js";
 export let GlobalConfig = class {
     static debugMode = false;
-    static server;
     static adapter = runtime;
     static get debugging() {
         return this.debugMode

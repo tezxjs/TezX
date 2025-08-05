@@ -2,7 +2,6 @@ import { Runtime } from "../types/index.js";
 export declare let GlobalConfig: {
     new (): {};
     debugMode?: boolean;
-    server: any;
     adapter: Runtime;
     readonly debugging: {
         info: (msg: string, ...args: unknown[]) => void;

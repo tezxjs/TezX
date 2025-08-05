@@ -94,8 +94,7 @@ class TezX extends router_js_1.Router {
                 return staticHandler(ctx);
             }
             const route = this.router.search(method, pathname);
-            if (!route ||
-                (route.handlers.length === 0 && route.middlewares.length === 0)) {
+            if (!route || (route.handlers.length === 0 && route.middlewares.length === 0)) {
                 return this.#notFound(ctx);
             }
             ctx.params = route.params;
@@ -115,7 +114,7 @@ class TezX extends router_js_1.Router {
                 res = ctx.send(ctx.body);
             }
             if (!res) {
-                throw new Error(`Handler failed: No response returned. Did you forget ${(0, colors_js_1.colorText)("await next()", "bgRed")} or to return a response? ${(0, colors_js_1.colorText)(`Path: ${ctx.pathname}, Method: ${ctx.method}`, "bgCyan")}`);
+                return this.#notFound(ctx);
             }
             return res;
         }

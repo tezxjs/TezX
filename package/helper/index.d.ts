@@ -32,7 +32,6 @@ declare const _default: {
     GlobalConfig: {
         new (): {};
         debugMode?: boolean;
-        server: any;
         adapter: import("../types/index.js").Runtime;
         readonly debugging: {
             info: (msg: string, ...args: unknown[]) => void;

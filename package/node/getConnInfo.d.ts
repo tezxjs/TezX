@@ -18,4 +18,4 @@ import { Middleware } from "../types/index.js";
  *   return new Response(`Your IP: ${ip}`);
  * });
  */
-export declare function getConnInfo(): Middleware<any>;
+export declare function getConnInfo<T extends Record<string, any> = {}, Path extends string = any>(): Middleware<T, Path>;

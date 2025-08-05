@@ -5,7 +5,6 @@ const debugging_js_1 = require("../utils/debugging.js");
 const runtime_js_1 = require("../utils/runtime.js");
 let GlobalConfig = class {
     static debugMode = false;
-    static server;
     static adapter = runtime_js_1.runtime;
     static get debugging() {
         return this.debugMode
