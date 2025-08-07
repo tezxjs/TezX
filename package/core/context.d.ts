@@ -92,6 +92,17 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
         append?: boolean;
     }): this;
     /**
+     * Deletes a response header by key.
+     *
+     * If the native Response object is not yet available (`this.res` is falsy),
+     * it removes the header from the internal headers store.
+     * If the native Response object is available, it removes the header directly from the response headers.
+     *
+     * @param {ResHeaderKey} key - The name of the header to delete (case-insensitive).
+     * @returns {this} Returns the current instance for method chaining.
+     */
+    deleteHeader(key: ResHeaderKey): this;
+    /**
      * Gets the route parameters extracted from the URL.
      *
      * @returns {Record<string, any>} An object containing key-value pairs of route parameters.
@@ -138,7 +149,7 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
      * @returns {HttpBaseResponse} Response object suitable for runtime.
      * @protected
      */
-    createResponse(body: BodyInit | null, init?: ResponseInit): HttpBaseResponse;
+    newResponse(body: BodyInit | null, init?: ResponseInit): HttpBaseResponse;
     /**
      * Sends a plain text response.
      *

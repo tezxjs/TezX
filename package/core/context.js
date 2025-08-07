@@ -41,8 +41,9 @@ export class Context {
     }
     setHeader(key, value, options) {
         let _key = key.toLowerCase();
+        let append = options?.append || _key == 'set-cookie';
         if (!this.res) {
-            if (options?.append && this.#headers[_key]) {
+            if (append && this.#headers[_key]) {
                 this.#headers[_key] += `, ${value}`;
             }
             else {
@@ -51,12 +52,22 @@ export class Context {
         }
         else {
             const resHeaders = this.res.headers;
-            if (options?.append) {
+            if (append) {
                 resHeaders.append(_key, value);
             }
             else {
                 resHeaders.set(_key, value);
             }
+        }
+        return this;
+    }
+    deleteHeader(key) {
+        const _key = key.toLowerCase();
+        if (!this.res) {
+            delete this.#headers[_key];
+        }
+        else {
+            this.res.headers.delete(_key);
         }
         return this;
     }
@@ -82,14 +93,14 @@ export class Context {
         this.#status = status;
         return this;
     };
-    createResponse(body, init = {}) {
+    newResponse(body, init = {}) {
         const headers = { ...this.#headers, ...init.headers };
         const status = init.status || this.#status;
         const statusText = init.statusText;
         return new Response(body, { status, statusText, headers });
     }
     text(content, init) {
-        return this.createResponse(content, {
+        return this.newResponse(content, {
             ...init,
             headers: {
                 "Content-Type": "text/plain; charset=utf-8",
@@ -104,7 +115,7 @@ export class Context {
                 const value = args?.[i] ?? "";
                 return result + str + value;
             }, "");
-            return this.createResponse(html, {
+            return this.newResponse(html, {
                 headers: {
                     "Content-Type": "text/html; charset=utf-8",
                 },
@@ -112,7 +123,7 @@ export class Context {
         }
         else {
             let init = args?.[0];
-            return this.createResponse(html, {
+            return this.newResponse(html, {
                 ...init,
                 headers: {
                     "Content-Type": "text/html; charset=utf-8",
@@ -122,7 +133,7 @@ export class Context {
         }
     }
     xml(xml, init) {
-        return this.createResponse(xml, {
+        return this.newResponse(xml, {
             ...init,
             headers: {
                 "Content-Type": "application/xml; charset=utf-8",
@@ -131,7 +142,7 @@ export class Context {
         });
     }
     json(json, init) {
-        return this.createResponse(JSON.stringify(json), {
+        return this.newResponse(JSON.stringify(json), {
             ...init,
             headers: {
                 "Content-Type": "application/json; charset=utf-8",
@@ -144,7 +155,7 @@ export class Context {
         const contentType = init?.headers?.["Content-Type"] ||
             init?.headers?.["content-type"] ||
             type;
-        return this.createResponse(_body, {
+        return this.newResponse(_body, {
             ...init,
             headers: {
                 "Content-Type": contentType,
@@ -162,7 +173,7 @@ export class Context {
         if (!(await fileExists(filePath)))
             throw Error("File not found");
         let buf = await getFileBuffer(filePath);
-        return this.createResponse(buf, {
+        return this.newResponse(buf, {
             status: 200,
             headers: {
                 "Content-Disposition": `attachment; filename="${filename}"`,
@@ -186,7 +197,7 @@ export class Context {
         let filename = init?.filename;
         if (filename)
             headers["Content-Disposition"] = `attachment; filename="${filename}"`;
-        return this.createResponse(fileStream, {
+        return this.newResponse(fileStream, {
             status: init?.status || 200,
             statusText: init?.statusText,
             headers,
