@@ -75,12 +75,16 @@ export type ResHeaderKey = ResponseHeader | (string & {});
  * Represents a collection of HTTP response headers as key-value pairs.
  * Keys and values are strings.
  */
-export type ResponseHeaders = Record<ResHeaderKey, string>;
+export interface ResponseHeaders extends Partial<Record<ResHeaderKey, string>> {
+    [key: string]: string | undefined;
+}
 /**
  * Represents a collection of HTTP request headers as key-value pairs.
  * Keys and values are strings.
  */
-export type RequestHeaders = Record<ReqHeaderKey, string>;
+export interface RequestHeaders extends Partial<Record<ReqHeaderKey, string>> {
+    [key: string]: string | undefined;
+}
 /**
  * Options for initializing a Response object.
  */

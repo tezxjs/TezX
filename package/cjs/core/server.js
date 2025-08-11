@@ -66,11 +66,10 @@ class TezX extends router_js_1.Router {
             return ctx.res;
         };
     }
-    async #handleRequest(req, args) {
+    async #handleRequest(req, method, args) {
         if (!(req instanceof Request)) {
             throw new Error("Invalid request object provided to tezX server.");
         }
-        const method = (req.method ?? "GET").toUpperCase();
         const pathname = await this.#resolvePath((0, url_js_1.getPathname)(req.url));
         let ctx = new context_js_1.Context(req, {
             pathname,
@@ -79,17 +78,7 @@ class TezX extends router_js_1.Router {
             args,
         });
         try {
-            if (method === "HEAD") {
-                const getRequest = new Request(req.url, { ...req, method: "GET" });
-                const headResponse = await this.#handleRequest(getRequest, args);
-                return new Response(null, {
-                    status: headResponse.status,
-                    statusText: headResponse.statusText,
-                    headers: headResponse.headers,
-                });
-            }
-            const staticKey = `${method} ${pathname}`;
-            const staticHandler = this.staticFile?.[staticKey];
+            const staticHandler = this.staticFile?.[`${method} ${pathname}`];
             if (staticHandler) {
                 return staticHandler(ctx);
             }
@@ -123,7 +112,17 @@ class TezX extends router_js_1.Router {
         }
     }
     async serve(req, ...args) {
-        return this.#handleRequest(req, args);
+        const method = (req.method ?? "GET").toUpperCase();
+        if (method === "HEAD") {
+            const getRequest = new Request(req.url, { ...req, method: "GET" });
+            const headResponse = await this.#handleRequest(getRequest, method, args);
+            return new Response(null, {
+                status: headResponse.status,
+                statusText: headResponse.statusText,
+                headers: headResponse.headers,
+            });
+        }
+        return this.#handleRequest(req, method, args);
     }
 }
 exports.TezX = TezX;

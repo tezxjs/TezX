@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.notFoundResponse = void 0;
 exports.handleErrorResponse = handleErrorResponse;
 exports.determineContentTypeBody = determineContentTypeBody;
+exports.newResponse = newResponse;
 let notFoundResponse = (ctx) => {
     const { method, pathname } = ctx;
     return ctx.text(`${method}: '${pathname}' could not find\n`, {
@@ -47,4 +48,25 @@ function determineContentTypeBody(body) {
         };
     }
     return { type: "text/plain; charset=utf-8", body: String(body ?? "") };
+}
+function newResponse(body, type, init = {}, baseHeaders, defaultStatus) {
+    let headers;
+    if (init.headers) {
+        headers = {
+            "Content-Type": type,
+            ...baseHeaders,
+            ...init.headers,
+        };
+    }
+    else {
+        headers = {
+            "Content-Type": type,
+            ...baseHeaders,
+        };
+    }
+    return new Response(body, {
+        status: init.status || defaultStatus,
+        statusText: init.statusText,
+        headers,
+    });
 }

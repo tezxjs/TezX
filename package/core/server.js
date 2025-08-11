@@ -63,11 +63,10 @@ export class TezX extends Router {
             return ctx.res;
         };
     }
-    async #handleRequest(req, args) {
+    async #handleRequest(req, method, args) {
         if (!(req instanceof Request)) {
             throw new Error("Invalid request object provided to tezX server.");
         }
-        const method = (req.method ?? "GET").toUpperCase();
         const pathname = await this.#resolvePath(getPathname(req.url));
         let ctx = new Context(req, {
             pathname,
@@ -76,17 +75,7 @@ export class TezX extends Router {
             args,
         });
         try {
-            if (method === "HEAD") {
-                const getRequest = new Request(req.url, { ...req, method: "GET" });
-                const headResponse = await this.#handleRequest(getRequest, args);
-                return new Response(null, {
-                    status: headResponse.status,
-                    statusText: headResponse.statusText,
-                    headers: headResponse.headers,
-                });
-            }
-            const staticKey = `${method} ${pathname}`;
-            const staticHandler = this.staticFile?.[staticKey];
+            const staticHandler = this.staticFile?.[`${method} ${pathname}`];
             if (staticHandler) {
                 return staticHandler(ctx);
             }
@@ -120,6 +109,16 @@ export class TezX extends Router {
         }
     }
     async serve(req, ...args) {
-        return this.#handleRequest(req, args);
+        const method = (req.method ?? "GET").toUpperCase();
+        if (method === "HEAD") {
+            const getRequest = new Request(req.url, { ...req, method: "GET" });
+            const headResponse = await this.#handleRequest(getRequest, method, args);
+            return new Response(null, {
+                status: headResponse.status,
+                statusText: headResponse.statusText,
+                headers: headResponse.headers,
+            });
+        }
+        return this.#handleRequest(req, method, args);
     }
 }

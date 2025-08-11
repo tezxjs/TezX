@@ -42,3 +42,24 @@ export function determineContentTypeBody(body) {
     }
     return { type: "text/plain; charset=utf-8", body: String(body ?? "") };
 }
+export function newResponse(body, type, init = {}, baseHeaders, defaultStatus) {
+    let headers;
+    if (init.headers) {
+        headers = {
+            "Content-Type": type,
+            ...baseHeaders,
+            ...init.headers,
+        };
+    }
+    else {
+        headers = {
+            "Content-Type": type,
+            ...baseHeaders,
+        };
+    }
+    return new Response(body, {
+        status: init.status || defaultStatus,
+        statusText: init.statusText,
+        headers,
+    });
+}

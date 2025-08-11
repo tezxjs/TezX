@@ -1,7 +1,7 @@
 import { fileExists, fileSize, getFileBuffer, readStream, } from "../utils/file.js";
 import { extensionExtract } from "../utils/low-level.js";
-import { determineContentTypeBody } from "../utils/response.js";
 import { defaultMimeType, mimeTypes } from "../utils/mimeTypes.js";
+import { determineContentTypeBody, newResponse } from "../utils/response.js";
 import { TezXRequest } from "./request.js";
 export class Context {
     #status = 200;
@@ -37,7 +37,7 @@ export class Context {
         return this.#headers;
     }
     set clearHeader(header) {
-        this.#headers = header || {};
+        this.#headers = (header || {});
     }
     setHeader(key, value, options) {
         let _key = key.toLowerCase();
@@ -97,16 +97,10 @@ export class Context {
         const headers = { ...this.#headers, ...init.headers };
         const status = init.status || this.#status;
         const statusText = init.statusText;
-        return new Response(body, { status, statusText, headers });
+        return new Response(body, { status, statusText, headers: headers });
     }
     text(content, init) {
-        return this.newResponse(content, {
-            ...init,
-            headers: {
-                "Content-Type": "text/plain; charset=utf-8",
-                ...init?.headers,
-            },
-        });
+        return newResponse(content, "text/plain; charset=utf-8", init, this.#headers, this.#status);
     }
     html(strings, ...args) {
         let html = strings;
@@ -115,53 +109,25 @@ export class Context {
                 const value = args?.[i] ?? "";
                 return result + str + value;
             }, "");
-            return this.newResponse(html, {
-                headers: {
-                    "Content-Type": "text/html; charset=utf-8",
-                },
-            });
+            return newResponse(html, "text/html; charset=utf-8", {}, this.#headers, this.#status);
         }
         else {
             let init = args?.[0];
-            return this.newResponse(html, {
-                ...init,
-                headers: {
-                    "Content-Type": "text/html; charset=utf-8",
-                    ...init?.headers,
-                },
-            });
+            return newResponse(html, "text/html; charset=utf-8", init, this.#headers, this.#status);
         }
     }
     xml(xml, init) {
-        return this.newResponse(xml, {
-            ...init,
-            headers: {
-                "Content-Type": "application/xml; charset=utf-8",
-                ...init?.headers,
-            },
-        });
+        return newResponse(xml, "text/xml; charset=utf-8", init, this.#headers, this.#status);
     }
     json(json, init) {
-        return this.newResponse(JSON.stringify(json), {
-            ...init,
-            headers: {
-                "Content-Type": "application/json; charset=utf-8",
-                ...init?.headers,
-            },
-        });
+        return newResponse(JSON.stringify(json), "application/json; charset=utf-8", init, this.#headers, this.#status);
     }
     send(body, init) {
         let { body: _body, type } = determineContentTypeBody(body);
         const contentType = init?.headers?.["Content-Type"] ||
             init?.headers?.["content-type"] ||
             type;
-        return this.newResponse(_body, {
-            ...init,
-            headers: {
-                "Content-Type": contentType,
-                ...init?.headers,
-            },
-        });
+        return newResponse(_body, contentType, {}, this.#headers, this.#status);
     }
     redirect(url, status = 302) {
         return new Response(null, {
@@ -173,14 +139,13 @@ export class Context {
         if (!(await fileExists(filePath)))
             throw Error("File not found");
         let buf = await getFileBuffer(filePath);
-        return this.newResponse(buf, {
+        return newResponse(buf, "application/octet-stream", {
             status: 200,
             headers: {
                 "Content-Disposition": `attachment; filename="${filename}"`,
-                "Content-Type": "application/octet-stream",
                 "Content-Length": buf.byteLength.toString(),
-            },
-        });
+            }
+        }, this.#headers, this.#status);
     }
     async sendFile(filePath, init) {
         if (!(await fileExists(filePath)))

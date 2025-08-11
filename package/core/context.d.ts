@@ -1,4 +1,4 @@
-import { ResHeaderKey, HttpBaseResponse, ResponseHeaders, ResponseInit } from "../types/index.js";
+import { HttpBaseResponse, ResHeaderKey, ResponseHeaders, ResponseInit } from "../types/index.js";
 import { TezXRequest } from "./request.js";
 export type ContextOptions<T> = {
     pathname: string;
@@ -72,7 +72,7 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
      * ctx.header('content-type'); // → 'application/json'
      * ctx.header(); // → { 'content-type': 'application/json' }
      */
-    header(): ResponseHeaders;
+    header(): Record<string, string>;
     header(header: ResHeaderKey): string | undefined;
     protected set clearHeader(header: ResponseHeaders);
     /**

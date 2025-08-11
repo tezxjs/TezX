@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Context = void 0;
 const file_js_1 = require("../utils/file.js");
 const low_level_js_1 = require("../utils/low-level.js");
-const response_js_1 = require("../utils/response.js");
 const mimeTypes_js_1 = require("../utils/mimeTypes.js");
+const response_js_1 = require("../utils/response.js");
 const request_js_1 = require("./request.js");
 class Context {
     #status = 200;
@@ -40,7 +40,7 @@ class Context {
         return this.#headers;
     }
     set clearHeader(header) {
-        this.#headers = header || {};
+        this.#headers = (header || {});
     }
     setHeader(key, value, options) {
         let _key = key.toLowerCase();
@@ -100,16 +100,10 @@ class Context {
         const headers = { ...this.#headers, ...init.headers };
         const status = init.status || this.#status;
         const statusText = init.statusText;
-        return new Response(body, { status, statusText, headers });
+        return new Response(body, { status, statusText, headers: headers });
     }
     text(content, init) {
-        return this.newResponse(content, {
-            ...init,
-            headers: {
-                "Content-Type": "text/plain; charset=utf-8",
-                ...init?.headers,
-            },
-        });
+        return (0, response_js_1.newResponse)(content, "text/plain; charset=utf-8", init, this.#headers, this.#status);
     }
     html(strings, ...args) {
         let html = strings;
@@ -118,53 +112,25 @@ class Context {
                 const value = args?.[i] ?? "";
                 return result + str + value;
             }, "");
-            return this.newResponse(html, {
-                headers: {
-                    "Content-Type": "text/html; charset=utf-8",
-                },
-            });
+            return (0, response_js_1.newResponse)(html, "text/html; charset=utf-8", {}, this.#headers, this.#status);
         }
         else {
             let init = args?.[0];
-            return this.newResponse(html, {
-                ...init,
-                headers: {
-                    "Content-Type": "text/html; charset=utf-8",
-                    ...init?.headers,
-                },
-            });
+            return (0, response_js_1.newResponse)(html, "text/html; charset=utf-8", init, this.#headers, this.#status);
         }
     }
     xml(xml, init) {
-        return this.newResponse(xml, {
-            ...init,
-            headers: {
-                "Content-Type": "application/xml; charset=utf-8",
-                ...init?.headers,
-            },
-        });
+        return (0, response_js_1.newResponse)(xml, "text/xml; charset=utf-8", init, this.#headers, this.#status);
     }
     json(json, init) {
-        return this.newResponse(JSON.stringify(json), {
-            ...init,
-            headers: {
-                "Content-Type": "application/json; charset=utf-8",
-                ...init?.headers,
-            },
-        });
+        return (0, response_js_1.newResponse)(JSON.stringify(json), "application/json; charset=utf-8", init, this.#headers, this.#status);
     }
     send(body, init) {
         let { body: _body, type } = (0, response_js_1.determineContentTypeBody)(body);
         const contentType = init?.headers?.["Content-Type"] ||
             init?.headers?.["content-type"] ||
             type;
-        return this.newResponse(_body, {
-            ...init,
-            headers: {
-                "Content-Type": contentType,
-                ...init?.headers,
-            },
-        });
+        return (0, response_js_1.newResponse)(_body, contentType, {}, this.#headers, this.#status);
     }
     redirect(url, status = 302) {
         return new Response(null, {
@@ -176,14 +142,13 @@ class Context {
         if (!(await (0, file_js_1.fileExists)(filePath)))
             throw Error("File not found");
         let buf = await (0, file_js_1.getFileBuffer)(filePath);
-        return this.newResponse(buf, {
+        return (0, response_js_1.newResponse)(buf, "application/octet-stream", {
             status: 200,
             headers: {
                 "Content-Disposition": `attachment; filename="${filename}"`,
-                "Content-Type": "application/octet-stream",
                 "Content-Length": buf.byteLength.toString(),
-            },
-        });
+            }
+        }, this.#headers, this.#status);
     }
     async sendFile(filePath, init) {
         if (!(await (0, file_js_1.fileExists)(filePath)))
