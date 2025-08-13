@@ -1,5 +1,5 @@
 import { Context } from "../core/context.js";
-import { Middleware } from "../types/index.js";
+import { HttpBaseResponse, Middleware } from "../types/index.js";
 export type CacheRule = {
     /**
      * 🎯 Condition to determine if this rule applies.
@@ -28,6 +28,13 @@ export type CacheOptions = {
      * 🧪 Weak ETag generation (optional).
      */
     useWeakETag?: boolean;
+    /**
+     * Error handler for cache middleware.
+     * @param error - The error that occurred.
+     * @param ctx - The current request context.
+     * @returns An HTTP response to send when an error occurs.
+     */
+    onError?: (error: Error, ctx: Context) => HttpBaseResponse;
     /**
      * 📝 Logging function for cache events.
      */

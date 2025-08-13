@@ -1,6 +1,9 @@
 import { GlobalConfig } from "../core/config.js";
 const cacheControl = (options) => {
-    const { defaultSettings, useWeakETag = false, rules = [], logEvent = (event, ctx, error) => {
+    const { defaultSettings, useWeakETag = false, rules = [], onError = (error, ctx) => {
+        ctx.setStatus = 500;
+        ctx.body = { error: "Failed to set cache headers." };
+    }, logEvent = (event, ctx, error) => {
         if (event === "error") {
             GlobalConfig.debugging.error(`[CACHE] ${event.toUpperCase()}: ${error?.message}`);
         }
@@ -41,8 +44,7 @@ const cacheControl = (options) => {
         }
         catch (error) {
             logEvent("error", ctx, error);
-            ctx.setStatus = 500;
-            ctx.body = { error: "Failed to set cache headers." };
+            return onError?.(error, ctx);
         }
     };
 };

@@ -31,13 +31,6 @@ export declare class RadixRouter implements RouteRegistry {
      */
     private _match;
     /**
-     * Merges a child router under a given base path.
-     *
-     * @param basePath - The base route prefix to mount the child router
-     * @param childRouter - The child router to merge into this one
-     */
-    mergeRouter(basePath: string, childRouter: this): void;
-    /**
      * Parses a route pattern into structured segments.
      *
      * @param pattern - The route string (e.g., "/users/:id?")

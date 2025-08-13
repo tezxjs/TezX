@@ -346,7 +346,6 @@ export interface RouteRegistry {
      * @param handlers - Array of middleware or callback handlers
      */
     addRoute<T extends Record<string, any> = any>(method: HTTPMethod, path: string, handler: HandlerType<T>): void;
-    mergeRouter?(path: string, router: this): void;
     /**
      * Find a route based on the given method and path.
      *

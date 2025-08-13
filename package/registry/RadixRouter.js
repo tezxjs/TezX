@@ -99,23 +99,6 @@ export class RadixRouter {
         }
         return { success: false, node };
     }
-    mergeRouter(basePath, childRouter) {
-        const segments = sanitizePathSplit(basePath);
-        let node = this.root;
-        for (const segment of segments) {
-            node.children[segment] ??= { children: {} };
-            node = node.children[segment];
-        }
-        if (childRouter.root.handlers) {
-            node.isEndpoint = true;
-            node.handlers ??= {};
-            for (const method in childRouter.root.handlers) {
-                node.handlers[method] ??= [];
-                node.handlers[method].push(...(childRouter.root.handlers?.[method] || []));
-            }
-        }
-        Object.assign(node.children, childRouter.root.children);
-    }
     parsePattern(pattern) {
         const segments = sanitizePathSplit(pattern);
         const result = [];

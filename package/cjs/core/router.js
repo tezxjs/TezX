@@ -174,18 +174,9 @@ class Router {
         if (!(router instanceof Router)) {
             throw new Error("Router instance is required.");
         }
-        if (this.router?.mergeRouter) {
-            const parts = (0, low_level_js_1.sanitizePathSplitBasePath)(this.basePath, path);
-            router.route.forEach((r) => {
-                this.#addRoute(r?.method, `/${(0, low_level_js_1.sanitizePathSplitBasePath)(path, r?.pattern).join("/")}`, r?.handlers, true);
-            });
-            this.router.mergeRouter(`/${parts.join("/")}`, router.router);
-        }
-        else {
-            router.route.forEach((r) => {
-                this.#addRoute(r?.method, `/${(0, low_level_js_1.sanitizePathSplitBasePath)(path, r?.pattern).join("/")}`, r?.handlers);
-            });
-        }
+        router.route.forEach((r) => {
+            this.#addRoute(r?.method, `/${(0, low_level_js_1.sanitizePathSplitBasePath)(path, r?.pattern).join("/")}`, r?.handlers);
+        });
         Object.assign(this.staticFile, router.staticFile);
     }
 }
