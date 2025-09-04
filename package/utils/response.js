@@ -31,7 +31,7 @@ export function determineContentTypeBody(body) {
     if (typeof Blob !== "undefined" && body instanceof Blob) {
         return { type: body.type || "application/octet-stream", body };
     }
-    if (typeof body === "object" && typeof body.pipe === "function") {
+    if (typeof body === "object" && typeof body?.pipe === "function") {
         return { type: "application/octet-stream", body };
     }
     if (typeof body === "object") {

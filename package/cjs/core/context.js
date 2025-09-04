@@ -74,9 +74,6 @@ class Context {
         }
         return this;
     }
-    get params() {
-        return this.#params;
-    }
     set params(params) {
         this.#params = params;
     }
@@ -135,7 +132,7 @@ class Context {
     redirect(url, status = 302) {
         return new Response(null, {
             status: status,
-            headers: { Location: url },
+            headers: { ...this.#headers, Location: url },
         });
     }
     async download(filePath, filename) {

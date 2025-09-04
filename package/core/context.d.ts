@@ -102,15 +102,6 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
      * @returns {this} Returns the current instance for method chaining.
      */
     deleteHeader(key: ResHeaderKey): this;
-    /**
-     * Gets the route parameters extracted from the URL.
-     *
-     * @returns {Record<string, any>} An object containing key-value pairs of route parameters.
-     *
-     * @example
-     * // For route `/user/:id` and URL `/user/123`, it returns: { id: "123" }
-     */
-    get params(): Record<string, any>;
     protected set params(params: Record<string, any>);
     /**
      * Gets the wrapped request object (`TezXRequest`).

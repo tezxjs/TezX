@@ -126,11 +126,9 @@ export class Router {
         }
         return this;
     }
-    #addRoute(method, path, handlers, skip = false) {
+    #addRoute(method, path, handlers) {
         let pattern = `/${sanitizePathSplitBasePath(this.basePath, path).join("/")}`;
-        if (!skip) {
-            this.router.addRoute(method, pattern, handlers);
-        }
+        this.router.addRoute(method, pattern, handlers);
         this.route.push({
             method: method,
             pattern: pattern,
