@@ -6,12 +6,18 @@ import hljs from "highlight.js";
 import "highlight.js/styles/github-dark.css"; // Syntax highlighting theme
 
 // import "highlight.js/styles/atom-one-light.css"; // Syntax highlighting theme
+import mermaid from "mermaid";
 
 import { marked } from "marked";
 import { useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function MarkdownRenderer({ markdown }: { markdown: string }) {
+  useEffect(() => {
+    mermaid.initialize({ startOnLoad: false, theme: "dark" });
+  }, []);
+
   const htmlContent = useMemo(() => {
     const option = {
       highlight: (code: any, lang: any) => {
@@ -76,6 +82,11 @@ export default function MarkdownRenderer({ markdown }: { markdown: string }) {
   const updatedHtmlContent = (htmlContent as any)?.replace(
     /<pre><code class="([^"]*)">([\s\S]*?)<\/code><\/pre>/g,
     (match: any, classNames: any, codeContent: any) => {
+      const trimmedCode = codeContent.trim();
+      if (classNames.includes("language-mermaid")) {
+        return `<div class="mermaid">${trimmedCode}</div>`;
+      }
+
       return `
         <div class="relative">
           <button
@@ -88,11 +99,19 @@ export default function MarkdownRenderer({ markdown }: { markdown: string }) {
             <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path>
             </svg>
           </button>
-          <pre><code class="${classNames}">${codeContent}</code></pre>
+          <pre><code class="${classNames}">${trimmedCode}</code></pre>
         </div>
       `;
     },
   );
+  const router = useRouter();
+  useEffect(() => {
+    mermaid.contentLoaded(); // Render all mermaid diagrams
+  }, [updatedHtmlContent, router]);
+
+  useEffect(() => {
+    setTimeout(() => mermaid.contentLoaded(), 0);
+  }, [updatedHtmlContent, router]);
 
   // const updatedHtmlContent = (htmlContent as any)?.replace(
   //     /<pre><code class="([^"]*)">([\s\S]*?)<\/code><\/pre>/g,

@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import a from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { IoIosArrowForward } from "react-icons/io";
 
@@ -58,13 +58,13 @@ export default function Sidebar({ content }: Props) {
         }
         else {
           return (
-            <Link
+            <a
               key={r?.id}
               href={`/${r?.path}` || ""}
               className={`${pathname == `/${r?.path}` ? "text-primary" : "hover:text-primary "} w-full flex items-center px-2.5 py-2 rounded transition-all`}
             >
               {r?.name}
-            </Link>
+            </a>
           );
         }
       })}
