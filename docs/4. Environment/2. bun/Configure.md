@@ -33,7 +33,7 @@ project/
 ### `server.ts`
 
 ```ts
-import { loadEnv } from "tezx/bun";
+import { loadEnv, wsHandlers} from "tezx/bun";
 import { app } from "./src/app"; // TezX app instance
 
 // Load environment variables
@@ -45,27 +45,7 @@ Bun.serve({
   fetch(req, server) {
     return app.serve(req, server); // TezX handles the request
   },
-  websocket: {
-    open(ws) {
-      console.log("WebSocket connected");
-      return (ws.data as any)?.open?.(ws);
-    },
-    message(ws, msg) {
-      return (ws.data as any)?.message?.(ws, msg);
-    },
-    close(ws, code, reason) {
-      return (ws.data as any)?.close?.(ws, { code, reason });
-    },
-    ping(ws, data) {
-      return (ws.data as any)?.ping?.(ws, data);
-    },
-    pong(ws, data) {
-      return (ws.data as any)?.pong?.(ws, data);
-    },
-    drain(ws) {
-      return (ws.data as any)?.drain?.(ws);
-    },
-  },
+  websocket: wsHandlers({}),
 });
 
 console.log(`🚀 Server running at http://localhost:${process.env.PORT}`);
