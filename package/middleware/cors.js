@@ -27,10 +27,6 @@ function cors(option = {}) {
         if (maxAge) {
             ctx.headers.set("Access-Control-Max-Age", maxAge.toString());
         }
-        if (ctx.method === "OPTIONS") {
-            ctx.setStatus = 204;
-            return;
-        }
         if (ctx.req.method === "OPTIONS") {
             return new Response(null, { status: 204, headers: ctx.header });
         }
