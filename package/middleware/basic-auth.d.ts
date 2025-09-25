@@ -1,83 +1,55 @@
 import { Context } from "../core/context.js";
 import { HttpBaseResponse, Middleware } from "../types/index.js";
 /**
- * Supported authentication method types.
+ * Options for Basic Authentication middleware.
  */
-export type AuthMethod = "basic" | "api-key" | "bearer-token";
-export type AuthCredential = {
-    username?: any;
-    password?: any;
-    token?: any;
-    apiKey?: any;
-};
-/**
- * Configuration options for dynamic basic authentication.
- */
-export type DynamicBasicAuthOptions = {
+export type BasicAuthOptions = {
     /**
-     * 🔐 Function to validate the provided credentials.
-     * @param method - The method of authentication.
-     * @param credentials - The extracted credentials.
+     * Function to validate the username and password.
+     * Can return a boolean or a Promise<boolean>.
+     *
+     * @param username - The username extracted from the request.
+     * @param password - The password extracted from the request.
      * @param ctx - The current request context.
-     * @returns A boolean or Promise resolving to whether the credentials are valid.
+     * @returns Whether the credentials are valid.
      */
-    validateCredentials: (method: AuthMethod, credentials: AuthCredential, ctx: Context) => boolean | Promise<boolean>;
+    validate: (username: string, password: string, ctx: Context) => boolean | Promise<boolean>;
     /**
-     * 🔒 Function to dynamically determine the realm for authentication prompt.
-     * @param ctx - The current request context.
-     * @returns The authentication realm string.
+     * Realm name shown in the `WWW-Authenticate` header.
+     * Defaults to `"Restricted Area"`.
      */
-    getRealm?: (ctx: Context) => string;
+    realm?: string;
     /**
-     * ❌ Custom handler for unauthorized access.
+     * Custom handler for unauthorized requests.
+     *
      * @param ctx - The current request context.
-     * @param error - Optional error information.
-     * @returns A CallbackReturn to end the response.
+     * @param error - Optional error object describing why access was denied.
+     * @returns HttpBaseResponse to send to the client.
      */
     onUnauthorized?: (ctx: Context, error?: Error) => HttpBaseResponse;
-    /**
-     * 🚦 Rate-limiting configuration.
-     *  @requires getConnInfo middleware. for parse remote address.
-     */
-    rateLimit?: {
-        /**
-         * 🧠 Custom cache or storage for rate-limit tracking.
-         */
-        storage?: {
-            get: (key: string) => {
-                count: number;
-                resetTime: number;
-            } | undefined;
-            set: (key: string, value: {
-                count: number;
-                resetTime: number;
-            }) => void;
-            clearExpired: () => void;
-        };
-        /** 🔁 Max requests allowed within the window */
-        maxRequests: number;
-        /** ⏲️ Duration of window in milliseconds */
-        windowMs: number;
-    };
-    /**
-     * 🛠 Supported authentication types.
-     * @default ["basic"]
-     */
-    supportedMethods?: AuthMethod[];
-    /**
-     * 🧑‍⚖️ Optional RBAC (Role-Based Access Control) check.
-     * @param ctx - The current request context.
-     * @param credentials - The validated credentials.
-     * @returns Whether access is allowed.
-     */
-    checkAccess?: (ctx: Context, credentials: AuthCredential) => boolean | Promise<boolean>;
 };
 /**
- * 🔐 Middleware for flexible authentication using Basic, API Key, or Bearer Token.
- * Supports rate limiting, IP filtering, and role-based access control.
+ * Basic Authentication Middleware
  *
- * @param options - Custom authentication handler options.
- * @returns A middleware function.
+ * Verifies that incoming requests contain a valid Basic Auth header
+ * (`Authorization: Basic <base64-credentials>`). Supports async
+ * validation and custom unauthorized handling.
+ *
+ * @param options - Configuration options for validation, realm, and error handling.
+ * @returns Middleware function to use in routes.
+ *
+ * @example
+ * ```ts
+ * import basicAuth from "./middleware/basicAuth.js";
+ *
+ * const auth = basicAuth({
+ *   validate: async (username, password) => username === "admin" && password === "1234",
+ * });
+ *
+ * app.use("/admin", auth, (ctx) => {
+ *   ctx.json({ message: "Access granted" });
+ * });
+ * ```
  */
-declare const basicAuth: (options: DynamicBasicAuthOptions) => Middleware;
-export { basicAuth, basicAuth as default };
+export declare const basicAuth: <T extends Record<string, any> = {}, Path extends string = any>(options: BasicAuthOptions) => Middleware<T, Path>;
+export default basicAuth;

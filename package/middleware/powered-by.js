@@ -1,6 +1,6 @@
 const poweredBy = (serverName) => {
     return function poweredBy(ctx, next) {
-        ctx.setHeader("x-powered-by", serverName || "TezX");
+        ctx.headers.set("x-powered-by", serverName || "TezX");
         return next();
     };
 };

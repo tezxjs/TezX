@@ -2,8 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.notFoundResponse = void 0;
 exports.handleErrorResponse = handleErrorResponse;
+exports.toString = toString;
 exports.determineContentTypeBody = determineContentTypeBody;
-exports.newResponse = newResponse;
+const config_js_1 = require("../core/config.js");
+const error_js_1 = require("../core/error.js");
 let notFoundResponse = (ctx) => {
     const { method, pathname } = ctx;
     return ctx.text(`${method}: '${pathname}' could not find\n`, {
@@ -11,14 +13,24 @@ let notFoundResponse = (ctx) => {
     });
 };
 exports.notFoundResponse = notFoundResponse;
-async function handleErrorResponse(message = new Error("Internal Server Error"), ctx) {
-    let error = message;
-    if (message instanceof Error) {
-        error = message.stack;
+async function handleErrorResponse(err = error_js_1.TezXError.internal(), ctx) {
+    if (err instanceof error_js_1.TezXError) {
+        config_js_1.GlobalConfig.debugging.error(err.details ?? err?.message);
+        return ctx.status(err.statusCode ?? 500).send(err.details ?? err?.message ?? "Internal Server Error");
     }
-    return ctx.text(error, {
-        status: 500,
-    });
+    return await handleErrorResponse(error_js_1.TezXError.internal(), ctx);
+}
+function toString(input, values) {
+    if (typeof input === "string") {
+        return input;
+    }
+    let result = "";
+    for (let i = 0; i < input.length; i++) {
+        result += input[i];
+        if (i < values.length)
+            result += values[i];
+    }
+    return result;
 }
 function determineContentTypeBody(body) {
     if (typeof body === "string" ||
@@ -48,25 +60,4 @@ function determineContentTypeBody(body) {
         };
     }
     return { type: "text/plain; charset=utf-8", body: String(body ?? "") };
-}
-function newResponse(body, type, init = {}, baseHeaders, defaultStatus) {
-    let headers;
-    if (init.headers) {
-        headers = {
-            "Content-Type": type,
-            ...baseHeaders,
-            ...init.headers,
-        };
-    }
-    else {
-        headers = {
-            "Content-Type": type,
-            ...baseHeaders,
-        };
-    }
-    return new Response(body, {
-        status: init.status || defaultStatus,
-        statusText: init.statusText,
-        headers,
-    });
 }

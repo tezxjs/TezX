@@ -1,13 +1,10 @@
 import { generateUUID } from "../helper/index.js";
 const requestID = (headerName = "X-Request-ID", contextKey = "requestID") => {
     return function requestID(ctx, next) {
-        let requestId = ctx.header(headerName);
-        if (!requestId) {
-            requestId = `req-${generateUUID()}`;
-        }
+        let requestId = ctx.headers.get(headerName) ?? `req-${generateUUID()}`;
         ctx[contextKey] = requestId;
-        ctx.setHeader(headerName, requestId);
+        ctx.headers.set(headerName, requestId);
         return next();
     };
 };
-export { requestID, requestID as default };
+export { requestID as default, requestID };

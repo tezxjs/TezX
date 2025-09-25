@@ -17,8 +17,8 @@ function createRateLimitDefaultStorage() {
         },
     };
 }
-function isRateLimit(ctx, key, store, maxRequests, windowMs) {
-    store.clearExpired();
+function isRateLimit(key, store, maxRequests, windowMs) {
+    store?.clearExpired();
     const now = Date.now();
     let entry = store.get(key) || { count: 0, resetTime: now + windowMs };
     if (now < entry.resetTime) {

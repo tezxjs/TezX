@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.wsHandlers = void 0;
 exports.upgradeWebSocket = upgradeWebSocket;
 function upgradeWebSocket(callback, options = {}) {
     const { onUpgradeError = (error, ctx) => {
@@ -34,4 +35,28 @@ function upgradeWebSocket(callback, options = {}) {
         return next();
     };
 }
+const wsHandlers = (options) => {
+    return {
+        open(ws) {
+            return ws.data?.open?.(ws);
+        },
+        message(ws, msg) {
+            return ws.data?.message?.(ws, msg);
+        },
+        close(ws, code, reason) {
+            return ws.data?.close?.(ws, { code, reason });
+        },
+        ping(ws, data) {
+            return ws.data?.ping?.(ws, data);
+        },
+        pong(ws, data) {
+            return ws.data?.pong?.(ws, data);
+        },
+        drain(ws) {
+            return ws.data?.drain?.(ws);
+        },
+        ...options,
+    };
+};
+exports.wsHandlers = wsHandlers;
 exports.default = upgradeWebSocket;

@@ -1,5 +1,5 @@
-import { sanitizePathSplitBasePath } from "../utils/low-level.js";
 import { RadixRouter } from "../registry/RadixRouter.js";
+import { sanitizePathSplitBasePath } from "../utils/low-level.js";
 export class Router {
     env = {};
     router;
@@ -163,7 +163,9 @@ export class Router {
     }
     #routeAddTriNode(path, router) {
         this.env = { ...this.env, ...router.env };
-        if (this.router?.name && router.router?.name && this.router?.name !== router.router?.name) {
+        if (this.router?.name &&
+            router.router?.name &&
+            this.router?.name !== router.router?.name) {
             throw new Error(`Router name mismatch: expected "${this.router.name}", got "${router.router.name}"`);
         }
         if (!(router instanceof Router)) {

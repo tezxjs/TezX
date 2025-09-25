@@ -1,28 +1,28 @@
 import { fileExists, fileSize, getFileBuffer, readStream, } from "../utils/file.js";
 import { extensionExtract } from "../utils/low-level.js";
 import { defaultMimeType, mimeTypes } from "../utils/mimeTypes.js";
-import { determineContentTypeBody, newResponse } from "../utils/response.js";
+import { determineContentTypeBody, toString } from "../utils/response.js";
 import { TezXRequest } from "./request.js";
 export class Context {
     #status = 200;
-    #headers = { connection: "keep-alive" };
+    #headers;
     #req = null;
     #params = {};
     rawRequest;
     #args;
     #body;
+    url;
+    res;
     env = {};
     pathname;
     method;
-    constructor(req, options) {
-        this.#args = options?.args;
+    constructor(req, pathname, method, env, args) {
+        this.#args = args;
         this.rawRequest = req;
-        this.pathname = options?.pathname;
-        this.env = options?.env || {};
-        this.method = options?.method;
-    }
-    get url() {
-        return this.req.url;
+        this.url = req.url;
+        this.pathname = pathname;
+        this.env = env ?? {};
+        this.method = method;
     }
     get getStatus() {
         return this.#status;
@@ -30,44 +30,20 @@ export class Context {
     set setStatus(code) {
         this.#status = code;
     }
-    header(header) {
-        if (header) {
-            return this.#headers[header?.toLowerCase()];
-        }
-        return this.#headers;
-    }
-    set clearHeader(header) {
-        this.#headers = (header || {});
+    get headers() {
+        return this.res?.headers ?? (this.#headers ??= new Headers());
     }
     setHeader(key, value, options) {
-        let _key = key.toLowerCase();
-        let append = options?.append || _key == 'set-cookie';
-        if (!this.res) {
-            if (append && this.#headers[_key]) {
-                this.#headers[_key] += `, ${value}`;
-            }
-            else {
-                this.#headers[_key] = value;
-            }
-        }
-        else {
-            const resHeaders = this.res.headers;
-            if (append) {
-                resHeaders.append(_key, value);
-            }
-            else {
-                resHeaders.set(_key, value);
-            }
-        }
-        return this;
-    }
-    deleteHeader(key) {
+        if (!value)
+            return this;
         const _key = key.toLowerCase();
-        if (!this.res) {
-            delete this.#headers[_key];
+        const append = options?.append || _key === "set-cookie";
+        const target = this.res?.headers ?? (this.#headers ??= new Headers());
+        if (append) {
+            target.append(_key, value);
         }
         else {
-            this.res.headers.delete(_key);
+            target.set(_key, value);
         }
         return this;
     }
@@ -75,10 +51,7 @@ export class Context {
         this.#params = params;
     }
     get req() {
-        if (!this.#req) {
-            this.#req = new TezXRequest(this.rawRequest, this.method, this.pathname, this.#params);
-        }
-        return this.#req;
+        return (this.#req ??= new TezXRequest(this.rawRequest, this.method, this.pathname, this.#params));
     }
     get body() {
         return this.#body;
@@ -90,66 +63,93 @@ export class Context {
         this.#status = status;
         return this;
     };
+    #newResponse(body, type, init = {}) {
+        const headers = new Headers(this.#headers);
+        headers.set("Content-Type", type);
+        if (init.headers) {
+            for (const key in init.headers) {
+                const value = init.headers[key];
+                if (!value)
+                    continue;
+                if (key.toLowerCase() === "set-cookie") {
+                    headers.append(key, value);
+                }
+                else {
+                    headers.set(key, value);
+                }
+            }
+        }
+        return new Response(body, {
+            status: init.status ?? this.#status,
+            statusText: init.statusText,
+            headers,
+        });
+    }
     newResponse(body, init = {}) {
-        const headers = { ...this.#headers, ...init.headers };
-        const status = init.status || this.#status;
-        const statusText = init.statusText;
-        return new Response(body, { status, statusText, headers: headers });
+        const headers = new Headers(this.#headers);
+        if (init.headers) {
+            for (const key in init.headers) {
+                const value = init.headers[key];
+                if (!value) {
+                    continue;
+                }
+                if (key.toLowerCase() === "set-cookie") {
+                    headers.append(key, value);
+                }
+                else {
+                    headers.set(key, value);
+                }
+            }
+        }
+        return new Response(body, {
+            status: init.status ?? this.#status,
+            statusText: init.statusText,
+            headers,
+        });
     }
     text(content, init) {
-        return newResponse(content, "text/plain; charset=utf-8", init, this.#headers, this.#status);
+        return this.#newResponse(content, "text/plain; charset=utf-8", init);
     }
     html(strings, ...args) {
-        let html = strings;
-        if (Array.isArray(strings)) {
-            html = strings.reduce((result, str, i) => {
-                const value = args?.[i] ?? "";
-                return result + str + value;
-            }, "");
-            return newResponse(html, "text/html; charset=utf-8", {}, this.#headers, this.#status);
-        }
-        else {
-            let init = args?.[0];
-            return newResponse(html, "text/html; charset=utf-8", init, this.#headers, this.#status);
-        }
+        return this.#newResponse(toString(strings, args), "text/html; charset=utf-8", args?.[0]);
     }
-    xml(xml, init) {
-        return newResponse(xml, "text/xml; charset=utf-8", init, this.#headers, this.#status);
+    xml(strings, ...args) {
+        return this.#newResponse(toString(strings, args), "text/html; charset=utf-8", args?.[0]);
     }
     json(json, init) {
-        return newResponse(JSON.stringify(json), "application/json; charset=utf-8", init, this.#headers, this.#status);
+        return this.#newResponse(JSON.stringify(json), "application/json; charset=utf-8", init);
     }
     send(body, init) {
         let { body: _body, type } = determineContentTypeBody(body);
-        const contentType = init?.headers?.["Content-Type"] ||
-            init?.headers?.["content-type"] ||
+        const contentType = init?.headers?.["Content-Type"] ??
+            init?.headers?.["content-type"] ??
             type;
-        return newResponse(_body, contentType, {}, this.#headers, this.#status);
+        return this.#newResponse(_body, contentType, init);
     }
     redirect(url, status = 302) {
-        return new Response(null, {
-            status: status,
-            headers: { ...this.#headers, Location: url },
-        });
+        const headers = new Headers(this.#headers);
+        headers.set("Location", url);
+        return new Response(null, { status, headers });
     }
     async download(filePath, filename) {
         if (!(await fileExists(filePath)))
             throw Error("File not found");
-        let buf = await getFileBuffer(filePath);
-        return newResponse(buf, "application/octet-stream", {
-            status: 200,
-            headers: {
-                "Content-Disposition": `attachment; filename="${filename}"`,
-                "Content-Length": buf.byteLength.toString(),
-            }
-        }, this.#headers, this.#status);
+        const buf = await getFileBuffer(filePath);
+        const headers = {
+            "Content-Disposition": `attachment; filename="${filename}"`,
+            "Content-Length": buf.byteLength.toString(),
+        };
+        return this.#newResponse(buf, "application/octet-stream", {
+            status: this.#status,
+            headers,
+        });
     }
     async sendFile(filePath, init) {
         if (!(await fileExists(filePath)))
             throw Error("File not found");
         let size = await fileSize(filePath);
-        const ext = extensionExtract(filePath) || "";
-        const mimeType = mimeTypes[ext] || defaultMimeType;
+        const ext = extensionExtract(filePath);
+        const mimeType = mimeTypes[ext] ?? defaultMimeType;
         let fileStream = await readStream(filePath);
         let headers = {
             "Content-Type": mimeType,
@@ -157,10 +157,11 @@ export class Context {
             ...init?.headers,
         };
         let filename = init?.filename;
-        if (filename)
+        if (filename) {
             headers["Content-Disposition"] = `attachment; filename="${filename}"`;
+        }
         return this.newResponse(fileStream, {
-            status: init?.status || 200,
+            status: init?.status ?? this.#status,
             statusText: init?.statusText,
             headers,
         });

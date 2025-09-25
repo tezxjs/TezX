@@ -1,4 +1,3 @@
-import { Context } from "..";
 export declare function createRateLimitDefaultStorage(): {
     get: (key: string) => {
         count: number;
@@ -13,7 +12,7 @@ export declare function createRateLimitDefaultStorage(): {
     }>;
     clearExpired: () => void;
 };
-export declare function isRateLimit(ctx: Context, key: string, store: any, maxRequests: number, windowMs: number): {
+export declare function isRateLimit(key: string, store: any, maxRequests: number, windowMs: number): {
     check: boolean;
     entry: any;
 };

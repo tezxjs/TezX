@@ -34,7 +34,7 @@ function allCookies(ctx) {
     return cookies;
 }
 function setCookie(ctx, name, value, options) {
-    ctx.setHeader("Set-Cookie", `${name}=${value}; ${serializeOptions(options || {})}`);
+    ctx.setHeader("Set-Cookie", `${name}=${value}; ${serializeOptions(options ?? {})}`);
 }
 function deleteCookie(ctx, name, options) {
     ctx.setHeader("Set-Cookie", `${name}=; ${serializeOptions({ ...options, maxAge: 0, expires: new Date(0) })}`);

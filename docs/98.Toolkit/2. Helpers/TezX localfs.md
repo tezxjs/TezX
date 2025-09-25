@@ -161,10 +161,8 @@ Then files are available at:
 app.post("/upload", async (ctx) => {
   const formData = await ctx.req.formData();
   const file = formData?.files;
-
   const buffer = Buffer.from(await file.arrayBuffer());
   const result = await storage.saveFile(file.name, buffer);
-
   return ctx.json(result);
 });
 

@@ -8,24 +8,24 @@ const response_js_1 = require("../utils/response.js");
 const request_js_1 = require("./request.js");
 class Context {
     #status = 200;
-    #headers = { connection: "keep-alive" };
+    #headers;
     #req = null;
     #params = {};
     rawRequest;
     #args;
     #body;
+    url;
+    res;
     env = {};
     pathname;
     method;
-    constructor(req, options) {
-        this.#args = options?.args;
+    constructor(req, pathname, method, env, args) {
+        this.#args = args;
         this.rawRequest = req;
-        this.pathname = options?.pathname;
-        this.env = options?.env || {};
-        this.method = options?.method;
-    }
-    get url() {
-        return this.req.url;
+        this.url = req.url;
+        this.pathname = pathname;
+        this.env = env ?? {};
+        this.method = method;
     }
     get getStatus() {
         return this.#status;
@@ -33,44 +33,20 @@ class Context {
     set setStatus(code) {
         this.#status = code;
     }
-    header(header) {
-        if (header) {
-            return this.#headers[header?.toLowerCase()];
-        }
-        return this.#headers;
-    }
-    set clearHeader(header) {
-        this.#headers = (header || {});
+    get headers() {
+        return this.res?.headers ?? (this.#headers ??= new Headers());
     }
     setHeader(key, value, options) {
-        let _key = key.toLowerCase();
-        let append = options?.append || _key == 'set-cookie';
-        if (!this.res) {
-            if (append && this.#headers[_key]) {
-                this.#headers[_key] += `, ${value}`;
-            }
-            else {
-                this.#headers[_key] = value;
-            }
-        }
-        else {
-            const resHeaders = this.res.headers;
-            if (append) {
-                resHeaders.append(_key, value);
-            }
-            else {
-                resHeaders.set(_key, value);
-            }
-        }
-        return this;
-    }
-    deleteHeader(key) {
+        if (!value)
+            return this;
         const _key = key.toLowerCase();
-        if (!this.res) {
-            delete this.#headers[_key];
+        const append = options?.append || _key === "set-cookie";
+        const target = this.res?.headers ?? (this.#headers ??= new Headers());
+        if (append) {
+            target.append(_key, value);
         }
         else {
-            this.res.headers.delete(_key);
+            target.set(_key, value);
         }
         return this;
     }
@@ -78,10 +54,7 @@ class Context {
         this.#params = params;
     }
     get req() {
-        if (!this.#req) {
-            this.#req = new request_js_1.TezXRequest(this.rawRequest, this.method, this.pathname, this.#params);
-        }
-        return this.#req;
+        return (this.#req ??= new request_js_1.TezXRequest(this.rawRequest, this.method, this.pathname, this.#params));
     }
     get body() {
         return this.#body;
@@ -93,66 +66,93 @@ class Context {
         this.#status = status;
         return this;
     };
+    #newResponse(body, type, init = {}) {
+        const headers = new Headers(this.#headers);
+        headers.set("Content-Type", type);
+        if (init.headers) {
+            for (const key in init.headers) {
+                const value = init.headers[key];
+                if (!value)
+                    continue;
+                if (key.toLowerCase() === "set-cookie") {
+                    headers.append(key, value);
+                }
+                else {
+                    headers.set(key, value);
+                }
+            }
+        }
+        return new Response(body, {
+            status: init.status ?? this.#status,
+            statusText: init.statusText,
+            headers,
+        });
+    }
     newResponse(body, init = {}) {
-        const headers = { ...this.#headers, ...init.headers };
-        const status = init.status || this.#status;
-        const statusText = init.statusText;
-        return new Response(body, { status, statusText, headers: headers });
+        const headers = new Headers(this.#headers);
+        if (init.headers) {
+            for (const key in init.headers) {
+                const value = init.headers[key];
+                if (!value) {
+                    continue;
+                }
+                if (key.toLowerCase() === "set-cookie") {
+                    headers.append(key, value);
+                }
+                else {
+                    headers.set(key, value);
+                }
+            }
+        }
+        return new Response(body, {
+            status: init.status ?? this.#status,
+            statusText: init.statusText,
+            headers,
+        });
     }
     text(content, init) {
-        return (0, response_js_1.newResponse)(content, "text/plain; charset=utf-8", init, this.#headers, this.#status);
+        return this.#newResponse(content, "text/plain; charset=utf-8", init);
     }
     html(strings, ...args) {
-        let html = strings;
-        if (Array.isArray(strings)) {
-            html = strings.reduce((result, str, i) => {
-                const value = args?.[i] ?? "";
-                return result + str + value;
-            }, "");
-            return (0, response_js_1.newResponse)(html, "text/html; charset=utf-8", {}, this.#headers, this.#status);
-        }
-        else {
-            let init = args?.[0];
-            return (0, response_js_1.newResponse)(html, "text/html; charset=utf-8", init, this.#headers, this.#status);
-        }
+        return this.#newResponse((0, response_js_1.toString)(strings, args), "text/html; charset=utf-8", args?.[0]);
     }
-    xml(xml, init) {
-        return (0, response_js_1.newResponse)(xml, "text/xml; charset=utf-8", init, this.#headers, this.#status);
+    xml(strings, ...args) {
+        return this.#newResponse((0, response_js_1.toString)(strings, args), "text/html; charset=utf-8", args?.[0]);
     }
     json(json, init) {
-        return (0, response_js_1.newResponse)(JSON.stringify(json), "application/json; charset=utf-8", init, this.#headers, this.#status);
+        return this.#newResponse(JSON.stringify(json), "application/json; charset=utf-8", init);
     }
     send(body, init) {
         let { body: _body, type } = (0, response_js_1.determineContentTypeBody)(body);
-        const contentType = init?.headers?.["Content-Type"] ||
-            init?.headers?.["content-type"] ||
+        const contentType = init?.headers?.["Content-Type"] ??
+            init?.headers?.["content-type"] ??
             type;
-        return (0, response_js_1.newResponse)(_body, contentType, {}, this.#headers, this.#status);
+        return this.#newResponse(_body, contentType, init);
     }
     redirect(url, status = 302) {
-        return new Response(null, {
-            status: status,
-            headers: { ...this.#headers, Location: url },
-        });
+        const headers = new Headers(this.#headers);
+        headers.set("Location", url);
+        return new Response(null, { status, headers });
     }
     async download(filePath, filename) {
         if (!(await (0, file_js_1.fileExists)(filePath)))
             throw Error("File not found");
-        let buf = await (0, file_js_1.getFileBuffer)(filePath);
-        return (0, response_js_1.newResponse)(buf, "application/octet-stream", {
-            status: 200,
-            headers: {
-                "Content-Disposition": `attachment; filename="${filename}"`,
-                "Content-Length": buf.byteLength.toString(),
-            }
-        }, this.#headers, this.#status);
+        const buf = await (0, file_js_1.getFileBuffer)(filePath);
+        const headers = {
+            "Content-Disposition": `attachment; filename="${filename}"`,
+            "Content-Length": buf.byteLength.toString(),
+        };
+        return this.#newResponse(buf, "application/octet-stream", {
+            status: this.#status,
+            headers,
+        });
     }
     async sendFile(filePath, init) {
         if (!(await (0, file_js_1.fileExists)(filePath)))
             throw Error("File not found");
         let size = await (0, file_js_1.fileSize)(filePath);
-        const ext = (0, low_level_js_1.extensionExtract)(filePath) || "";
-        const mimeType = mimeTypes_js_1.mimeTypes[ext] || mimeTypes_js_1.defaultMimeType;
+        const ext = (0, low_level_js_1.extensionExtract)(filePath);
+        const mimeType = mimeTypes_js_1.mimeTypes[ext] ?? mimeTypes_js_1.defaultMimeType;
         let fileStream = await (0, file_js_1.readStream)(filePath);
         let headers = {
             "Content-Type": mimeType,
@@ -160,10 +160,11 @@ class Context {
             ...init?.headers,
         };
         let filename = init?.filename;
-        if (filename)
+        if (filename) {
             headers["Content-Disposition"] = `attachment; filename="${filename}"`;
+        }
         return this.newResponse(fileStream, {
-            status: init?.status || 200,
+            status: init?.status ?? this.#status,
             statusText: init?.statusText,
             headers,
         });

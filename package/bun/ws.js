@@ -31,4 +31,27 @@ export function upgradeWebSocket(callback, options = {}) {
         return next();
     };
 }
+export const wsHandlers = (options) => {
+    return {
+        open(ws) {
+            return ws.data?.open?.(ws);
+        },
+        message(ws, msg) {
+            return ws.data?.message?.(ws, msg);
+        },
+        close(ws, code, reason) {
+            return ws.data?.close?.(ws, { code, reason });
+        },
+        ping(ws, data) {
+            return ws.data?.ping?.(ws, data);
+        },
+        pong(ws, data) {
+            return ws.data?.pong?.(ws, data);
+        },
+        drain(ws) {
+            return ws.data?.drain?.(ws);
+        },
+        ...options,
+    };
+};
 export default upgradeWebSocket;

@@ -3,47 +3,37 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.cors = cors;
 exports.default = cors;
 function cors(option = {}) {
-    const { methods, allowedHeaders, credentials, exposedHeaders, maxAge, origin, } = option;
+    const { credentials, maxAge, origin, } = option;
+    let methods = (option.methods || ["GET", "POST", "PUT", "DELETE"]).join(", ");
+    let allowedHeaders = (option.allowedHeaders || ["Content-Type", "Authorization"]).join(", ");
+    let exposedHeaders = option?.exposedHeaders?.join(", ");
     return async function cors(ctx, next) {
         const reqOrigin = ctx.req.header("origin") || "";
         let allowOrigin = "*";
         if (typeof origin === "string") {
             allowOrigin = origin;
         }
-        else if (origin instanceof RegExp) {
-            allowOrigin = origin.test(reqOrigin) ? reqOrigin : "";
-        }
         else if (Array.isArray(origin)) {
-            const isAllowed = origin.some((item) => {
-                if (typeof item === "string") {
-                    return item === reqOrigin;
-                }
-                else if (item instanceof RegExp) {
-                    return item.test(reqOrigin);
-                }
-            });
-            allowOrigin = isAllowed ? reqOrigin : "";
+            allowOrigin = origin.includes(reqOrigin) ? reqOrigin : "";
         }
         else if (typeof origin === "function") {
             allowOrigin = origin(reqOrigin) ? reqOrigin : "";
         }
-        ctx.setHeader("Access-Control-Allow-Origin", allowOrigin);
-        ctx.setHeader("Access-Control-Allow-Methods", (methods || ["GET", "POST", "PUT", "DELETE"]).join(", "));
-        ctx.setHeader("Access-Control-Allow-Headers", (allowedHeaders || ["Content-Type", "Authorization"]).join(", "));
+        ctx.headers.set("Access-Control-Allow-Origin", allowOrigin);
+        ctx.headers.set("Access-Control-Allow-Methods", methods);
+        ctx.headers.set("Access-Control-Allow-Headers", allowedHeaders);
         if (exposedHeaders) {
-            ctx.setHeader("Access-Control-Expose-Headers", exposedHeaders.join(", "));
+            ctx.headers.set("Access-Control-Expose-Headers", exposedHeaders);
         }
         if (credentials) {
-            ctx.setHeader("Access-Control-Allow-Credentials", "true");
+            ctx.headers.set("Access-Control-Allow-Credentials", "true");
         }
         if (maxAge) {
-            ctx.setHeader("Access-Control-Max-Age", maxAge.toString());
+            ctx.headers.set("Access-Control-Max-Age", maxAge.toString());
         }
-        if (ctx.req.method === "OPTIONS") {
-            return new Response(null, {
-                status: 204,
-                headers: ctx.header(),
-            });
+        if (ctx.method === "OPTIONS") {
+            ctx.setStatus = 204;
+            return;
         }
         return await next();
     };

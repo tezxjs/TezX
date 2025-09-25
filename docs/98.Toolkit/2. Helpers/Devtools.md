@@ -1,7 +1,6 @@
-
 # 📊 TezX DevTools
 
-> Developer-friendly diagnostics and inspector panel for TezX-based applications. Plug in to see routes, middlewares, env variables, cookies, and add your own custom debug tabs.
+> Developer-friendly diagnostics panel for TezX apps. Inspect routes, middleware, env variables, cookies, and add custom debug tabs.
 
 ---
 
@@ -9,11 +8,6 @@
 
 ```bash
 npm install @tezx/devtools
-```
-
-Ensure you also have:
-
-```bash
 npm install tezx
 ```
 
@@ -21,41 +15,34 @@ npm install tezx
 
 ## 🚀 Quick Usage
 
-In your TezX app entry (e.g., `server.ts` or `index.ts`):
-
 ```ts
 import { TezX } from "tezx";
-import {nodeAdapter} from "tezx/node";
+import { nodeAdapter } from "tezx/node";
 import DevTools from "@tezx/devtools";
 
 const app = new TezX();
 
-app.get(
-  "/devtools",
-  DevTools(app, {
-    // Optional
-    // disableTabs: ['cookies', 'routes'],
-    // extraTabs: (ctx) => [ ... ]
-  })
-);
+app.get("/devtools", DevTools(app, {
+  // Optional
+  // disableTabs: ['cookies', 'routes'],
+  // extraTabs: (ctx) => [ ... ]
+}));
 
 nodeAdapter(app).listen(3000);
 ```
 
-Now visit:
-**`http://localhost:3000/devtools`**
-to see a real-time diagnostic dashboard.
+Visit: **`http://localhost:3000/devtools`**
 
 ---
 
 ## 🧩 Built-in Tabs
 
-| Tab           | Description                                              |
-| ------------- | -------------------------------------------------------- |
-| `routes`      | Lists all loaded routes with method, path, and source    |
-| `middlewares` | Displays registered middleware and which routes use them |
-| `cookies`     | Shows request cookies (parsed from `ctx`)                |
-| `.env`        | Displays environment variables loaded via `.env`         |
+| Tab           | Description                                |
+| ------------- | ------------------------------------------ |
+| `routes`      | Lists all routes with method, path, source |
+| `middlewares` | Shows registered middleware per route      |
+| `cookies`     | Parsed request cookies                     |
+| `.env`        | Environment variables loaded via `.env`    |
 
 ---
 
@@ -67,38 +54,33 @@ DevTools(app: TezX<any>, options?: Options): Callback
 
 ### Options
 
-| Option        | Type                                                      | Description             |
-| ------------- | --------------------------------------------------------- | ----------------------- |
-| `extraTabs`   | `(ctx) => TabType \| Promise<TabType>`                    | Add your own tab panels |
-| `disableTabs` | `Array<'cookies' \| 'routes' \| '.env' \| 'middlewares'>` | Hide built-in tabs      |
+| Option        | Type              | Description       |                       |                 |                    |
+| ------------- | ----------------- | ----------------- | --------------------- | --------------- | ------------------ |
+| `extraTabs`   | `(ctx) => TabType | Promise<TabType>` | Add custom debug tabs |                 |                    |
+| `disableTabs` | `Array<'cookies'  | 'routes'          | '.env'                | 'middlewares'>` | Hide built-in tabs |
 
 ---
 
-## 🛠️ Add Custom Tabs
-
-You can inject your own debug panels using the `extraTabs` option.
+## 🛠 Add Custom Tabs
 
 ```ts
-import DevTools , { dumpMiddlewares } from "@tezx/devtools";
+import DevTools, { dumpMiddlewares } from "@tezx/devtools";
 
-app.get(
-  "/devtools",
-  DevTools(app, {
-    extraTabs(ctx) {
-      const rows = dumpMiddlewares(app)
-        .map(r => `<tr><td>${r.endpoint}</td><td>${r.pattern}</td><td>${r.appliedMiddlewares}</td></tr>`)
-        .join("");
-      return [
-        {
-          tab: "middlewares",
-          label: "Middleware Table",
-          doc_title: "Middleware Overview",
-          content: `<table>${rows}</table>`
-        }
-      ];
-    }
-  })
-);
+app.get("/devtools", DevTools(app, {
+  extraTabs(ctx) {
+    const rows = dumpMiddlewares(app)
+      .map(r => `<tr><td>${r.endpoint}</td><td>${r.pattern}</td><td>${r.appliedMiddlewares}</td></tr>`)
+      .join("");
+    return [
+      {
+        tab: "middlewares",
+        label: "Middleware Table",
+        doc_title: "Middleware Overview",
+        content: `<table>${rows}</table>`
+      }
+    ];
+  }
+}));
 ```
 
 ---
@@ -112,7 +94,7 @@ type TabType = {
   doc_title: string;
   label: string;
   tab: Tab | string;
-  content: string; // Rendered HTML content
+  content: string; // HTML content
 }[];
 
 type Options = {
@@ -123,9 +105,7 @@ type Options = {
 
 ---
 
-## 📁 Directory Example
-
-**Using `tezx/router`**
+## 📁 Directory Structure Example
 
 ```bash
 my-app/
@@ -134,10 +114,13 @@ my-app/
 │   └── ...
 ├── public/
 │   └── ...
-├── tezx.config.mjs             ← setup TezX + DevTools here
 ├── .env
 ├── package.json
 └── tsconfig.json
 ```
+
+---
+
+💡 **Tip:** Use `extraTabs` to create real-time diagnostic panels tailored to your app.
 
 ---

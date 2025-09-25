@@ -36,20 +36,18 @@ export class RadixRouter {
     search(method, path) {
         let params = {};
         let middlewares = [];
-        const { success, node } = this._match(method, this.root, sanitizePathSplit(path), 0, params, middlewares, new Set());
+        const { success, node } = this._match(method, this.root, path?.split("/")?.filter(Boolean), 0, params, middlewares);
         if (success && node) {
             const handlers = node.handlers?.[method] ?? [];
             return { method, params, handlers, middlewares };
         }
         return { method, params: {}, handlers: [], middlewares };
     }
-    _match(method, node, segments, index, params, middlewares, seen) {
-        if (node.handlers?.ALL) {
-            for (const mw of node.handlers.ALL) {
-                if (!seen.has(mw)) {
-                    seen.add(mw);
-                    middlewares.push(mw);
-                }
+    _match(method, node, segments, index, params, middlewares) {
+        if (node?.handlers?.ALL) {
+            const mw = node.handlers?.ALL;
+            for (let i = 0; i < mw.length; i++) {
+                middlewares.push(mw[i]);
             }
         }
         if (index === segments.length) {
@@ -58,40 +56,59 @@ export class RadixRouter {
             const opt = node.children[":"];
             if (opt?.isOptional) {
                 params[opt.paramName] = null;
-                return this._match(method, opt, segments, index, params, middlewares, seen);
+                return this._match(method, opt, segments, index, params, middlewares);
             }
             return { success: false, node: node };
         }
         const wc = node.children["*"];
-        if (wc?.handlers?.ALL) {
-            for (const mw of wc.handlers.ALL) {
-                if (!seen.has(mw)) {
-                    seen.add(mw);
-                    middlewares.push(mw);
-                }
-            }
-        }
         const seg = segments[index];
         if (node.children[seg]) {
-            const res = this._match(method, node.children[seg], segments, index + 1, params, middlewares, seen);
-            if (res.success)
+            const res = this._match(method, node.children[seg], segments, index + 1, params, middlewares);
+            if (res.success) {
+                if (wc?.handlers?.ALL) {
+                    const mw = wc.handlers?.ALL;
+                    for (let i = 0; i < mw.length; i++) {
+                        middlewares.push(mw[i]);
+                    }
+                }
                 return res;
+            }
         }
         const dyn = node.children[":"];
         if (dyn) {
             params[dyn.paramName] = seg;
-            const res = this._match(method, dyn, segments, index + 1, params, middlewares, seen);
-            if (res.success)
+            const res = this._match(method, dyn, segments, index + 1, params, middlewares);
+            if (res.success) {
+                if (wc?.handlers?.ALL) {
+                    const mw = wc.handlers?.ALL;
+                    for (let i = 0; i < mw.length; i++) {
+                        middlewares.push(mw[i]);
+                    }
+                }
                 return res;
+            }
             if (dyn.isOptional) {
                 params[dyn.paramName] = null;
-                const skip = this._match(method, dyn, segments, index, params, middlewares, seen);
-                if (skip.success)
+                const skip = this._match(method, dyn, segments, index, params, middlewares);
+                if (skip.success) {
+                    if (wc?.handlers?.ALL) {
+                        const mw = wc.handlers?.ALL;
+                        for (let i = 0; i < mw.length; i++) {
+                            middlewares.push(mw[i]);
+                        }
+                    }
                     return skip;
+                }
             }
         }
         if (wc) {
             let wildcard = segments.slice(index).join("/");
+            if (wc?.handlers?.ALL) {
+                const mw = wc.handlers?.ALL;
+                for (let i = 0; i < mw.length; i++) {
+                    middlewares.push(mw[i]);
+                }
+            }
             if (wildcard) {
                 params[wc.paramName] = wildcard;
                 return { node: wc, success: true };
@@ -124,3 +141,35 @@ export class RadixRouter {
         return result;
     }
 }
+const routes = [
+    "/",
+    "/users",
+    "/users/:id",
+    "/users/:id/profile",
+    "/posts/:postId?",
+    "/files/*",
+    "/admin/settings",
+    "/search/:term?",
+    "/categories/:categoryId/products/:productId",
+    "/about",
+];
+const testPaths = [
+    "/",
+    "/users",
+    "/users/123",
+    "/users/123/profile",
+    "/posts",
+    "/posts/456",
+    "/files/path/to/file.txt",
+    "/admin/settings",
+    "/search",
+    "/search/nodejs",
+    "/categories/12/products/999",
+    "/notfound",
+];
+const router = new RadixRouter();
+let x = function xx() {
+    return {
+        body: "3453455",
+    };
+};

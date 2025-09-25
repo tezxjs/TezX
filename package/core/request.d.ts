@@ -1,4 +1,4 @@
-import { ExtractParamsFromPath, ReqHeaderKey, HTTPMethod, NetAddr, RequestHeaders } from "../types/index.js";
+import { ExtractParamsFromPath, HTTPMethod, NetAddr, ReqHeaderKey, RequestHeaders } from "../types/index.js";
 /**
  * A wrapper around the raw HTTP request that provides convenient access to URL, headers, body parsing, and route parameters.
  *
@@ -60,7 +60,7 @@ export declare class TezXRequest<Path extends string = any> {
      *
      * @returns {Record<string, any>} Query parameters.
      */
-    get query(): Record<string, any>;
+    get query(): Record<string, string | string[]>;
     /**
      * Parses the request body as plain text.
      *

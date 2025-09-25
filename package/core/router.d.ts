@@ -1,19 +1,24 @@
 import { Callback, HandlerType, HTTPMethod, Middleware, RouteRegistry, ServeStatic } from "../types/index.js";
+/**
+ * Router configuration options.
+ */
 export type RouterConfig = {
     /**
      * Custom route registry instance used internally to store routes.
-     * Defaults to CombineRouteRegistry.
+     * If not provided, the router will use the default CombineRouteRegistry.
      */
     routeRegistry?: RouteRegistry;
     /**
-     * `env` allows you to define environment variables for the router.
-     * It is a record of key-value pairs where the key is the variable name
-     * and the value can be either a string or a number.
+     * `env` allows you to define environment variables for the router instance.
+     * Example: `{ NODE_ENV: "production", API_VERSION: 2 }`
      */
     env?: Record<string, string | number>;
     /**
-     * `basePath` sets the base path for the router. This is useful for grouping
-     * routes under a specific path prefix.
+     * `basePath` sets a base path prefix for the router. Useful to group routes
+     * under a common prefix (for example when mounting the router on a sub-path).
+     *
+     * - Example: `basePath: "/api/v1"` will prefix all registered routes with `/api/v1`.
+     * - Should not end with a trailing slash — the router will normalize it.
      */
     basePath?: string;
 };

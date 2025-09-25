@@ -1,8 +1,8 @@
-import { colorText } from "../utils/colors.js";
 import { handleErrorResponse, notFoundResponse } from "../utils/response.js";
 import { getPathname } from "../utils/url.js";
 import { GlobalConfig } from "./config.js";
 import { Context } from "./context.js";
+import { TezXError } from "./error.js";
 import { Router } from "./router.js";
 export class TezX extends Router {
     #pathResolver;
@@ -24,88 +24,70 @@ export class TezX extends Router {
         this.#errorHandler = callback;
         return this;
     }
-    async #resolvePath(pathname) {
-        let resolvePath = pathname;
-        if (this.#pathResolver) {
-            resolvePath = await this.#pathResolver(pathname);
-            GlobalConfig.debugging.warn(`${colorText(" PATH RESOLVE ", "white")} ${colorText(pathname, "red")} ➞ ${colorText(resolvePath, "cyan")}`);
-        }
-        if (typeof resolvePath !== "string") {
-            throw new Error(`Path resolution failed: expected a string, got ${typeof resolvePath}`);
-        }
-        return resolvePath;
-    }
-    #chain(middlewares) {
-        if (!Array.isArray(middlewares)) {
-            throw new TypeError("Middleware stack must be an array!");
-        }
-        const len = middlewares.length;
-        return async function (ctx) {
-            let index = -1;
-            async function dispatch(i) {
-                if (i <= index) {
-                    throw new Error("next() called multiple times");
-                }
-                index = i;
-                if (i >= len)
-                    return;
+    async #chain(ctx, mLen, middlewares, hLen, handlers) {
+        let index = -1;
+        let res;
+        async function dispatch(i) {
+            if (i <= index)
+                throw new Error("next() called multiple times");
+            index = i;
+            if (i < mLen) {
                 const fn = middlewares[i];
-                if (typeof fn !== "function") {
-                    throw new TypeError(`Middleware at index ${i} must be a function`);
-                }
-                const result = await fn(ctx, () => dispatch(i + 1));
-                if (result instanceof Response) {
-                    ctx.res = result;
+                if (typeof fn !== "function")
+                    throw new TypeError(`Middleware[${i}] must be a function`);
+                res = (await fn(ctx, () => dispatch(i + 1)));
+                if (res !== undefined) {
+                    ctx.res = res;
                 }
                 return ctx.res;
             }
-            await dispatch(0);
-            return ctx.res;
-        };
+            const hi = i - mLen;
+            if (hi < hLen) {
+                const fn = handlers[hi];
+                if (typeof fn !== "function")
+                    throw new TypeError(`Handler[${hi}] must be a function`);
+                res = (await fn(ctx, () => dispatch(i + 1)));
+                if (res !== undefined) {
+                    ctx.res = res;
+                }
+                return ctx.res;
+            }
+        }
+        await dispatch(0);
+        return (ctx.res ??
+            (ctx.body !== undefined ? ctx.send(ctx.body) : this.#notFound(ctx)));
     }
     async #handleRequest(req, method, args) {
-        if (!(req instanceof Request)) {
+        if (!(req instanceof Request))
             throw new Error("Invalid request object provided to tezX server.");
-        }
-        const pathname = await this.#resolvePath(getPathname(req.url));
-        let ctx = new Context(req, {
-            pathname,
-            method,
-            env: this.env,
-            args,
-        });
+        const rawPath = getPathname(req.url);
+        const pathname = this.#pathResolver
+            ? await this.#pathResolver(rawPath)
+            : rawPath;
+        const ctx = new Context(req, pathname, method, this.env, args);
         try {
             const staticHandler = this.staticFile?.[`${method} ${pathname}`];
             if (staticHandler) {
                 return staticHandler(ctx);
             }
             const route = this.router.search(method, pathname);
-            if (!route || (route.handlers.length === 0 && route.middlewares.length === 0)) {
+            const mLen = route?.middlewares?.length;
+            const hLen = route?.handlers?.length;
+            if (!route || (hLen === 0 && mLen === 0)) {
                 return this.#notFound(ctx);
             }
             ctx.params = route.params;
-            if (route.handlers.length === 1 && route.middlewares.length === 0) {
-                const result = await route.handlers[0](ctx);
-                if (result)
-                    return result;
-                if (ctx.body !== undefined)
-                    return ctx.send(ctx.body);
-                return this.#notFound(ctx);
+            if (hLen === 1 && mLen === 0) {
+                return ((await route.handlers[0](ctx)) ??
+                    (ctx.body !== undefined ? ctx.send(ctx.body) : this.#notFound(ctx)));
             }
-            let res = await this.#chain([
-                ...route.middlewares,
-                ...route.handlers,
-            ])(ctx);
-            if (!res && ctx.body !== undefined) {
-                res = ctx.send(ctx.body);
-            }
-            if (!res) {
-                return this.#notFound(ctx);
-            }
-            return res;
+            return await this.#chain(ctx, mLen, route.middlewares, hLen, route.handlers);
         }
         catch (err) {
-            return this.#errorHandler(err, ctx);
+            if (!(err instanceof TezXError)) {
+                return this.#errorHandler?.(TezXError.internal(err?.message, err?.stack), ctx);
+            }
+            return this.#errorHandler?.(err, ctx);
         }
     }
     async serve(req, ...args) {

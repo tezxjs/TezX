@@ -128,6 +128,7 @@ export interface CookieOptions {
  */
 export type Runtime = "bun" | "deno" | "node";
 import { Context } from "../core/context.js";
+import { TezXError } from "../core/error.js";
 import { RequestHeader, ResponseHeader } from "./headers.js";
 /**
  * Options to customize static file serving behavior.
@@ -233,7 +234,7 @@ export type Middleware<T extends Record<string, any> = {}, Path extends string =
  * @param ctx - The context object where the error occurred.
  * @returns An HTTP response or a promise that resolves to an HTTP response.
  */
-export type ErrorHandler<T extends Record<string, any> = {}> = (err: Error, ctx: Ctx<T>) => HttpBaseResponse;
+export type ErrorHandler<T extends Record<string, any> = {}> = (err: TezXError, ctx: Ctx<T>) => HttpBaseResponse;
 /**
  * Configuration options for parsing and validating multipart/form-data.
  */

@@ -19,6 +19,7 @@ function compileRegexRoute(seg) {
             const name = seg.slice(1) || "*";
             paramNames.push(name);
             regexStr += `\\/(.+)`;
+            break;
         }
         else {
             regexStr += `\\/${seg}`;

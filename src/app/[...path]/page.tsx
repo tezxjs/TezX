@@ -1,6 +1,5 @@
 import { SiteDescription, SiteTitle } from "@/config";
 import { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import docs from "../docs.json";
@@ -48,7 +47,7 @@ export default function page({ params }: Props) {
         <MarkdownRenderer markdown={dx.content} />
         <div className="flex items-center justify-center pt-5 pb-4 gap-4">
           {prev?.path && (
-            <Link
+            <a
               className="btn btn-outline hover:border-primary rounded-md btn-sm h-10 capitalize hover:bg-primary hover:text-white"
               href={`/${prev.path}`}
             >
@@ -56,11 +55,11 @@ export default function page({ params }: Props) {
                 <IoIosArrowBack />
               </span>
               <span>{prev?.name}</span>
-            </Link>
+            </a>
           )}
 
           {next?.path && (
-            <Link
+            <a
               className="btn btn-outline hover:border-primary rounded-md btn-sm h-10 capitalize hover:bg-primary hover:text-white"
               href={`/${next.path}`}
             >
@@ -68,7 +67,7 @@ export default function page({ params }: Props) {
               <span>
                 <IoIosArrowForward />
               </span>
-            </Link>
+            </a>
           )}
         </div>
       </section>

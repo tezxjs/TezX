@@ -1,19 +1,6 @@
-import { HttpBaseResponse, ResHeaderKey, ResponseHeaders, ResponseInit } from "../types/index.js";
+import { HttpBaseResponse, ResHeaderKey, ResponseInit } from "../types/index.js";
 import { TezXRequest } from "./request.js";
-export type ContextOptions<T> = {
-    pathname: string;
-    method: string;
-    env: Record<string, any> & T;
-    args?: any[];
-};
-/**
- * Represents the context of an HTTP request lifecycle.
- * Provides utilities to handle request, response, headers, and body.
- *
- * @template T - The type for environment variables or shared state.
- * @template Path - The string literal type for route paths.
- */
-export declare class Context<T extends Record<string, any> = {}, Path extends string = any> {
+export declare class Context<TEnv extends Record<string, any> = {}, TPath extends string = any> {
     #private;
     [key: string]: any;
     /**
@@ -23,10 +10,28 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
      */
     rawRequest: Request;
     /**
-     * Environment variables or shared state accessible in context.
-     * @type {Record<string, any> & T}
+     * The URL associated with the current context.
+     *
+     * This is a read-only string representing the resource location or endpoint.
      */
-    env: Record<string, any> & T;
+    readonly url: string;
+    /**
+     * The native Response object associated with this context, if available.
+     *
+     * This property is set when a response has been created or is being manipulated directly.
+     * It may be undefined if the response has not yet been constructed.
+     *
+     * @type {Response | undefined}
+     * @remarks
+     * - When present, headers and status should be set directly on this object.
+     * - When undefined, internal header and status management is used.
+     */
+    res?: Response;
+    /**
+     * Environment variables or shared state accessible in context.
+     * @type {Record<string, any> & TEnv}
+     */
+    env: Record<string, any> & TEnv;
     /**
      * Request pathname (URL path without domain).
      * @readonly
@@ -43,14 +48,9 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
      * Creates a new context instance.
      *
      * @param {Request} req - The native Request object.
-     * @param {ContextOptions<T>} options - Context options including pathname, method, env, params, and args.
+     * @param {ContextOptions<TEnv>} options - Context options including pathname, method, env, params, and args.
      */
-    constructor(req: Request, options: ContextOptions<T>);
-    /**
-     * Returns the full URL string of the request, including query parameters.
-     * @type {string}
-     */
-    get url(): string;
+    constructor(req: Request, pathname: string, method: string, env: Record<string, any> & TEnv, args: any[]);
     /**
      * Gets the current HTTP status code.
      * @returns {number} The HTTP status code.
@@ -62,19 +62,34 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
      */
     set setStatus(code: number);
     /**
-     * Retrieves a specific header value or all headers.
+     * Access the response headers.
      *
-     * @param {ResHeaderKey} [header] - Optional header name (case-insensitive, internally lowercased).
-     * @returns {string | undefined | ResponseHeaders} - Returns the header value if key is provided,
-     * or the entire headers object if no key is passed.
+     * @remarks
+     * This returns the native {@link Headers} object associated with the response.
+     * It gives you full control over reading, setting, appending, and deleting headers
+     * using the standard Web Headers API.
      *
      * @example
-     * ctx.header('content-type'); // → 'application/json'
-     * ctx.header(); // → { 'content-type': 'application/json' }
+     * ```ts
+     * // Get a header value
+     * const contentType = ctx.headers.get("content-type")
+     *
+     * // Set or overwrite a header
+     * ctx.headers.set("x-powered-by", "tezx")
+     *
+     * // Append multiple values
+     * ctx.headers.append("set-cookie", "id=123")
+     * ctx.headers.append("set-cookie", "token=xyz")
+     *
+     * // Iterate all headers
+     * for (const [key, value] of ctx.headers.entries()) {
+     *   console.log(key, value)
+     * }
+     * ```
+     *
+     * @returns {Headers} The response headers object.
      */
-    header(): Record<string, string>;
-    header(header: ResHeaderKey): string | undefined;
-    protected set clearHeader(header: ResponseHeaders);
+    get headers(): Headers;
     /**
      * Sets or appends a header to the response.
      *
@@ -91,26 +106,15 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
     setHeader(key: ResHeaderKey, value: string, options?: {
         append?: boolean;
     }): this;
-    /**
-     * Deletes a response header by key.
-     *
-     * If the native Response object is not yet available (`this.res` is falsy),
-     * it removes the header from the internal headers store.
-     * If the native Response object is available, it removes the header directly from the response headers.
-     *
-     * @param {ResHeaderKey} key - The name of the header to delete (case-insensitive).
-     * @returns {this} Returns the current instance for method chaining.
-     */
-    deleteHeader(key: ResHeaderKey): this;
     protected set params(params: Record<string, any>);
     /**
      * Gets the wrapped request object (`TezXRequest`).
      *
      * Lazily initializes the wrapped request on first access.
      *
-     * @returns {TezXRequest<Path>} The wrapped request.
+     * @returns {TezXRequest<TPath>} The wrapped request.
      */
-    get req(): TezXRequest<Path>;
+    get req(): TezXRequest<TPath>;
     /**
      * Gets the response body.
      * @returns {*} The response body.
@@ -140,7 +144,7 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
      * @returns {HttpBaseResponse} Response object suitable for runtime.
      * @protected
      */
-    newResponse(body: BodyInit | null, init?: ResponseInit): HttpBaseResponse;
+    newResponse(body: BodyInit | null, init?: ResponseInit): Response;
     /**
      * Sends a plain text response.
      *
@@ -154,28 +158,33 @@ export declare class Context<T extends Record<string, any> = {}, Path extends st
     /**
      * Sends an HTML response.
      *
-     * Can be used as a template literal or simple HTML string.
+     * Supports both:
+     * - Simple string: `ctx.html("<h1>Hello</h1>")`
+     * - Template literal: `ctx.html`<h1>${title}</h1>``
      *
-     * @param {string | readonly string[]} strings - HTML string or template literals.
-     * @param {...any[]} [args] - Optional values for template literals or ResponseInit.
-     * @returns {HttpBaseResponse} A properly constructed HTML response.
+     * Minimizes intermediate string allocations for lower GC overhead.
      *
-     * @example
-     * ctx.html("<h1>Hello</h1>");
-     * ctx.html`<h1>${title}</h1>`;
+     * @param {string | readonly string[]} strings - HTML string or template literal array.
+     * @param {...any[]} args - Values for template literals or a ResponseInit object if using a string.
+     * @returns {HttpBaseResponse} Constructed HTML response.
      */
     html(strings: string, init?: ResponseInit): HttpBaseResponse;
     html(strings: readonly string[], ...values: any[]): HttpBaseResponse;
     /**
      * Sends an XML response.
      *
-     * Automatically sets Content-Type to `application/xml; charset=utf-8`.
+     * Supports both:
+     * - Simple string: `ctx.xml("<note><to>User</to></note>")`
+     * - Template literal: `ctx.xml`<note><to>${user}</to></note>``
      *
-     * @param {string} xml - XML string.
-     * @param {ResponseInit} [init] - Optional response init.
-     * @returns {HttpBaseResponse} The response object.
+     * Minimizes intermediate string allocations for lower GC overhead.
+     *
+     * @param {string | readonly string[]} strings - XML string or template literal array.
+     * @param {...any[]} args - Values for template literals or a ResponseInit object if using a string.
+     * @returns {HttpBaseResponse} Constructed XML response.
      */
-    xml(xml: string, init?: ResponseInit): HttpBaseResponse;
+    xml(strings: string, init?: ResponseInit): HttpBaseResponse;
+    xml(strings: readonly string[], ...values: any[]): HttpBaseResponse;
     /**
      * Sends a JSON response.
      *

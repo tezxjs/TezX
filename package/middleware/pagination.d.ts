@@ -1,5 +1,5 @@
-import { Context, Middleware } from "../index.js";
-export type PaginationOptions = {
+import { Context } from "../index.js";
+export type PaginationOptions<DataKey extends string = "data", CountKey extends string = "total", Item = any> = {
     /**
      * 🔢 Default page number when not specified
      * @default 1
@@ -35,13 +35,13 @@ export type PaginationOptions = {
      * @default "total"
      * @example "totalCount" // Read from response.totalCount
      */
-    countKey?: string;
+    countKey?: CountKey;
     /**
      * 📦 Key containing the data array in response
      * @default "data"
      * @example "items" // Process response.items array
      */
-    dataKey?: string;
+    dataKey?: DataKey;
     /**
      * 🛠️ Function to fetch data dynamically
      * @param ctx - Request context
@@ -57,7 +57,9 @@ export type PaginationOptions = {
         limit: number;
         offset: number;
     }) => Promise<{
-        [key: string]: any;
+        [K in DataKey]: Item[];
+    } & {
+        [K in CountKey]: number;
     }>;
 };
 export type PaginationBodyType = {
@@ -100,5 +102,5 @@ export type PaginationBodyType = {
  *   }
  * }));
  */
-declare const paginationHandler: (options?: PaginationOptions) => Middleware;
+declare const paginationHandler: <DataKey extends string = "data", CountKey extends string = "total", Item = any>(options?: PaginationOptions<DataKey, CountKey, Item>) => any;
 export { paginationHandler, paginationHandler as default };

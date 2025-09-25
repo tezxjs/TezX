@@ -21,10 +21,6 @@ export type RateLimiterOptions = {
      */
     keyGenerator?: (ctx: Context) => string;
     /**
-        //  * ⚠️ (Future) Storage backend - currently memory only
-        //  * @todo Implement Redis storage
-        //  */
-    /**
      * 🔄 Custom cache storage implementation (e.g., using `Map`, `Redis`, etc.).
      * By default, it uses a `Map<string, { count: number; resetTime: number }>`.
      */

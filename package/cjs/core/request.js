@@ -17,22 +17,22 @@ class TezXRequest {
     #headersCache;
     #queryCache;
     constructor(req, method, pathname, params) {
-        this.url = req.url || "";
-        this.params = params || {};
+        this.url = req.url;
+        this.params = params ?? {};
         this.method = method;
         this.#rawRequest = req;
-        this.pathname = pathname || "/";
+        this.pathname = pathname ?? "/";
     }
     header(header) {
         if (header) {
-            return this.#rawRequest.headers.get(header?.toLowerCase());
+            return this.#rawRequest.headers.get(header.toLowerCase());
         }
         if (this.#headersCache)
             return this.#headersCache;
         const obj = {};
-        for (const [key, value] of this.#rawRequest.headers.entries()) {
+        this.#rawRequest.headers.forEach((value, key) => {
             obj[key.toLowerCase()] = value;
-        }
+        });
         this.#headersCache = obj;
         return this.#headersCache;
     }

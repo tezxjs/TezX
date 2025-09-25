@@ -1,11 +1,10 @@
-import { Ctx } from "../types/index.js";
+import { Middleware } from "../types/index.js";
 export type CorsOptions = {
     /**
      * Allowed origins for CORS.
-     * Can be a string, a RegExp, an array of strings or RegExps, or a function
-     * that takes the request origin and returns a boolean indicating if it is allowed.
+     * Can be a string, an array of strings, or a function that returns a boolean.
      */
-    origin?: string | RegExp | (string | RegExp)[] | ((reqOrigin: string) => boolean);
+    origin?: string | string[] | ((reqOrigin: string) => boolean);
     /**
      * Allowed HTTP methods for CORS requests.
      * Defaults to ['GET', 'POST', 'PUT', 'DELETE'].
@@ -21,31 +20,18 @@ export type CorsOptions = {
      */
     exposedHeaders?: string[];
     /**
-     * Indicates whether the response to the request can be exposed
-     * when the credentials flag is true.
+     * Indicates whether credentials are allowed.
      */
     credentials?: boolean;
     /**
-     * Indicates how long the results of a preflight request
-     * can be cached (in seconds).
+     * Preflight cache duration in seconds.
      */
     maxAge?: number;
 };
 /**
  * Middleware for handling Cross-Origin Resource Sharing (CORS).
  *
- * @param {CorsOptions} [option={}] - Configuration options for CORS.
- * @returns {Function} Middleware function compatible with the framework's middleware signature.
- *
- * @example
- * ```ts
- * app.use(cors({
- *   origin: ["https://example.com", /https:\/\/.*\.example\.com/],
- *   methods: ["GET", "POST"],
- *   credentials: true,
- *   maxAge: 600,
- * }));
- * ```
+ * @param option - Configuration options for CORS.
  */
-declare function cors(option?: CorsOptions): (ctx: Ctx, next: () => Promise<any>) => Promise<any>;
+declare function cors<T extends Record<string, any> = {}, Path extends string = any>(option?: CorsOptions): Middleware<T, Path>;
 export { cors, cors as default };
