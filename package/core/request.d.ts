@@ -71,9 +71,9 @@ export declare class TezXRequest<Path extends string = any> {
      * Parses the request body as JSON.
      *
      * @template T - Expected type of parsed JSON object.
-     * @returns {Promise<T | {}>} Parsed JSON or empty object if not application/json.
+     * @returns {Promise<T>} Parsed JSON or empty object if not application/json.
      */
-    json<T = any>(): Promise<T | {}>;
+    json<T extends Record<string, any>>(): Promise<T>;
     /**
      * Parses and returns the form data from the incoming HTTP request.
      *

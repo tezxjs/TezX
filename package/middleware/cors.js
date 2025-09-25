@@ -31,6 +31,9 @@ function cors(option = {}) {
             ctx.setStatus = 204;
             return;
         }
+        if (ctx.req.method === "OPTIONS") {
+            return new Response(null, { status: 204, headers: ctx.header });
+        }
         return await next();
     };
 }
