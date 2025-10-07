@@ -31,3 +31,12 @@ export declare function generateID(): string;
  * console.log(uuid); // "a63e47b6-6a3b-4d53-90b6-8db2f2d07943"
  */
 export declare function generateUUID(): string;
+/**
+ * Generate a short nonce (JS-only, low-GC) by sampling the BASE64 charset.
+ * This function intentionally uses Math.random for speed and low allocation.
+ * If you require cryptographic randomness, swap with crypto.randomFillSync.
+ *
+ * @param {number} [length=16] - nonce length in characters
+ * @returns {string} generated nonce string
+ */
+export declare function generateRandomBase64(length?: number): string;

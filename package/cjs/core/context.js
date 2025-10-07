@@ -150,7 +150,7 @@ class Context {
     async sendFile(filePath, init) {
         if (!(await (0, file_js_1.fileExists)(filePath)))
             throw Error("File not found");
-        let size = await (0, file_js_1.fileSize)(filePath);
+        let { size, mtime } = await (0, file_js_1.fileSize)(filePath);
         const ext = (0, low_level_js_1.extensionExtract)(filePath);
         const mimeType = mimeTypes_js_1.mimeTypes[ext] ?? mimeTypes_js_1.defaultMimeType;
         let fileStream = await (0, file_js_1.readStream)(filePath);

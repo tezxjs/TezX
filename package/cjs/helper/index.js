@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GlobalConfig = exports.colorText = exports.httpStatusMap = exports.generateUUID = exports.generateID = exports.readStream = exports.getFileBuffer = exports.fileSize = exports.fileExists = exports.setCookie = exports.getCookie = exports.deleteCookie = exports.allCookies = exports.sanitized = exports.sanitizePathSplitBasePath = exports.sanitizePathSplit = exports.normalizeHeaderKey = exports.extensionExtract = exports.Environment = exports.useFormData = void 0;
+exports.GlobalConfig = exports.colorText = exports.httpStatusMap = exports.generateUUID = exports.generateID = exports.readStream = exports.getFileBuffer = exports.fileSize = exports.fileExists = exports.generateRandomBase64 = exports.setCookie = exports.getCookie = exports.deleteCookie = exports.allCookies = exports.sanitized = exports.sanitizePathSplitBasePath = exports.sanitizePathSplit = exports.normalizeHeaderKey = exports.extensionExtract = exports.Environment = exports.useFormData = void 0;
 const config_js_1 = require("../core/config.js");
 Object.defineProperty(exports, "GlobalConfig", { enumerable: true, get: function () { return config_js_1.GlobalConfig; } });
 const colors_js_1 = require("../utils/colors.js");
@@ -10,6 +10,7 @@ Object.defineProperty(exports, "httpStatusMap", { enumerable: true, get: functio
 const generateID_js_1 = require("../utils/generateID.js");
 Object.defineProperty(exports, "generateID", { enumerable: true, get: function () { return generateID_js_1.generateID; } });
 Object.defineProperty(exports, "generateUUID", { enumerable: true, get: function () { return generateID_js_1.generateUUID; } });
+Object.defineProperty(exports, "generateRandomBase64", { enumerable: true, get: function () { return generateID_js_1.generateRandomBase64; } });
 const cookie_js_1 = require("../utils/cookie.js");
 Object.defineProperty(exports, "allCookies", { enumerable: true, get: function () { return cookie_js_1.allCookies; } });
 Object.defineProperty(exports, "deleteCookie", { enumerable: true, get: function () { return cookie_js_1.deleteCookie; } });
@@ -32,6 +33,7 @@ const formData_js_1 = require("../utils/formData.js");
 Object.defineProperty(exports, "useFormData", { enumerable: true, get: function () { return formData_js_1.useFormData; } });
 exports.default = {
     useFormData: formData_js_1.useFormData,
+    generateRandomBase64: generateID_js_1.generateRandomBase64,
     Environment: runtime_js_1.Environment,
     extensionExtract: low_level_js_1.extensionExtract,
     normalizeHeaderKey: low_level_js_1.normalizeHeaderKey,

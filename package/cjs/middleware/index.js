@@ -16,10 +16,15 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./basic-auth.js"), exports);
 __exportStar(require("./bearer-auth.js"), exports);
+__exportStar(require("./cache-control.js"), exports);
 __exportStar(require("./cors.js"), exports);
+__exportStar(require("./detect-bot.js"), exports);
+__exportStar(require("./i18n.js"), exports);
 __exportStar(require("./logger.js"), exports);
 __exportStar(require("./pagination.js"), exports);
 __exportStar(require("./powered-by.js"), exports);
+__exportStar(require("./rate-limiter.js"), exports);
 __exportStar(require("./request-id.js"), exports);
 __exportStar(require("./sanitize-headers.js"), exports);
+__exportStar(require("./secure-headers.js"), exports);
 __exportStar(require("./xss-protection.js"), exports);

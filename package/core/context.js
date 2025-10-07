@@ -1,4 +1,4 @@
-import { fileExists, fileSize, getFileBuffer, readStream, } from "../utils/file.js";
+import { fileExists, fileSize, getFileBuffer, readStream } from "../utils/file.js";
 import { extensionExtract } from "../utils/low-level.js";
 import { defaultMimeType, mimeTypes } from "../utils/mimeTypes.js";
 import { determineContentTypeBody, toString } from "../utils/response.js";
@@ -147,7 +147,7 @@ export class Context {
     async sendFile(filePath, init) {
         if (!(await fileExists(filePath)))
             throw Error("File not found");
-        let size = await fileSize(filePath);
+        let { size, mtime } = await fileSize(filePath);
         const ext = extensionExtract(filePath);
         const mimeType = mimeTypes[ext] ?? defaultMimeType;
         let fileStream = await readStream(filePath);

@@ -37,6 +37,7 @@ exports.fileExists = fileExists;
 exports.getFileBuffer = getFileBuffer;
 exports.readStream = readStream;
 exports.fileSize = fileSize;
+exports.etagDigest = etagDigest;
 const runtime_js_1 = require("./runtime.js");
 async function fileExists(path) {
     switch (runtime_js_1.runtime) {
@@ -100,15 +101,33 @@ async function fileSize(path) {
     switch (runtime_js_1.runtime) {
         case "node": {
             const { stat } = await Promise.resolve().then(() => __importStar(require("node:fs/promises")));
-            return (await stat(path)).size;
+            const st = await stat(path);
+            return { size: st.size, mtime: st.mtime };
         }
         case "bun": {
-            return Bun.file(path).size;
+            const st = await Bun.file(path).stat();
+            return { size: st.size, mtime: st.mtime };
         }
         case "deno": {
-            return (await Deno.stat(path)).size;
+            const st = await Deno.stat(path);
+            return {
+                size: st.size,
+                mtime: st.mtime ?? new Date()
+            };
         }
         default:
-            return 0;
+            throw new Error("Unsupported runtime: " + runtime_js_1.runtime);
     }
+}
+async function etagDigest(algo = 'MD5', data) {
+    const encoded = typeof data === "string" ? new TextEncoder().encode(data) : data;
+    if (runtime_js_1.runtime === "bun") {
+        return Bun.hash(data, 256).toString(16);
+    }
+    if (globalThis?.crypto?.subtle) {
+        const buffer = await crypto.subtle.digest(algo, encoded);
+        return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+    const { createHash } = await Promise.resolve().then(() => __importStar(require("node:crypto")));
+    return createHash(algo).update(encoded).digest("hex");
 }

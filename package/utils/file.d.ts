@@ -29,6 +29,10 @@ export declare function readStream(path: string): Promise<ReadableStream>;
  * Supports Node.js, Bun, and Deno runtimes.
  *
  * @param {string} path - Path to the file.
- * @returns {Promise<number>} - Resolves to the file size in bytes.
+ * @returns {Promise<{size: number, mtime: Date}>} - Resolves to the file size in bytes.
  */
-export declare function fileSize(path: string): Promise<number>;
+export declare function fileSize(path: string): Promise<{
+    mtime: Date;
+    size: number;
+}>;
+export declare function etagDigest(algo: string | undefined, data: any): Promise<string>;

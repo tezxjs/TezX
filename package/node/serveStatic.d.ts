@@ -15,6 +15,14 @@ import { ServeStatic, StaticFileArray, StaticServeOption } from "../types/index.
  * @param args - Either [route, folder, option] or [folder, option]
  * @returns A list of static files and their associated route paths.
  */
+/**
+ * Universal ETag generator for Deno, Bun, and Node.js environments.
+ * Uses file size + modification time (mtimeMs) to create a unique hash-based ETag.
+ *
+ * @example
+ * const etag = await getETag("/path/to/file.txt");
+ * ctx.setHeader("ETag", etag);
+ */
 export declare function serveStatic(route: string, folder: string, option?: StaticServeOption): ServeStatic;
 export declare function serveStatic(folder: string, option?: StaticServeOption): ServeStatic;
 /**

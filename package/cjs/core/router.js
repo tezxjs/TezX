@@ -32,7 +32,7 @@ class Router {
                     if (headers) {
                         for (const key in headers) {
                             let value = headers?.[key];
-                            ctx.setHeader(key, value);
+                            ctx.headers.set(key, value);
                         }
                     }
                     return ctx.sendFile(r.fileSource);

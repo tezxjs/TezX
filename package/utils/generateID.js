@@ -21,3 +21,12 @@ export function generateUUID() {
         return crypto.randomUUID();
     return generateID();
 }
+export function generateRandomBase64(length = 16) {
+    let result = '';
+    const BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    for (let i = 0; i < length; i++) {
+        const idx = Math.floor(Math.random() * 64);
+        result += BASE64[idx];
+    }
+    return result;
+}

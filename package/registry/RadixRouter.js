@@ -141,35 +141,3 @@ export class RadixRouter {
         return result;
     }
 }
-const routes = [
-    "/",
-    "/users",
-    "/users/:id",
-    "/users/:id/profile",
-    "/posts/:postId?",
-    "/files/*",
-    "/admin/settings",
-    "/search/:term?",
-    "/categories/:categoryId/products/:productId",
-    "/about",
-];
-const testPaths = [
-    "/",
-    "/users",
-    "/users/123",
-    "/users/123/profile",
-    "/posts",
-    "/posts/456",
-    "/files/path/to/file.txt",
-    "/admin/settings",
-    "/search",
-    "/search/nodejs",
-    "/categories/12/products/999",
-    "/notfound",
-];
-const router = new RadixRouter();
-let x = function xx() {
-    return {
-        body: "3453455",
-    };
-};
