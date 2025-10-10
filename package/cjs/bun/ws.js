@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.wsHandlers = void 0;
 exports.upgradeWebSocket = upgradeWebSocket;
+const error_js_1 = require("../core/error.js");
 function upgradeWebSocket(callback, options = {}) {
     const { onUpgradeError = (error, ctx) => {
         ctx.setStatus = 401;
@@ -17,15 +18,15 @@ function upgradeWebSocket(callback, options = {}) {
                 return next();
             }
             ctx.setStatus = 401;
-            return onUpgradeError(new Error("401 Bad Request: Invalid WebSocket headers"), ctx);
+            return onUpgradeError(new error_js_1.TezXError("401 Bad Request: Invalid WebSocket headers", 401), ctx);
         }
         ctx.wsProtocol = ctx.url?.startsWith("https") ? "wss" : "ws";
         if (!callback) {
-            throw new Error("WebSocket callback is missing. Please provide a valid callback function to handle the WebSocket events.");
+            throw new error_js_1.TezXError("WebSocket callback is missing. Please provide a valid callback function to handle the WebSocket events.");
         }
         let args = ctx.args[0];
         if (!args?.upgrade) {
-            return onUpgradeError(new Error("Bun server instance missing for WebSocket"), ctx);
+            return onUpgradeError(new error_js_1.TezXError("Bun server instance missing for WebSocket"), ctx);
         }
         const success = args.upgrade(ctx.rawRequest, {
             data: callback(ctx),

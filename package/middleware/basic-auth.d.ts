@@ -1,4 +1,5 @@
 import { Context } from "../core/context.js";
+import { TezXError } from "../core/error.js";
 import { HttpBaseResponse, Middleware } from "../types/index.js";
 /**
  * Options for Basic Authentication middleware.
@@ -26,7 +27,7 @@ export type BasicAuthOptions = {
      * @param error - Optional error object describing why access was denied.
      * @returns HttpBaseResponse to send to the client.
      */
-    onUnauthorized?: (ctx: Context, error?: Error) => HttpBaseResponse;
+    onUnauthorized?: (ctx: Context, error?: TezXError) => HttpBaseResponse;
 };
 /**
  * Basic Authentication Middleware

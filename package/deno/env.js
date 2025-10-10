@@ -1,9 +1,10 @@
 import { runtime } from "../utils/runtime.js";
 import { colorText } from "../utils/colors.js";
+import { TezXError } from "../core/error.js";
 function parseEnvFile(filePath, result) {
     try {
         if (runtime !== "deno") {
-            throw new Error(`Please use ${colorText(`import {loadEnv} from "tezx/${runtime}"`, "bgRed")} environment`);
+            throw new TezXError(`Please use ${colorText(`import {loadEnv} from "tezx/${runtime}"`, "bgRed")} environment`);
         }
         let fileExists = false;
         try {

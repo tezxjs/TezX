@@ -1,16 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GlobalConfig = exports.colorText = exports.httpStatusMap = exports.generateUUID = exports.generateID = exports.readStream = exports.getFileBuffer = exports.fileSize = exports.fileExists = exports.generateRandomBase64 = exports.setCookie = exports.getCookie = exports.deleteCookie = exports.allCookies = exports.sanitized = exports.sanitizePathSplitBasePath = exports.sanitizePathSplit = exports.normalizeHeaderKey = exports.extensionExtract = exports.Environment = exports.useFormData = void 0;
+exports.useFormData = exports.setCookie = exports.sanitized = exports.sanitizePathSplitBasePath = exports.sanitizePathSplit = exports.runtime = exports.readStream = exports.normalizeHeaderKey = exports.httpStatusMap = exports.getFileBuffer = exports.getCookie = exports.generateUUID = exports.generateRandomBase64 = exports.generateID = exports.fileSize = exports.fileExists = exports.extensionExtract = exports.deleteCookie = exports.colorText = exports.allCookies = exports.GlobalConfig = void 0;
 const config_js_1 = require("../core/config.js");
 Object.defineProperty(exports, "GlobalConfig", { enumerable: true, get: function () { return config_js_1.GlobalConfig; } });
 const colors_js_1 = require("../utils/colors.js");
 Object.defineProperty(exports, "colorText", { enumerable: true, get: function () { return colors_js_1.colorText; } });
-const httpStatusMap_js_1 = require("../utils/httpStatusMap.js");
-Object.defineProperty(exports, "httpStatusMap", { enumerable: true, get: function () { return httpStatusMap_js_1.httpStatusMap; } });
-const generateID_js_1 = require("../utils/generateID.js");
-Object.defineProperty(exports, "generateID", { enumerable: true, get: function () { return generateID_js_1.generateID; } });
-Object.defineProperty(exports, "generateUUID", { enumerable: true, get: function () { return generateID_js_1.generateUUID; } });
-Object.defineProperty(exports, "generateRandomBase64", { enumerable: true, get: function () { return generateID_js_1.generateRandomBase64; } });
 const cookie_js_1 = require("../utils/cookie.js");
 Object.defineProperty(exports, "allCookies", { enumerable: true, get: function () { return cookie_js_1.allCookies; } });
 Object.defineProperty(exports, "deleteCookie", { enumerable: true, get: function () { return cookie_js_1.deleteCookie; } });
@@ -21,6 +15,14 @@ Object.defineProperty(exports, "fileExists", { enumerable: true, get: function (
 Object.defineProperty(exports, "fileSize", { enumerable: true, get: function () { return file_js_1.fileSize; } });
 Object.defineProperty(exports, "getFileBuffer", { enumerable: true, get: function () { return file_js_1.getFileBuffer; } });
 Object.defineProperty(exports, "readStream", { enumerable: true, get: function () { return file_js_1.readStream; } });
+const formData_js_1 = require("../utils/formData.js");
+Object.defineProperty(exports, "useFormData", { enumerable: true, get: function () { return formData_js_1.useFormData; } });
+const generateID_js_1 = require("../utils/generateID.js");
+Object.defineProperty(exports, "generateID", { enumerable: true, get: function () { return generateID_js_1.generateID; } });
+Object.defineProperty(exports, "generateRandomBase64", { enumerable: true, get: function () { return generateID_js_1.generateRandomBase64; } });
+Object.defineProperty(exports, "generateUUID", { enumerable: true, get: function () { return generateID_js_1.generateUUID; } });
+const httpStatusMap_js_1 = require("../utils/httpStatusMap.js");
+Object.defineProperty(exports, "httpStatusMap", { enumerable: true, get: function () { return httpStatusMap_js_1.httpStatusMap; } });
 const low_level_js_1 = require("../utils/low-level.js");
 Object.defineProperty(exports, "extensionExtract", { enumerable: true, get: function () { return low_level_js_1.extensionExtract; } });
 Object.defineProperty(exports, "normalizeHeaderKey", { enumerable: true, get: function () { return low_level_js_1.normalizeHeaderKey; } });
@@ -28,13 +30,11 @@ Object.defineProperty(exports, "sanitizePathSplit", { enumerable: true, get: fun
 Object.defineProperty(exports, "sanitizePathSplitBasePath", { enumerable: true, get: function () { return low_level_js_1.sanitizePathSplitBasePath; } });
 Object.defineProperty(exports, "sanitized", { enumerable: true, get: function () { return low_level_js_1.sanitized; } });
 const runtime_js_1 = require("../utils/runtime.js");
-Object.defineProperty(exports, "Environment", { enumerable: true, get: function () { return runtime_js_1.Environment; } });
-const formData_js_1 = require("../utils/formData.js");
-Object.defineProperty(exports, "useFormData", { enumerable: true, get: function () { return formData_js_1.useFormData; } });
+Object.defineProperty(exports, "runtime", { enumerable: true, get: function () { return runtime_js_1.runtime; } });
 exports.default = {
     useFormData: formData_js_1.useFormData,
     generateRandomBase64: generateID_js_1.generateRandomBase64,
-    Environment: runtime_js_1.Environment,
+    runtime: runtime_js_1.runtime,
     extensionExtract: low_level_js_1.extensionExtract,
     normalizeHeaderKey: low_level_js_1.normalizeHeaderKey,
     sanitizePathSplit: low_level_js_1.sanitizePathSplit,

@@ -16,7 +16,9 @@ exports.notFoundResponse = notFoundResponse;
 async function handleErrorResponse(err = error_js_1.TezXError.internal(), ctx) {
     if (err instanceof error_js_1.TezXError) {
         config_js_1.GlobalConfig.debugging.error(err.details ?? err?.message);
-        return ctx.status(err.statusCode ?? 500).send(err.details ?? err?.message ?? "Internal Server Error");
+        return ctx
+            .status(err.statusCode ?? 500)
+            .send(err.details ?? err?.message ?? "Internal Server Error");
     }
     return await handleErrorResponse(error_js_1.TezXError.internal(), ctx);
 }

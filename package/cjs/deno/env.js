@@ -3,10 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.loadEnv = loadEnv;
 const runtime_js_1 = require("../utils/runtime.js");
 const colors_js_1 = require("../utils/colors.js");
+const error_js_1 = require("../core/error.js");
 function parseEnvFile(filePath, result) {
     try {
         if (runtime_js_1.runtime !== "deno") {
-            throw new Error(`Please use ${(0, colors_js_1.colorText)(`import {loadEnv} from "tezx/${runtime_js_1.runtime}"`, "bgRed")} environment`);
+            throw new error_js_1.TezXError(`Please use ${(0, colors_js_1.colorText)(`import {loadEnv} from "tezx/${runtime_js_1.runtime}"`, "bgRed")} environment`);
         }
         let fileExists = false;
         try {

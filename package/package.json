@@ -1,6 +1,6 @@
 {
   "name": "tezx",
-  "version": "3.0.14-beta.1",
+  "version": "3.0.14-beta2",
   "description": "TezX is a high-performance, lightweight JavaScript framework designed for speed, scalability, and flexibility. It enables efficient routing, middleware management, and static file serving with minimal configuration. Fully compatible with Node.js, Deno, and Bun.",
   "type": "module",
   "main": "cjs/index.js",
@@ -42,6 +42,16 @@
       "require": "./cjs/helper/index.js",
       "types": "./helper/index.d.ts"
     },
+    "./jwt/node": {
+      "import": "./jwt/node.js",
+      "require": "./cjs/jwt/node.js",
+      "types": "./jwt/node.d.ts"
+    },
+    "./jwt/web": {
+      "import": "./jwt/web.js",
+      "require": "./cjs/jwt/web.js",
+      "types": "./jwt/web.d.ts"
+    },
     "./registry": {
       "import": "./registry/index.js",
       "require": "./cjs/registry/index.js",
@@ -64,6 +74,7 @@
     "core/",
     "deno/",
     "helper/",
+    "jwt/",
     "middleware/",
     "node/",
     "registry/",

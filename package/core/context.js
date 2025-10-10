@@ -1,7 +1,8 @@
-import { fileExists, fileSize, getFileBuffer, readStream } from "../utils/file.js";
+import { fileExists, fileSize, getFileBuffer, readStream, } from "../utils/file.js";
 import { extensionExtract } from "../utils/low-level.js";
 import { defaultMimeType, mimeTypes } from "../utils/mimeTypes.js";
 import { determineContentTypeBody, toString } from "../utils/response.js";
+import { TezXError } from "./error.js";
 import { TezXRequest } from "./request.js";
 export class Context {
     #status = 200;
@@ -133,7 +134,7 @@ export class Context {
     }
     async download(filePath, filename) {
         if (!(await fileExists(filePath)))
-            throw Error("File not found");
+            throw TezXError.notFound("File not found");
         const buf = await getFileBuffer(filePath);
         const headers = {
             "Content-Disposition": `attachment; filename="${filename}"`,
@@ -146,7 +147,7 @@ export class Context {
     }
     async sendFile(filePath, init) {
         if (!(await fileExists(filePath)))
-            throw Error("File not found");
+            throw TezXError.notFound("File not found");
         let { size, mtime } = await fileSize(filePath);
         const ext = extensionExtract(filePath);
         const mimeType = mimeTypes[ext] ?? defaultMimeType;

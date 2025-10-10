@@ -76,7 +76,6 @@ const i18n = (options) => {
                 }
                 let msg = typeof acc === "string" ? acc : key;
                 return formatMessage(msg, vars);
-                ;
             };
             ctx.language = lang;
             return await next();

@@ -1,18 +1,18 @@
 import { GlobalConfig } from "../core/config.js";
 import { colorText } from "../utils/colors.js";
 export type { Runtime as AdapterType } from "../types/index.js";
-import { httpStatusMap } from "../utils/httpStatusMap.js";
-import { generateID, generateUUID, generateRandomBase64 } from "../utils/generateID.js";
 import { allCookies, deleteCookie, getCookie, setCookie } from "../utils/cookie.js";
 import { fileExists, fileSize, getFileBuffer, readStream } from "../utils/file.js";
-import { extensionExtract, normalizeHeaderKey, sanitizePathSplit, sanitizePathSplitBasePath, sanitized } from "../utils/low-level.js";
-import { Environment } from "../utils/runtime.js";
 import { useFormData } from "../utils/formData.js";
-export { useFormData, Environment, extensionExtract, normalizeHeaderKey, sanitizePathSplit, sanitizePathSplitBasePath, sanitized, allCookies, deleteCookie, getCookie, setCookie, generateRandomBase64, fileExists, fileSize, getFileBuffer, readStream, generateID, generateUUID, httpStatusMap, colorText, GlobalConfig, };
+import { generateID, generateRandomBase64, generateUUID } from "../utils/generateID.js";
+import { httpStatusMap } from "../utils/httpStatusMap.js";
+import { extensionExtract, normalizeHeaderKey, sanitizePathSplit, sanitizePathSplitBasePath, sanitized } from "../utils/low-level.js";
+import { runtime } from "../utils/runtime.js";
+export { GlobalConfig, allCookies, colorText, deleteCookie, extensionExtract, fileExists, fileSize, generateID, generateRandomBase64, generateUUID, getCookie, getFileBuffer, httpStatusMap, normalizeHeaderKey, readStream, runtime, sanitizePathSplit, sanitizePathSplitBasePath, sanitized, setCookie, useFormData, };
 declare const _default: {
     useFormData: typeof useFormData;
     generateRandomBase64: typeof generateRandomBase64;
-    Environment: typeof Environment;
+    runtime: "node" | "bun" | "deno" | "unknown";
     extensionExtract: typeof extensionExtract;
     normalizeHeaderKey: typeof normalizeHeaderKey;
     sanitizePathSplit: typeof sanitizePathSplit;

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TezXError = void 0;
+exports.TezXErrorParse = TezXErrorParse;
 class TezXError extends Error {
     statusCode;
     details;
@@ -39,3 +40,10 @@ class TezXError extends Error {
     }
 }
 exports.TezXError = TezXError;
+function TezXErrorParse(err, statusCode) {
+    if (err instanceof TezXError)
+        return err;
+    else if (err instanceof Error)
+        return new TezXError(err?.message, 500, err?.stack);
+    return new TezXError(String(err), statusCode);
+}

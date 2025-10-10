@@ -5,6 +5,7 @@ exports.getFiles = getFiles;
 const node_fs_1 = require("node:fs");
 const node_path_1 = require("node:path");
 const low_level_js_1 = require("../utils/low-level.js");
+const error_js_1 = require("../core/error.js");
 function serveStatic(...args) {
     let route = "";
     let dir;
@@ -25,7 +26,7 @@ function serveStatic(...args) {
             [dir] = args;
             break;
         default:
-            throw new Error(`\x1b[1;31m404 Not Found\x1b[0m \x1b[1;32mInvalid arguments\x1b[0m`);
+            throw new error_js_1.TezXError(`\x1b[1;31m404 Not Found\x1b[0m \x1b[1;32mInvalid arguments\x1b[0m`);
     }
     return {
         files: getFiles(dir, route, options),

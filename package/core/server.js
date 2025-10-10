@@ -1,18 +1,23 @@
+import { RadixRouter } from "../registry/RadixRouter.js";
 import { handleErrorResponse, notFoundResponse } from "../utils/response.js";
 import { getPathname } from "../utils/url.js";
 import { GlobalConfig } from "./config.js";
 import { Context } from "./context.js";
-import { TezXError } from "./error.js";
+import { TezXError, TezXErrorParse } from "./error.js";
 import { Router } from "./router.js";
 export class TezX extends Router {
     #pathResolver;
     #notFound = notFoundResponse;
     #errorHandler = handleErrorResponse;
-    constructor({ basePath = "/", env = {}, debugMode = false, onPathResolve, routeRegistry, } = {}) {
+    constructor({ basePath = "/", env = {}, debugMode = false, onPathResolve, routeRegistry = new RadixRouter(), } = {}) {
         if (debugMode) {
             GlobalConfig.debugMode = debugMode;
         }
-        super({ basePath, env, routeRegistry });
+        super({ basePath, env });
+        if (!routeRegistry) {
+            throw new Error("routeRegistry is required for TezX initialization");
+        }
+        this.router = routeRegistry;
         this.#pathResolver = onPathResolve;
         this.serve = this.serve.bind(this);
     }
@@ -29,7 +34,7 @@ export class TezX extends Router {
         let res;
         async function dispatch(i) {
             if (i <= index)
-                throw new Error("next() called multiple times");
+                throw new TezXError("next() called multiple times");
             index = i;
             if (i < mLen) {
                 const fn = middlewares[i];
@@ -59,7 +64,7 @@ export class TezX extends Router {
     }
     async #handleRequest(req, method, args) {
         if (!(req instanceof Request))
-            throw new Error("Invalid request object provided to tezX server.");
+            throw new TezXError("Invalid request object provided to tezX server.");
         const rawPath = getPathname(req.url);
         const pathname = this.#pathResolver
             ? await this.#pathResolver(rawPath)
@@ -70,7 +75,7 @@ export class TezX extends Router {
             if (staticHandler) {
                 return staticHandler(ctx);
             }
-            const route = this.router.search(method, pathname);
+            const route = this.router?.search(method, pathname);
             const mLen = route?.middlewares?.length;
             const hLen = route?.handlers?.length;
             if (!route || (hLen === 0 && mLen === 0)) {
@@ -84,10 +89,7 @@ export class TezX extends Router {
             return await this.#chain(ctx, mLen, route.middlewares, hLen, route.handlers);
         }
         catch (err) {
-            if (!(err instanceof TezXError)) {
-                return this.#errorHandler?.(TezXError.internal(err?.message, err?.stack), ctx);
-            }
-            return this.#errorHandler?.(err, ctx);
+            return this.#errorHandler?.(TezXErrorParse(err), ctx);
         }
     }
     async serve(req, ...args) {
@@ -103,4 +105,7 @@ export class TezX extends Router {
         }
         return this.#handleRequest(req, method, args);
     }
+}
+if (!globalThis.TezX) {
+    globalThis.TezX = TezX;
 }

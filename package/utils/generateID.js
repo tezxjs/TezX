@@ -22,7 +22,7 @@ export function generateUUID() {
     return generateID();
 }
 export function generateRandomBase64(length = 16) {
-    let result = '';
+    let result = "";
     const BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     for (let i = 0; i < length; i++) {
         const idx = Math.floor(Math.random() * 64);

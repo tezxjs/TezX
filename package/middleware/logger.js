@@ -1,3 +1,4 @@
+import { TezXError } from "../core/error.js";
 import { colorText } from "../utils/colors.js";
 function logger(options = { enabled: true }) {
     return async function logger(ctx, next) {
@@ -15,8 +16,8 @@ function logger(options = { enabled: true }) {
         }
         catch (err) {
             console.error(`${colorText("Error:", "red")}`, err.stack);
-            throw new Error(err.stack);
+            throw new TezXError(err.stack);
         }
     };
 }
-export { logger, logger as default };
+export { logger as default, logger };

@@ -61,7 +61,7 @@ export type WebSocketOptions = {
     /**
      * Called when an error occurs during the upgrade process.
      */
-    onUpgradeError?: (err: Error, ctx: Context) => HttpBaseResponse;
+    onUpgradeError?: (err: TezXError, ctx: Context) => HttpBaseResponse;
 };
 /**
  * Represents a string key used for HTTP headers.

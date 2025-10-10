@@ -1,5 +1,5 @@
 function cors(option = {}) {
-    const { credentials, maxAge, origin, } = option;
+    const { credentials, maxAge, origin } = option;
     let methods = (option.methods || ["GET", "POST", "PUT", "DELETE"]).join(", ");
     let allowedHeaders = (option.allowedHeaders || ["Content-Type", "Authorization"]).join(", ");
     let exposedHeaders = option?.exposedHeaders?.join(", ");

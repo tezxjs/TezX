@@ -23,7 +23,7 @@ const rateLimiter = (options) => {
         if (check) {
             const retryAfter = Math.ceil((entry.resetTime - Date.now()) / 1000);
             ctx.headers.set("Retry-After", retryAfter.toString());
-            return onError(ctx, retryAfter, new Error(`Rate limit exceeded. Retry after ${retryAfter} seconds.`));
+            return onError(ctx, retryAfter, new TezXError(`Rate limit exceeded. Retry after ${retryAfter} seconds.`));
         }
         ctx.headers.set("X-RateLimit-Limit", maxRequests.toString());
         ctx.headers.set("X-RateLimit-Remaining", (maxRequests - entry.count).toString());

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.upgradeWebSocket = upgradeWebSocket;
+const error_js_1 = require("../core/error.js");
 function upgradeWebSocket(callback, options = {}) {
     const { onUpgradeError = (error, ctx) => {
         ctx.setStatus = 401;
@@ -12,13 +13,13 @@ function upgradeWebSocket(callback, options = {}) {
         const key = ctx.req.header("sec-websocket-key");
         if (upgrade !== "websocket" || !connection?.includes("upgrade") || !key) {
             ctx.setStatus = 401;
-            const error = new Error("Invalid WebSocket upgrade request.");
+            const error = new error_js_1.TezXError("Invalid WebSocket upgrade request.", 401);
             return next ? next() : onUpgradeError(error, ctx);
         }
         ctx.wsProtocol = ctx.url?.startsWith("https") ? "wss" : "ws";
         try {
             if (typeof callback !== "function") {
-                throw new Error("Missing or invalid WebSocket callback handler.");
+                throw new error_js_1.TezXError("Missing or invalid WebSocket callback handler.");
             }
             const { socket, response } = Deno.upgradeWebSocket(ctx.rawRequest, {
                 protocol: options.protocol,
@@ -32,7 +33,7 @@ function upgradeWebSocket(callback, options = {}) {
             return response;
         }
         catch (err) {
-            return onUpgradeError(err instanceof Error ? err : new Error("WebSocket Upgrade Failed"), ctx);
+            return onUpgradeError((0, error_js_1.TezXErrorParse)(err, 426), ctx);
         }
     };
 }

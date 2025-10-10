@@ -1,6 +1,7 @@
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { extensionExtract, sanitizePathSplitBasePath, } from "../utils/low-level.js";
+import { TezXError } from "../core/error.js";
 export function serveStatic(...args) {
     let route = "";
     let dir;
@@ -21,7 +22,7 @@ export function serveStatic(...args) {
             [dir] = args;
             break;
         default:
-            throw new Error(`\x1b[1;31m404 Not Found\x1b[0m \x1b[1;32mInvalid arguments\x1b[0m`);
+            throw new TezXError(`\x1b[1;31m404 Not Found\x1b[0m \x1b[1;32mInvalid arguments\x1b[0m`);
     }
     return {
         files: getFiles(dir, route, options),

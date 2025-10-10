@@ -5,6 +5,7 @@ const file_js_1 = require("../utils/file.js");
 const low_level_js_1 = require("../utils/low-level.js");
 const mimeTypes_js_1 = require("../utils/mimeTypes.js");
 const response_js_1 = require("../utils/response.js");
+const error_js_1 = require("./error.js");
 const request_js_1 = require("./request.js");
 class Context {
     #status = 200;
@@ -136,7 +137,7 @@ class Context {
     }
     async download(filePath, filename) {
         if (!(await (0, file_js_1.fileExists)(filePath)))
-            throw Error("File not found");
+            throw error_js_1.TezXError.notFound("File not found");
         const buf = await (0, file_js_1.getFileBuffer)(filePath);
         const headers = {
             "Content-Disposition": `attachment; filename="${filename}"`,
@@ -149,7 +150,7 @@ class Context {
     }
     async sendFile(filePath, init) {
         if (!(await (0, file_js_1.fileExists)(filePath)))
-            throw Error("File not found");
+            throw error_js_1.TezXError.notFound("File not found");
         let { size, mtime } = await (0, file_js_1.fileSize)(filePath);
         const ext = (0, low_level_js_1.extensionExtract)(filePath);
         const mimeType = mimeTypes_js_1.mimeTypes[ext] ?? mimeTypes_js_1.defaultMimeType;

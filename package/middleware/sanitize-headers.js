@@ -1,5 +1,5 @@
 const sanitizeHeaders = (options = {}) => {
-    const { whitelist = [], blacklist = [], } = options;
+    const { whitelist = [], blacklist = [] } = options;
     const normalizedWhitelist = whitelist.map((h) => h.toLowerCase());
     const normalizedBlacklist = blacklist.map((h) => h.toLowerCase());
     let lWhite = normalizedWhitelist.length;

@@ -117,16 +117,16 @@ export type SecureHeadersOptions = {
 };
 /**
  * secureHeaders middleware
-*
-* Precomputes static headers (HSTS, static CSP, X-Frame-Options, etc.) at
-* middleware creation time. Optionally supports per-request CSP nonces
-* (disabled in ultraFastMode).
+ *
+ * Precomputes static headers (HSTS, static CSP, X-Frame-Options, etc.) at
+ * middleware creation time. Optionally supports per-request CSP nonces
+ * (disabled in ultraFastMode).
  *
  * @template T,Path
  * @param {SecureHeadersOptions} [userOpts={}] - configuration overrides
  * @returns {Middleware<T,Path>} TezX-compatible middleware
-*
-* @example
-* app.use(secureHeaders({ preset: 'strict', cspUseNonce: true }));
-*/
+ *
+ * @example
+ * app.use(secureHeaders({ preset: 'strict', cspUseNonce: true }));
+ */
 export declare const secureHeaders: <T extends Record<string, any> = {}, Path extends string = any>(userOpts?: SecureHeadersOptions) => Middleware<T, Path>;

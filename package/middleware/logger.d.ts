@@ -15,4 +15,4 @@ import { Middleware } from "../types/index.js";
 declare function logger(options?: {
     enabled: boolean;
 }): Middleware;
-export { logger, logger as default };
+export { logger as default, logger };

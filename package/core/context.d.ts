@@ -252,9 +252,9 @@ export declare class Context<TEnv extends Record<string, any> = {}, TPath extend
         filename?: string;
     }): Promise<HttpBaseResponse>;
     /**
-     * bun [server]
-     * deno [connInfo]
-     * node [res, server]
+     *@property bun [server]
+     *@property deno [connInfo]
+     *@property node [res, server]
      */
     protected get args(): any;
 }

@@ -1,4 +1,5 @@
 import { Context } from "../core/context.js";
+import { TezXError } from "../core/error.js";
 import { HttpBaseResponse, Middleware } from "../types/index.js";
 /**
  * Options for Bearer Authentication middleware.
@@ -23,7 +24,7 @@ export type BearerAuthOptions = {
      * @param error - Optional error object describing the reason.
      * @returns HttpBaseResponse to send to the client.
      */
-    onUnauthorized?: (ctx: Context, error?: Error) => HttpBaseResponse;
+    onUnauthorized?: (ctx: Context, error?: TezXError) => HttpBaseResponse;
 };
 /**
  * Bearer Authentication Middleware

@@ -1,5 +1,5 @@
 import { GlobalConfig } from "../core/config.js";
-import { createRateLimitDefaultStorage, isRateLimit } from "../utils/rateLimit.js";
+import { createRateLimitDefaultStorage, isRateLimit, } from "../utils/rateLimit.js";
 import { runtime } from "../utils/runtime.js";
 export const detectBot = (opts = {}) => {
     const botUAs = opts.botUserAgents || ["bot", "spider", "crawl", "slurp"];

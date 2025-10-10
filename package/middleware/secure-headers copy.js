@@ -16,7 +16,7 @@ const defaultPresets = {
         noSniff: true,
         xssProtection: true,
         referrerPolicy: "strict-origin-when-cross-origin",
-        permissionsPolicy: 'geolocation=(), microphone=(), camera=(), usb=()',
+        permissionsPolicy: "geolocation=(), microphone=(), camera=(), usb=()",
         csp: {
             "default-src": ["'self'"],
             "script-src": ["'self'"],
@@ -25,9 +25,9 @@ const defaultPresets = {
             "font-src": ["'self'"],
             "connect-src": ["'self'"],
             "object-src": ["'none'"],
-            "frame-ancestors": ["'none'"]
+            "frame-ancestors": ["'none'"],
         },
-        cspReportOnly: false
+        cspReportOnly: false,
     },
     balanced: {
         preset: "balanced",
@@ -37,15 +37,19 @@ const defaultPresets = {
         noSniff: true,
         xssProtection: true,
         referrerPolicy: "no-referrer-when-downgrade",
-        permissionsPolicy: 'geolocation=(), microphone=()',
+        permissionsPolicy: "geolocation=(), microphone=()",
         csp: {
             "default-src": ["'self'"],
             "script-src": ["'self'", "https://cdn.jsdelivr.net"],
-            "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            "style-src": [
+                "'self'",
+                "'unsafe-inline'",
+                "https://fonts.googleapis.com",
+            ],
             "img-src": ["'self'", "data:", "https://images.example.com"],
-            "connect-src": ["'self'", "https://api.example.com"]
+            "connect-src": ["'self'", "https://api.example.com"],
         },
-        cspReportOnly: true
+        cspReportOnly: true,
     },
     dev: {
         preset: "dev",
@@ -54,13 +58,18 @@ const defaultPresets = {
         noSniff: false,
         xssProtection: false,
         referrerPolicy: "no-referrer",
-        permissionsPolicy: '',
+        permissionsPolicy: "",
         csp: {
-            "default-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'", "http://localhost:3000"],
+            "default-src": [
+                "'self'",
+                "'unsafe-inline'",
+                "'unsafe-eval'",
+                "http://localhost:3000",
+            ],
             "img-src": ["'self'", "data:", "blob:"],
         },
-        cspReportOnly: true
-    }
+        cspReportOnly: true,
+    },
 };
 const setHeader = (ctx, name, value) => {
     if (typeof ctx.setHeader === "function")
@@ -72,8 +81,13 @@ const setHeader = (ctx, name, value) => {
 };
 export const secureHeaders = (userOpts = {}) => {
     const preset = userOpts.preset ?? "balanced";
-    const base = { ...(defaultPresets[preset] || defaultPresets.balanced), ...userOpts };
-    const hstsHeader = base.hsts ? `max-age=${base.hstsMaxAge || 31536000}; includeSubDomains; preload` : "";
+    const base = {
+        ...(defaultPresets[preset] || defaultPresets.balanced),
+        ...userOpts,
+    };
+    const hstsHeader = base.hsts
+        ? `max-age=${base.hstsMaxAge || 31536000}; includeSubDomains; preload`
+        : "";
     const frameHeader = base.frameGuard || "SAMEORIGIN";
     const noSniffHeader = base.noSniff ? "nosniff" : "";
     const xssHeader = base.xssProtection ? "1; mode=block" : "0";

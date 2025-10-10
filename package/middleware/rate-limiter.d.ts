@@ -1,4 +1,5 @@
 import { Context } from "../core/context.js";
+import { TezXError } from "../core/error.js";
 import { HttpBaseResponse, Middleware } from "../types/index.js";
 export type RateLimiterOptions = {
     /**
@@ -41,10 +42,10 @@ export type RateLimiterOptions = {
      * @example
      * onError: (ctx, retryAfter) => {
      *   ctx.status = 429;
-     *   throw new Error( `Rate limit exceeded. Try again in ${retryAfter} seconds.`);
+     *   throw new TezXError( `Rate limit exceeded. Try again in ${retryAfter} seconds.`);
      * }
      */
-    onError?: (ctx: Context, retryAfter: number, error: Error) => HttpBaseResponse;
+    onError?: (ctx: Context, retryAfter: number, error: TezXError) => HttpBaseResponse;
 };
 /**
  * 🚦 Rate limiting middleware for request throttling

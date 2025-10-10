@@ -1,16 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Router = void 0;
-const RadixRouter_js_1 = require("../registry/RadixRouter.js");
 const low_level_js_1 = require("../utils/low-level.js");
+const error_js_1 = require("./error.js");
 class Router {
     env = {};
     router;
     route = [];
     staticFile = Object.create(null);
     basePath;
-    constructor({ basePath = "/", env = {}, routeRegistry = new RadixRouter_js_1.RadixRouter(), } = {}) {
-        this.router = routeRegistry;
+    constructor({ basePath = "/", env = {} } = {}) {
         this.basePath = basePath;
         this.env = { ...env };
         this.get = this.get.bind(this);
@@ -77,14 +76,14 @@ class Router {
         return this;
     }
     addRouter(path, router) {
-        return this.#routeAddTriNode(path, router);
+        return this.#addRouterInstance(path, router);
     }
     group(prefix, callback) {
         const router = new Router({
             basePath: prefix,
         });
         callback(router);
-        this.#routeAddTriNode("/", router);
+        this.#addRouterInstance("/", router);
         return this;
     }
     use(...args) {
@@ -131,7 +130,7 @@ class Router {
     }
     #addRoute(method, path, handlers) {
         let pattern = `/${(0, low_level_js_1.sanitizePathSplitBasePath)(this.basePath, path).join("/")}`;
-        this.router.addRoute(method, pattern, handlers);
+        this.router?.addRoute(method, pattern, handlers);
         this.route.push({
             method: method,
             pattern: pattern,
@@ -140,7 +139,7 @@ class Router {
     }
     #registerRoute(method, path, ...args) {
         if (args.length === 0) {
-            throw new Error("At least one handler is required.");
+            throw new error_js_1.TezXError("At least one handler is required.");
         }
         let middlewares = [];
         let callback;
@@ -157,22 +156,17 @@ class Router {
             callback = args[0];
         }
         if (typeof callback !== "function") {
-            throw new Error("Route callback function is missing or invalid.");
+            throw new error_js_1.TezXError("Route callback function is missing or invalid.");
         }
         if (!middlewares.every((middleware) => typeof middleware === "function")) {
-            throw new Error("Middleware must be a function or an array of functions.");
+            throw new error_js_1.TezXError("Middleware must be a function or an array of functions.");
         }
         this.#addRoute(method, path, [...middlewares, callback]);
     }
-    #routeAddTriNode(path, router) {
+    #addRouterInstance(path, router) {
         this.env = { ...this.env, ...router.env };
-        if (this.router?.name &&
-            router.router?.name &&
-            this.router?.name !== router.router?.name) {
-            throw new Error(`Router name mismatch: expected "${this.router.name}", got "${router.router.name}"`);
-        }
         if (!(router instanceof Router)) {
-            throw new Error("Router instance is required.");
+            throw new error_js_1.TezXError("Router instance is required.");
         }
         router.route.forEach((r) => {
             this.#addRoute(r?.method, `/${(0, low_level_js_1.sanitizePathSplitBasePath)(path, r?.pattern).join("/")}`, r?.handlers);

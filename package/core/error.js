@@ -35,3 +35,10 @@ export class TezXError extends Error {
         };
     }
 }
+export function TezXErrorParse(err, statusCode) {
+    if (err instanceof TezXError)
+        return err;
+    else if (err instanceof Error)
+        return new TezXError(err?.message, 500, err?.stack);
+    return new TezXError(String(err), statusCode);
+}

@@ -23,7 +23,7 @@ export type DenoWebsocketOptions = {
  * @param {WebSocketOptions} [options={}] - Optional WebSocket configuration:
  *   - `protocol`?: string – Subprotocol.
  *   - `idleTimeout`?: number – Idle timeout in seconds.
- *   - `onUpgradeError`?: (error: Error, ctx: T) => any – Custom handler for upgrade errors.
+ *   - `onUpgradeError`?: (error: TezXError, ctx: T) => any – Custom handler for upgrade errors.
  *
  * @returns {Middleware<T, Path>} A middleware function to be used in a compatible HTTP/WebSocket server framework.
  *

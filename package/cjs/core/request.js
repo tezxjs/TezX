@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TezXRequest = void 0;
 const url_js_1 = require("../utils/url.js");
+const error_js_1 = require("./error.js");
 class TezXRequest {
     url;
     method;
@@ -83,11 +84,11 @@ class TezXRequest {
             return this.#cachedFormObject;
         const ct = this.#contentType;
         if (!ct)
-            throw new Error("Missing Content-Type");
+            throw new error_js_1.TezXError("Missing Content-Type");
         if (ct === "application/x-www-form-urlencoded" ||
             ct === "multipart/form-data") {
             if (this.#bodyConsumed) {
-                throw new Error("Multipart body already consumed elsewhere");
+                throw new error_js_1.TezXError("Multipart body already consumed elsewhere");
             }
             this.#cachedFormObject = (await this.#rawRequest.formData());
             this.#bodyConsumed = true;

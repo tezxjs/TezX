@@ -34,6 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.upgradeWebSocket = upgradeWebSocket;
+const error_js_1 = require("../core/error.js");
 function upgradeWebSocket(callback, options = {}) {
     const { onUpgradeError = (error, ctx) => {
         ctx.setStatus = 401;
@@ -49,13 +50,13 @@ function upgradeWebSocket(callback, options = {}) {
                 return next();
             }
             ctx.setStatus = 401;
-            return onUpgradeError(new Error("401 Bad Request: Invalid WebSocket headers"), ctx);
+            return onUpgradeError(new error_js_1.TezXError("401 Bad Request: Invalid WebSocket headers", 401), ctx);
         }
         ctx.wsProtocol = ctx.url?.startsWith("https") ? "wss" : "ws";
         const server = ctx.args?.[2];
         if (!server?.on) {
             ctx.setStatus = 500;
-            return onUpgradeError(new Error("Node server instance missing for WebSocket"), ctx);
+            return onUpgradeError(new error_js_1.TezXError("Node server instance missing for WebSocket", 426), ctx);
         }
         const { WebSocketServer } = await Promise.resolve().then(() => __importStar(require("ws")));
         const wss = new WebSocketServer({

@@ -1,5 +1,5 @@
 import { generateRandomBase64, GlobalConfig } from "../helper/index.js";
-const joinSrc = (v) => (typeof v === "string" ? v : v.join(" "));
+const joinSrc = (v) => typeof v === "string" ? v : v.join(" ");
 const buildCSPString = (cspObj) => {
     const parts = [];
     for (const key in cspObj)
@@ -15,7 +15,7 @@ export const secureHeaders = (userOpts = {}) => {
             noSniff: true,
             xssProtection: true,
             referrerPolicy: "strict-origin-when-cross-origin",
-            permissionsPolicy: 'geolocation=(), microphone=(), camera=(), usb=()',
+            permissionsPolicy: "geolocation=(), microphone=(), camera=(), usb=()",
             csp: {
                 "default-src": ["'self'"],
                 "script-src": ["'self'"],
@@ -35,11 +35,15 @@ export const secureHeaders = (userOpts = {}) => {
             noSniff: true,
             xssProtection: true,
             referrerPolicy: "no-referrer-when-downgrade",
-            permissionsPolicy: 'geolocation=(), microphone=()',
+            permissionsPolicy: "geolocation=(), microphone=()",
             csp: {
                 "default-src": ["'self'"],
                 "script-src": ["'self'", "https://cdn.jsdelivr.net"],
-                "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+                "style-src": [
+                    "'self'",
+                    "'unsafe-inline'",
+                    "https://fonts.googleapis.com",
+                ],
                 "img-src": ["'self'", "data:", "https://images.example.com"],
                 "connect-src": ["'self'", "https://api.example.com"],
             },
@@ -54,14 +58,22 @@ export const secureHeaders = (userOpts = {}) => {
             referrerPolicy: "no-referrer",
             permissionsPolicy: "",
             csp: {
-                "default-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'", "http://localhost:3000"],
+                "default-src": [
+                    "'self'",
+                    "'unsafe-inline'",
+                    "'unsafe-eval'",
+                    "http://localhost:3000",
+                ],
                 "img-src": ["'self'", "data:", "blob:"],
             },
             cspReportOnly: true,
         },
     };
     const preset = userOpts.preset ?? "balanced";
-    const base = { ...(defaultPresets[preset] || defaultPresets.balanced), ...userOpts };
+    const base = {
+        ...(defaultPresets[preset] || defaultPresets.balanced),
+        ...userOpts,
+    };
     const frameHeader = base.frameGuard || "SAMEORIGIN";
     const xssHeader = base.xssProtection ? "1; mode=block" : "0";
     const noSniffHeader = base.noSniff ? "nosniff" : "";

@@ -36,8 +36,7 @@ const cacheControl = (opts) => {
                 headers.set("Vary", vary.join(", "));
         }
         catch (err) {
-            const error = err instanceof Error ? new error_js_1.TezXError(err?.message, 500) : new error_js_1.TezXError(String(err));
-            return onError(error, ctx);
+            return onError((0, error_js_1.TezXErrorParse)(err), ctx);
         }
     };
 };

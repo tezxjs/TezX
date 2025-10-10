@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.serveStatic = serveStatic;
 exports.getFiles = getFiles;
+const error_js_1 = require("../core/error.js");
 const low_level_js_1 = require("../utils/low-level.js");
 function serveStatic(...args) {
     let route = "";
@@ -23,7 +24,7 @@ function serveStatic(...args) {
             [dir] = args;
             break;
         default:
-            throw new Error(`\x1b[1;31m404 Not Found\x1b[0m \x1b[1;32mInvalid arguments\x1b[0m`);
+            throw new error_js_1.TezXError(`\x1b[1;31m404 Not Found\x1b[0m \x1b[1;32mInvalid arguments\x1b[0m`);
     }
     return {
         files: getFiles(dir, route, options),

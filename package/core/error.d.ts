@@ -93,3 +93,4 @@ export declare class TezXError extends Error {
         details: any;
     };
 }
+export declare function TezXErrorParse(err: unknown, statusCode?: number): TezXError;

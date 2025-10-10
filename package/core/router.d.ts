@@ -4,11 +4,6 @@ import { Callback, HandlerType, HTTPMethod, Middleware, RouteRegistry, ServeStat
  */
 export type RouterConfig = {
     /**
-     * Custom route registry instance used internally to store routes.
-     * If not provided, the router will use the default CombineRouteRegistry.
-     */
-    routeRegistry?: RouteRegistry;
-    /**
      * `env` allows you to define environment variables for the router instance.
      * Example: `{ NODE_ENV: "production", API_VERSION: 2 }`
      */
@@ -33,7 +28,7 @@ export declare class Router<T extends Record<string, any> = {}> {
     /** Environment variables accessible within this router */
     protected env: Record<string, string | number>;
     /** Internal route registry to hold all routes */
-    protected router: RouteRegistry;
+    protected router?: RouteRegistry;
     /** Array tracking registered routes and their handlers */
     protected route: {
         method: string;
@@ -52,7 +47,7 @@ export declare class Router<T extends Record<string, any> = {}> {
      * @param config.env - Environment variables for router
      * @param config.routeRegistry - Custom route registry instance
      */
-    constructor({ basePath, env, routeRegistry, }?: RouterConfig);
+    constructor({ basePath, env }?: RouterConfig);
     /**
      * Registers static file routes to the application for serving files like HTML, CSS, JS, images, etc.
      *
@@ -61,7 +56,7 @@ export declare class Router<T extends Record<string, any> = {}> {
      *
      * @example
      * ```ts
-     * import { serveStatic } from "tezx/bun"; // or "tezx/node" or "tezx/deno"
+     * import { serveStatic } from "tezx/bun"; // or "tezx/node"
      *
      * app.static(
      *   serveStatic("public", {

@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logger = logger;
 exports.default = logger;
+exports.logger = logger;
+const error_js_1 = require("../core/error.js");
 const colors_js_1 = require("../utils/colors.js");
 function logger(options = { enabled: true }) {
     return async function logger(ctx, next) {
@@ -19,7 +20,7 @@ function logger(options = { enabled: true }) {
         }
         catch (err) {
             console.error(`${(0, colors_js_1.colorText)("Error:", "red")}`, err.stack);
-            throw new Error(err.stack);
+            throw new error_js_1.TezXError(err.stack);
         }
     };
 }

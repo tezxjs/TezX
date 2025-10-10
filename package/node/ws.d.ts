@@ -22,7 +22,7 @@ export type nodeWebSocketOptions = {
  *
  * @param {WebSocketCallback} callback - Function that returns WebSocket event handlers.
  * @param {WebSocketOptions} [options={}] - Options for WebSocket upgrade behavior.
- * @param {(error: Error, ctx: T) => any} [options.onUpgradeError] - Custom error handler for upgrade failures.
+ * @param {(error: TezXError, ctx: T) => any} [options.onUpgradeError] - Custom error handler for upgrade failures.
  * @param {number} [options.maxPayload=1048576] - Maximum allowed payload size (in bytes).
  * @param {boolean} [options.perMessageDeflate=false] - Whether to enable per-message deflate.
  *

@@ -34,7 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.wsHandlers = exports.upgradeWebSocket = exports.serveStatic = exports.loadEnv = exports.getConnInfo = void 0;
-const env_js_1 = require("../node/env.js");
+const env_js_1 = require("./env.js");
 Object.defineProperty(exports, "loadEnv", { enumerable: true, get: function () { return env_js_1.loadEnv; } });
 const serveStatic_js_1 = require("../node/serveStatic.js");
 Object.defineProperty(exports, "serveStatic", { enumerable: true, get: function () { return serveStatic_js_1.serveStatic; } });

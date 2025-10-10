@@ -1,8 +1,8 @@
 import { TezXError } from "./core/error.js";
 import { Router } from "./core/router.js";
-import { TezX } from "./core/server.js";
+import { TezX, TezX as TezXBase } from "./core/server.js";
 export type { Context as BaseContext } from "./core/context.js";
-export type { NetAddr as AddressType, Callback, Ctx as Context, CookieOptions, FormDataOptions, HandlerType, HttpBaseResponse, HTTPMethod, Middleware, NextCallback, RequestHeaders, ResponseHeaders, ResponseInit, RouteMatchResult, RouteRegistry, Runtime, StaticFileArray, StaticServeOption, WebSocketCallback, WebSocketEvent, ReqHeaderKey, ResHeaderKey, ErrorHandler, ServeStatic, WebSocketOptions, } from "./types/index.js";
+export type { NetAddr as AddressType, Callback, Ctx as Context, CookieOptions, ErrorHandler, FormDataOptions, HandlerType, HttpBaseResponse, HTTPMethod, Middleware, NextCallback, ReqHeaderKey, RequestHeaders, ResHeaderKey, ResponseHeaders, ResponseInit, RouteMatchResult, RouteRegistry, Runtime, ServeStatic, StaticFileArray, StaticServeOption, WebSocketCallback, WebSocketEvent, WebSocketOptions, } from "./types/index.js";
 export type { TezXConfig } from "./core/server.js";
 export type { TezXRequest } from "./core/request.js";
 export type { RouterConfig } from "./core/router.js";
@@ -15,3 +15,6 @@ declare const _default: {
     TezXError: typeof TezXError;
 };
 export default _default;
+declare global {
+    var TezX: typeof TezXBase;
+}

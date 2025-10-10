@@ -1,4 +1,4 @@
-import { TezXError } from "../core/error.js";
+import { TezXErrorParse } from "../core/error.js";
 export const cacheControl = (opts) => {
     const { defaultSettings, rules = [], onError = (err, ctx) => {
         ctx.setStatus = 500;
@@ -33,8 +33,7 @@ export const cacheControl = (opts) => {
                 headers.set("Vary", vary.join(", "));
         }
         catch (err) {
-            const error = err instanceof Error ? new TezXError(err?.message, 500) : new TezXError(String(err));
-            return onError(error, ctx);
+            return onError(TezXErrorParse(err), ctx);
         }
     };
 };

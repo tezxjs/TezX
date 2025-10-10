@@ -1,3 +1,4 @@
+import { TezXError } from "../core/error.js";
 import { extensionExtract, sanitizePathSplitBasePath, } from "../utils/low-level.js";
 export function serveStatic(...args) {
     let route = "";
@@ -19,7 +20,7 @@ export function serveStatic(...args) {
             [dir] = args;
             break;
         default:
-            throw new Error(`\x1b[1;31m404 Not Found\x1b[0m \x1b[1;32mInvalid arguments\x1b[0m`);
+            throw new TezXError(`\x1b[1;31m404 Not Found\x1b[0m \x1b[1;32mInvalid arguments\x1b[0m`);
     }
     return {
         files: getFiles(dir, route, options),

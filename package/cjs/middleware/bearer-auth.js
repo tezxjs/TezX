@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bearerAuth = void 0;
+const error_js_1 = require("../core/error.js");
 const bearerAuth = (options) => {
     const { validate, realm = "API", onUnauthorized = (ctx, error) => {
         ctx.setStatus = 401;
@@ -10,23 +11,22 @@ const bearerAuth = (options) => {
     return async (ctx, next) => {
         const auth = ctx.req.header("authorization");
         if (!auth || !auth.startsWith("Bearer ")) {
-            return onUnauthorized(ctx, new Error("Bearer token required"));
+            return onUnauthorized(ctx, new error_js_1.TezXError("Bearer token required"));
         }
         const token = auth.slice(7).trim();
         if (!token) {
-            return onUnauthorized(ctx, new Error("Empty token"));
+            return onUnauthorized(ctx, new error_js_1.TezXError("Empty token"));
         }
         try {
             const valid = await validate(token, ctx);
             if (!valid) {
-                return onUnauthorized(ctx, new Error("Invalid or expired token"));
+                return onUnauthorized(ctx, new error_js_1.TezXError("Invalid or expired token"));
             }
             ctx.token = token;
             await next();
         }
         catch (err) {
-            const error = err instanceof Error ? err : new Error(String(err));
-            return onUnauthorized(ctx, error);
+            return onUnauthorized(ctx, (0, error_js_1.TezXErrorParse)(err));
         }
     };
 };

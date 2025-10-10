@@ -1,4 +1,4 @@
-import { Callback, ErrorHandler } from "../types/index.js";
+import { Callback, ErrorHandler, RouteRegistry } from "../types/index.js";
 import { Router, RouterConfig } from "./router.js";
 export type TezXConfig = {
     /**
@@ -21,6 +21,11 @@ export type TezXConfig = {
      */
     onPathResolve?: (pathname: string) => string;
     /**
+     * Custom route registry instance used internally to store routes.
+     * If not provided, the router will use the default CombineRouteRegistry.
+     */
+    routeRegistry?: RouteRegistry;
+    /**
      * Enables or disables debugging for the middleware.
      * When set to `true`, detailed debug logs will be output,
      * useful for tracking the flow of requests and identifying issues.
@@ -31,7 +36,7 @@ export type TezXConfig = {
 } & RouterConfig;
 /**
  * TezX is an ultra-fast, flexible request router and server handler.
- * It supports plug-and-play for Deno, Bun, and Node runtimes.
+ * It supports plug-and-play for Bun, and Node runtimes.
  *
  * @template T - The environment object shared across requests.
  *
@@ -45,6 +50,8 @@ export type TezXConfig = {
  */
 export declare class TezX<T extends Record<string, any> = {}> extends Router<T> {
     #private;
+    /** Internal route registry to hold all routes */
+    protected router?: RouteRegistry;
     constructor({ basePath, env, debugMode, onPathResolve, routeRegistry, }?: TezXConfig);
     /**
      * Register a custom 404 (not found) handler.
@@ -85,27 +92,7 @@ export declare class TezX<T extends Record<string, any> = {}> extends Router<T> 
      *   port: 3001,
      *   reusePort: true, // enables SO_REUSEPORT for clustering
      *   fetch: app.serve,
-     *   websocket: {
-     *     open(ws) {
-     *       console.log(ws.data);
-     *       return ws.data?.open?.(ws);
-     *     },
-     *     message(ws, msg) {
-     *       return ws.data?.message?.(ws, msg);
-     *     },
-     *     close(ws, code, reason) {
-     *       return ws.data?.close?.(ws, { code, reason });
-     *     },
-     *     ping(ws, data) {
-     *       return ws.data?.ping?.(ws, data);
-     *     },
-     *     pong(ws, data) {
-     *       return ws.data?.pong?.(ws, data);
-     *     },
-     *     drain(ws) {
-     *       return ws.data?.drain?.(ws);
-     *     },
-     *   },
+     *   websocket: wsHandlers()
      * });
      * ```
      *

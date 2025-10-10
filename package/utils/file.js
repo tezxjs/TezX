@@ -1,3 +1,4 @@
+import { TezXError } from "../core/error.js";
 import { runtime } from "./runtime.js";
 export async function fileExists(path) {
     switch (runtime) {
@@ -37,7 +38,7 @@ export async function getFileBuffer(path) {
         case "deno":
             return Deno.readFile(path);
         default:
-            throw new Error("Unsupported runtime environment");
+            throw new TezXError("Unsupported runtime environment");
     }
 }
 export async function readStream(path) {
@@ -54,7 +55,7 @@ export async function readStream(path) {
             return (await Deno.open(path, { read: true })).readable;
         }
         default:
-            throw new Error("Unsupported runtime environment");
+            throw new TezXError("Unsupported runtime environment");
     }
 }
 export async function fileSize(path) {
@@ -72,21 +73,23 @@ export async function fileSize(path) {
             const st = await Deno.stat(path);
             return {
                 size: st.size,
-                mtime: st.mtime ?? new Date()
+                mtime: st.mtime ?? new Date(),
             };
         }
         default:
-            throw new Error("Unsupported runtime: " + runtime);
+            throw new TezXError("Unsupported runtime: " + runtime);
     }
 }
-export async function etagDigest(algo = 'MD5', data) {
+export async function etagDigest(algo = "MD5", data) {
     const encoded = typeof data === "string" ? new TextEncoder().encode(data) : data;
     if (runtime === "bun") {
         return Bun.hash(data, 256).toString(16);
     }
     if (globalThis?.crypto?.subtle) {
         const buffer = await crypto.subtle.digest(algo, encoded);
-        return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+        return Array.from(new Uint8Array(buffer))
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("");
     }
     const { createHash } = await import("node:crypto");
     return createHash(algo).update(encoded).digest("hex");
