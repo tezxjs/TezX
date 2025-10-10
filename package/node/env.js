@@ -1,10 +1,10 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "fs";
 import { TezXError } from "../core/error.js";
 import { colorText } from "../utils/colors.js";
 import { runtime } from "../utils/runtime.js";
 function parseEnvFile(filePath, result) {
     try {
-        if (runtime !== "node") {
+        if (runtime !== "bun" && runtime !== "node") {
             throw new TezXError(`Please use ${colorText(`import {loadEnv} from "tezx/${runtime}"`, "bgRed")} environment`);
         }
         let fileExists = existsSync(filePath);

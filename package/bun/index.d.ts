@@ -1,4 +1,4 @@
-import { loadEnv } from "./env.js";
+import { loadEnv } from "../node/env.js";
 import { serveStatic } from "../node/serveStatic.js";
 import { getConnInfo } from "./getConnInfo.js";
 import upgradeWebSocket, { wsHandlers } from "./ws.js";

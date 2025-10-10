@@ -1,21 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loadEnv = loadEnv;
-const node_fs_1 = require("node:fs");
+const fs_1 = require("fs");
 const error_js_1 = require("../core/error.js");
 const colors_js_1 = require("../utils/colors.js");
 const runtime_js_1 = require("../utils/runtime.js");
 function parseEnvFile(filePath, result) {
     try {
-        if (runtime_js_1.runtime !== "node") {
+        if (runtime_js_1.runtime !== "bun" && runtime_js_1.runtime !== "node") {
             throw new error_js_1.TezXError(`Please use ${(0, colors_js_1.colorText)(`import {loadEnv} from "tezx/${runtime_js_1.runtime}"`, "bgRed")} environment`);
         }
-        let fileExists = (0, node_fs_1.existsSync)(filePath);
+        let fileExists = (0, fs_1.existsSync)(filePath);
         if (!fileExists) {
             return;
         }
         let fileContent = "";
-        fileContent = (0, node_fs_1.readFileSync)(filePath, "utf8");
+        fileContent = (0, fs_1.readFileSync)(filePath, "utf8");
         const lines = fileContent.split("\n");
         for (const line of lines) {
             const trimmedLine = line.trim();
