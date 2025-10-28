@@ -8,7 +8,7 @@ export class Context {
     #status = 200;
     #headers;
     #req = null;
-    #params = {};
+    params = {};
     rawRequest;
     #args;
     #body;
@@ -48,11 +48,8 @@ export class Context {
         }
         return this;
     }
-    set params(params) {
-        this.#params = params;
-    }
     get req() {
-        return (this.#req ??= new TezXRequest(this.rawRequest, this.method, this.pathname, this.#params));
+        return (this.#req ??= new TezXRequest(this.rawRequest, this.method, this.pathname, this.params));
     }
     get body() {
         return this.#body;

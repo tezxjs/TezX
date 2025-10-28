@@ -1,8 +1,13 @@
-import { HttpBaseResponse, ResHeaderKey, ResponseInit } from "../types/index.js";
+import { ExtractParamsFromPath, HttpBaseResponse, ResHeaderKey, ResponseInit } from "../types/index.js";
 import { TezXRequest } from "./request.js";
 export declare class Context<TEnv extends Record<string, any> = {}, TPath extends string = any> {
     #private;
     [key: string]: any;
+    /**
+     * Route parameters extracted from the path.
+     * @type {ExtractParamsFromPath<TPath>}
+     */
+    readonly params: ExtractParamsFromPath<TPath>;
     /**
      * The original Request object from the underlying platform (e.g., Node.js, Deno).
      * Contains all headers and body data.
@@ -106,7 +111,6 @@ export declare class Context<TEnv extends Record<string, any> = {}, TPath extend
     setHeader(key: ResHeaderKey, value: string, options?: {
         append?: boolean;
     }): this;
-    protected set params(params: Record<string, any>);
     /**
      * Gets the wrapped request object (`TezXRequest`).
      *
