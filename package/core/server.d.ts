@@ -96,5 +96,5 @@ export declare class TezX<T extends Record<string, any> = {}> extends Router<T> 
      *   fetch: (req) => app.serve(req, server),
      * });
      */
-    serve(req: Request, server: Bun.Server): Promise<Response>;
+    serve(req: Request, server: Bun.Server<any>): Promise<Response>;
 }

@@ -45,5 +45,5 @@ export type wsHandlersOptions = {
 /**
  * Returns a Bun-compatible WebSocketHandler with optional custom options.
  */
-export declare const wsHandlers: (options?: wsHandlersOptions) => Bun.WebSocketHandler;
+export declare const wsHandlers: <T extends any>(options?: wsHandlersOptions) => Bun.WebSocketHandler<T>;
 export default upgradeWebSocket;
