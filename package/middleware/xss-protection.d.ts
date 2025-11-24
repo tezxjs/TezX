@@ -1,5 +1,5 @@
 import { Context } from "../core/context.js";
-import { NextCallback } from "../types/index.js";
+import { Middleware } from "../types/index.js";
 export type XSSProtectionOptions = {
     /**
      * 🟢 Whether to enable XSS protection
@@ -40,5 +40,5 @@ export type XSSProtectionOptions = {
  *   fallbackCSP: "default-src 'self'"
  * }));
  */
-declare const xssProtection: (options?: XSSProtectionOptions) => (ctx: Context, next: NextCallback) => Promise<void>;
+declare const xssProtection: <T extends Record<string, any> = {}, Path extends string = any>(options?: XSSProtectionOptions) => Middleware<T, Path>;
 export { xssProtection as default, xssProtection };

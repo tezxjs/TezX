@@ -1,0 +1,198 @@
+---
+title: i18n
+description: The i18n middleware adds multi-language support to TezX applications. It detects the user's preferred language, loads translation files, optionally caches them, and provides a translation function (`ctx.t`) in every request.
+---
+The `i18n` middleware adds multi-language support to `TezX` applications. It detects the user's preferred language, loads translation files, optionally caches them, and provides a translation function (ctx.t) in every request.
+
+## Basic Usage
+
+```ts
+import { i18n } from "tezx/middleware";
+
+app.use(
+  i18n({
+    loadTranslations: async (lang) => import(`./locales/${lang}.json`),
+    detectLanguage: (ctx) => ctx.req.query.lang || "en",
+    defaultLanguage: "en",
+  })
+);
+```
+
+Usage in routes:
+
+```ts
+ctx.t("greeting.hello"); // "Hello"
+ctx.t("user.welcome", { name: "Rakibul" }); // interpolates variables
+```
+
+---
+
+## How It Works
+
+1. Detect preferred language using `detectLanguage(ctx)`
+2. Load translations dynamically with `loadTranslations(language)`
+3. Cache translations in memory or via a custom adapter
+4. Attach a translation helper `ctx.t` to the context
+5. Interpolate variables in messages like `{{name}}`
+6. Fallback to `defaultLanguage` if translation is missing
+
+---
+
+## Example — Directory & Translation
+
+Directory structure:
+
+```bash
+/locales
+  ├── en.json
+  └── bn.json
+```
+
+`en.json`:
+
+```json
+{
+  "greeting": {
+    "hello": "Hello",
+    "welcome": "Welcome, {{name}}!"
+  }
+}
+```
+
+Route usage:
+
+```ts
+router.get("/hi", (ctx) => ctx.t("greeting.welcome", { name: "Rakibul" }));
+```
+
+Output:
+`?lang=en` → `"Welcome, Rakibul!"`
+`?lang=bn` → `"স্বাগতম, Rakibul!"`
+
+---
+
+## Caching
+
+### In-memory cache (default)
+
+```ts
+app.use(
+  i18n({
+    loadTranslations,
+    detectLanguage,
+    cacheTranslations: true,
+  })
+);
+```
+
+### External cache (Redis, file system, etc.)
+
+```ts
+const redisCache = {
+  async get(lang) { return JSON.parse(await redis.get(`i18n:${lang}`) || "null"); },
+  async set(lang, data) { await redis.set(`i18n:${lang}`, JSON.stringify(data)); },
+  async delete(lang) { await redis.del(`i18n:${lang}`); },
+};
+
+app.use(
+  i18n({
+    loadTranslations,
+    detectLanguage,
+    cacheTranslations: true,
+    cacheStorage: redisCache,
+  })
+);
+```
+
+---
+
+## Options Reference
+
+| Option                   | Type                                        | Default                | Description                                     |
+| ------------------------ | ------------------------------------------- | ---------------------- | ----------------------------------------------- |
+| `loadTranslations`       | `(lang: string) => Promise<TranslationMap>` | —                      | Load translations dynamically (JSON, DB, etc.)  |
+| `detectLanguage`         | `(ctx: Context) => string`                  | —                      | Determine the language for the request          |
+| `defaultLanguage`        | `string`                                    | `"en"`                 | Fallback language                               |
+| `defaultCacheDuration`   | `number`                                    | `3600000`              | Cache validity duration (ms)                    |
+| `translationFunctionKey` | `string`                                    | `"t"`                  | Property name for translation function on `ctx` |
+| `formatMessage`          | `(msg, vars) => string`                     | Interpolates `{{var}}` | Custom interpolation logic                      |
+| `isCacheValid`           | `(cached, lang) => boolean`                 | Expiry check           | Determines if a cache entry is valid            |
+| `cacheTranslations`      | `boolean`                                   | `false`                | Enable/disable caching                          |
+| `cacheStorage`           | `I18nCacheAdapter`                          | `null`                 | Custom cache adapter                            |
+
+---
+
+## Customization
+
+### Custom format function
+
+```ts
+i18n({ formatMessage: (msg, vars) => msg.replace(/\{(\w+)\}/g, (_, k) => vars?.[k] ?? "") });
+```
+
+### Custom language detection
+
+```ts
+detectLanguage: (ctx) =>
+  ctx.req.query.lang || ctx.cookies.get("lang") || ctx.req.headers["accept-language"]?.split(",")[0] || "en"
+```
+
+### File-based cache adapter
+
+```ts
+import fs from "fs/promises";
+import path from "path";
+
+const fileCache = {
+  async get(lang) {
+    try {
+      return JSON.parse(await fs.readFile(path.join("./cache", `${lang}.json`), "utf-8"));
+    } catch { return null; }
+  },
+  async set(lang, data) {
+    await fs.mkdir("./cache", { recursive: true });
+    await fs.writeFile(path.join("./cache", `${lang}.json`), JSON.stringify(data), "utf-8");
+  },
+  async delete(lang) {
+    await fs.unlink(path.join("./cache", `${lang}.json`)).catch(() => {});
+  },
+};
+```
+
+---
+
+## Cache Validation Example
+
+```ts
+isCacheValid: (cached, lang) => {
+  const file = `./locales/${lang}.json`;
+  const lastModified = fs.statSync(file).mtimeMs;
+  return cached.expiresAt > Date.now() && cached.expiresAt > lastModified;
+}
+```
+
+---
+
+## Error Handling
+
+Any error during translation loading, caching, or formatting throws a structured `Error`. Example:
+
+```ts
+try { await next(); } 
+catch (err) {
+  if (err instanceof Error) console.error("i18n failed:", err.message);
+}
+```
+
+---
+
+## Using Translations in Templates or API
+
+```ts
+router.get("/about", (ctx) => ({
+  title: ctx.t("page.about.title"),
+  description: ctx.t("page.about.description"),
+}));
+```
+
+---

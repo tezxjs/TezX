@@ -15,50 +15,81 @@ export let getPathname = (url) => {
 export function queryParser(qs) {
     if (!qs?.length)
         return {};
-    const startPos = qs.charCodeAt(0) === 63 ? 1 : 0;
-    const len = qs.length;
+    if (qs[0] === "?")
+        qs = qs.slice(1);
     const query = {};
-    let keyStart = startPos, valStart = -1;
-    let i = startPos;
-    const reuseArray = [];
-    for (; i <= len; i++) {
-        const ch = i < len ? qs.charCodeAt(i) : 38;
-        if (ch === 61 && valStart === -1) {
-            valStart = i + 1;
+    for (const part of qs.split("&")) {
+        if (!part)
+            continue;
+        const [k, v = ""] = part.split("=");
+        if (query[k] !== undefined) {
+            if (Array.isArray(query[k]))
+                query[k].push(v);
+            else
+                query[k] = [query[k], v];
         }
-        else if (ch === 38 || i === len) {
-            const keyEnd = valStart === -1 ? i : valStart - 1;
-            const key = qs.slice(keyStart, keyEnd);
-            const val = valStart === -1 ? "" : qs.slice(valStart, i);
-            const existing = query[key];
-            if (existing !== undefined) {
-                if (Array.isArray(existing)) {
-                    existing.push(val);
-                }
-                else {
-                    reuseArray.length = 0;
-                    reuseArray[0] = existing;
-                    reuseArray[1] = val;
-                    query[key] = reuseArray.slice();
-                }
-            }
-            else {
-                query[key] = val;
-            }
-            keyStart = i + 1;
-            valStart = -1;
-        }
+        else
+            query[k] = v;
     }
     return query;
 }
 export function url2query(url) {
-    let pathStart = url.indexOf("/", url.charCodeAt(9) === 58 ? 13 : 8);
-    if (pathStart === -1)
-        pathStart = url.length;
-    let queryStart = url.indexOf("?", pathStart);
-    if (queryStart === -1) {
-        return {};
+    const hashIndex = url.indexOf("#");
+    if (hashIndex !== -1) {
+        url = url.slice(0, hashIndex);
     }
-    let qs = url.slice(queryStart + 1);
+    const queryIndex = url.indexOf("?");
+    if (queryIndex === -1)
+        return {};
+    const qs = url.slice(queryIndex + 1);
     return queryParser(qs);
+}
+export function sanitizePathSplitBasePath(basePath, path, out) {
+    const combined = `${basePath}/${path}`;
+    const parts = out ?? [];
+    let segStart = 0;
+    let i = 0;
+    const len = combined.length;
+    while (i < len) {
+        const code = combined.charCodeAt(i);
+        if (code === 47 || code === 92) {
+            if (segStart < i) {
+                const seg = combined.slice(segStart, i);
+                if (seg !== "..")
+                    parts.push(seg);
+            }
+            segStart = i + 1;
+        }
+        i++;
+    }
+    if (segStart < len) {
+        const seg = combined.slice(segStart, len);
+        if (seg !== "..")
+            parts.push(seg);
+    }
+    return parts;
+}
+export function sanitizePathSplit(path, out) {
+    const parts = out ?? [];
+    let segStart = 0;
+    let i = 0;
+    const len = path.length;
+    while (i < len) {
+        const code = path.charCodeAt(i);
+        if (code === 47 || code === 92) {
+            if (segStart < i) {
+                const seg = path.slice(segStart, i);
+                if (seg !== "..")
+                    parts.push(seg);
+            }
+            segStart = i + 1;
+        }
+        i++;
+    }
+    if (segStart < len) {
+        const seg = path.slice(segStart, len);
+        if (seg !== "..")
+            parts.push(seg);
+    }
+    return parts;
 }

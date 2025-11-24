@@ -1,11 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cacheControl = void 0;
-const error_js_1 = require("../core/error.js");
 const cacheControl = (opts) => {
     const { defaultSettings, rules = [], onError = (err, ctx) => {
-        ctx.setStatus = 500;
-        ctx.body = { error: err.message ?? "Cache middleware failed" };
+        ctx.status(500).body = { error: err.message ?? "Cache middleware failed" };
     }, } = opts;
     const len = rules.length | 0;
     return async function cacheControlMiddleware(ctx, next) {
@@ -36,7 +34,8 @@ const cacheControl = (opts) => {
                 headers.set("Vary", vary.join(", "));
         }
         catch (err) {
-            return onError((0, error_js_1.TezXErrorParse)(err), ctx);
+            let error = err instanceof Error ? err : new Error(err);
+            return onError(error, ctx);
         }
     };
 };

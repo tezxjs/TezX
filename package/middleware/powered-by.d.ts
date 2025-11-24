@@ -13,5 +13,5 @@ import { Middleware } from "../types/index.js";
  * app.use(poweredBy("MyServer"));
  * ```
  */
-declare const poweredBy: (serverName?: string) => Middleware;
+declare const poweredBy: <T extends Record<string, any> = {}, Path extends string = any>(serverName?: string) => Middleware<T, Path>;
 export { poweredBy, poweredBy as default };

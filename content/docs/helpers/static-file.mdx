@@ -1,0 +1,96 @@
+---
+title: Static File
+description: Serve static files (HTML, CSS, JS, images, JSON, etc.) via custom routes using serveStatic.
+---
+
+Serve static files (`HTML`, `CSS`, `JS`, `images`, `JSON`, etc.) in **Bun** using TezX’s `serveStatic`.
+Node.js support requires built-in modules like `fs` and `path`.
+
+**Supported Platform:** `tezx/static` (works in Bun natively; Node.js requires `fs` + `path`)
+
+---
+
+## Import
+
+```ts
+import { serveStatic } from "tezx/static";
+```
+
+> **Note for Node.js:** `serveStatic` relies on `fs` and `path` internally, so make sure these core modules are available.
+
+---
+
+## Usage
+
+```ts
+import { TezX } from "tezx";
+import { serveStatic } from "tezx/static";
+const app = new TezX();
+
+app.static(serveStatic('/', './public', {
+  extensions: ['html', 'css', 'js'],
+  cacheControl: 'max-age=86400',
+  headers: { 'X-Static-Served-By': 'TezX-Bun' }
+}));
+```
+
+---
+
+## Types
+
+```ts
+type StaticFileArray = {
+  fileSource: string; // Absolute or relative path on disk
+  route: string;      // Public URL path
+}[];
+
+type StaticServeOption = {
+  cacheControl?: string;              // Cache-Control header
+  headers?: Record<string, string>;  // Custom headers
+  extensions?: string[];             // Allowed file extensions
+};
+
+type ServeStatic = {
+  files: StaticFileArray;
+  options?: StaticServeOption;
+};
+```
+
+---
+
+## Folder Example
+
+```bash
+my-app/
+├── public/
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+└── server.ts
+```
+
+---
+
+## Key Features
+
+| Feature             | Description                                             |
+| ------------------- | ------------------------------------------------------- |
+|  Extension filter | Serve only allowed file types                           |
+|  Route mapping   | Map files to custom URL paths                           |
+|  Headers          | Add custom headers like `Cache-Control`, `ETag`         |
+|  Performance       | Fast static file serving                                |
+
+---
+
+## Tips for Bun
+
+* Paths can be relative; `serveStatic` resolves them internally.
+* Always filter extensions to avoid exposing sensitive files.
+* Combine with dynamic routes for hybrid apps.
+* Use caching headers for optimal performance.
+
+---
+
+💡 **Reference:** [MDN – Cache-Control Header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control)
+
+---

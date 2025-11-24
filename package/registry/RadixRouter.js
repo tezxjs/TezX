@@ -1,5 +1,4 @@
-import { TezXError } from "../core/error.js";
-import { sanitizePathSplit } from "../helper/index.js";
+import { sanitizePathSplit } from "../utils/url.js";
 export class RadixRouter {
     root = { children: {} };
     name;
@@ -20,7 +19,7 @@ export class RadixRouter {
                 }
                 else if (node.children[":"]?.paramName !== paramName ||
                     node.children[":"]?.isOptional !== isOptional) {
-                    throw new TezXError(`Conflicting param definition for ${paramName}`);
+                    throw new Error(`Conflicting param definition for ${paramName}`);
                 }
                 node = node.children[":"];
             }

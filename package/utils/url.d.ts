@@ -40,3 +40,27 @@ export declare function queryParser(qs: string): Record<string, string | string[
  * Extracts and parses query string from URL with maximum efficiency
  */
 export declare function url2query(url: string): Record<string, string | string[]>;
+/**
+ * Combines a base path and a relative path, then splits the combined path into segments,
+ * filtering out any `".."` segments to sanitize the path.
+ *
+ * @param {string} basePath - The base path (e.g., "/api").
+ * @param {string} path - The relative or additional path to combine (e.g., "users/123").
+ * @param {string[]} [out] - Optional array to append the segments to.
+ * @returns {string[]} Array of sanitized path segments (without `".."`).
+ *
+ * @example
+ * sanitizePathSplitBasePath("/api", "users/../admin"); // returns ["api", "admin"]
+ */
+export declare function sanitizePathSplitBasePath(basePath: string, path: string, out?: string[]): string[];
+/**
+ * Splits a path string into segments, ignoring `".."` segments to sanitize the path.
+ *
+ * @param {string} path - The path string to split (e.g., "/api/users/../admin").
+ * @param {string[]} [out] - Optional array to append the segments to.
+ * @returns {string[]} Array of sanitized path segments (without `".."`).
+ *
+ * @example
+ * sanitizePathSplit("/api/users/../admin"); // returns ["api", "users", "admin"]
+ */
+export declare function sanitizePathSplit(path: string, out?: string[]): string[];

@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.i18n = exports.default = void 0;
-const index_js_1 = require("../index.js");
 const i18n = (options) => {
     const { loadTranslations, defaultCacheDuration = 3600000, detectLanguage, defaultLanguage = "en", translationFunctionKey = "t", formatMessage = (msg, vars = {}) => {
         if (vars && msg.indexOf("{{") !== -1) {
@@ -84,7 +83,9 @@ const i18n = (options) => {
             return await next();
         }
         catch (error) {
-            throw new index_js_1.TezXError(error?.message ?? "i18n failed", 500, error?.stack);
+            ctx.status(500);
+            let err = error instanceof Error ? error : new Error(error);
+            throw err;
         }
     };
 };

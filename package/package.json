@@ -1,7 +1,7 @@
 {
   "name": "tezx",
-  "version": "3.0.0-1",
-  "description": "TezX is a high-performance, lightweight JavaScript framework designed for speed, scalability, and flexibility. It enables efficient routing, middleware management, and static file serving with minimal configuration. Fully compatible with Node.js, Deno, and Bun.",
+  "version": "4.0.0",
+  "description": "TezX is a modern, ultra-lightweight, and high-performance JavaScript framework built specifically for Bun. It provides a minimal yet powerful API, seamless environment management, and a high-concurrency HTTP engine for building fast, scalable web applications.",
   "type": "module",
   "main": "cjs/index.js",
   "module": "index.js",
@@ -22,40 +22,25 @@
       "require": "./cjs/index.js",
       "types": "./index.d.ts"
     },
-    "./bun": {
-      "import": "./bun/index.js",
-      "require": "./cjs/bun/index.js",
-      "types": "./bun/index.d.ts"
+    "./config": {
+      "import": "./config/index.js",
+      "require": "./cjs/config/index.js",
+      "types": "./config/index.d.ts"
     },
-    "./node": {
-      "import": "./node/index.js",
-      "require": "./cjs/node/index.js",
-      "types": "./node/index.d.ts"
-    },
-    "./deno": {
-      "import": "./deno/index.js",
-      "require": "./cjs/deno/index.js",
-      "types": "./deno/index.d.ts"
+    "./cookie": {
+      "import": "./cookie/index.js",
+      "require": "./cjs/cookie/index.js",
+      "types": "./cookie/index.d.ts"
     },
     "./helper": {
       "import": "./helper/index.js",
       "require": "./cjs/helper/index.js",
       "types": "./helper/index.d.ts"
     },
-    "./jwt/node": {
-      "import": "./jwt/node.js",
-      "require": "./cjs/jwt/node.js",
-      "types": "./jwt/node.d.ts"
-    },
-    "./jwt/web": {
-      "import": "./jwt/web.js",
-      "require": "./cjs/jwt/web.js",
-      "types": "./jwt/web.d.ts"
-    },
-    "./registry": {
-      "import": "./registry/index.js",
-      "require": "./cjs/registry/index.js",
-      "types": "./registry/index.d.ts"
+    "./jwt": {
+      "import": "./jwt/index.js",
+      "require": "./cjs/jwt/index.js",
+      "types": "./jwt/index.d.ts"
     },
     "./middleware": {
       "import": "./middleware/index.js",
@@ -66,20 +51,41 @@
       "import": "./middleware/*.js",
       "require": "./cjs/middleware/*.js",
       "types": "./middleware/*.d.ts"
+    },
+    "./registry": {
+      "import": "./registry/index.js",
+      "require": "./cjs/registry/index.js",
+      "types": "./registry/index.d.ts"
+    },
+    "./static": {
+      "import": "./static/index.js",
+      "require": "./cjs/static/index.js",
+      "types": "./static/index.d.ts"
+    },
+    "./utils": {
+      "import": "./utils/index.js",
+      "require": "./cjs/utils/index.js",
+      "types": "./utils/index.d.ts"
+    },
+    "./ws": {
+      "import": "./ws/index.js",
+      "require": "./cjs/ws/index.js",
+      "types": "./ws/index.d.ts"
     }
   },
   "files": [
-    "bun/",
     "cjs/",
+    "config/",
+    "cookie/",
     "core/",
-    "deno/",
     "helper/",
     "jwt/",
     "middleware/",
-    "node/",
     "registry/",
+    "static/",
     "types/",
     "utils/",
+    "ws/",
     "index.d.ts",
     "index.js"
   ],
@@ -90,9 +96,9 @@
     "middleware",
     "router",
     "high-performance",
-    "node",
     "bun",
-    "deno",
+    "serve",
+    "websocket",
     "typescript",
     "web-framework"
   ],

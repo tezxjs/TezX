@@ -103,4 +103,4 @@ export type PaginationBodyType = {
  * }));
  */
 declare const paginationHandler: <DataKey extends string = "data", CountKey extends string = "total", Item = any>(options?: PaginationOptions<DataKey, CountKey, Item>) => any;
-export { paginationHandler, paginationHandler as default };
+export { paginationHandler as default, paginationHandler };

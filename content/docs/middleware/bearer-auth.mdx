@@ -1,0 +1,124 @@
+---
+title: bearerAuth
+description: Middleware to protect routes using Bearer tokens (JWTs or API tokens).
+---
+Middleware to protect routes using `Bearer` tokens (JWTs or API tokens). It reads the `Authorization` header, validates the token, and continues or blocks the request.
+
+---
+
+## Import
+
+```ts
+import { bearerAuth } from "tezx/middleware";
+```
+
+---
+
+## Options
+
+```ts
+type BearerAuthOptions = {
+  validate: (token: string, ctx: Context) => boolean | Promise<boolean>;
+  realm?: string;
+  onUnauthorized?: (ctx: Context, error?: Error) => HttpBaseResponse;
+};
+```
+
+**validate**
+Your function to check whether the token is valid.
+
+**realm**
+Shown in `WWW-Authenticate` header. Default: `"API"`.
+
+**onUnauthorized**
+Custom response when validation fails. If not provided, TezX returns:
+
+* `401`
+* `WWW-Authenticate: Bearer realm="<realm>"`
+* `{ error: "<reason>" }`
+
+---
+
+## How It Works
+
+1. Reads `Authorization` header.
+2. Must match: `Bearer <token>`.
+3. Extracts token.
+4. Calls `validate(token, ctx)`.
+5. If valid → request continues.
+6. If invalid → unauthorized response.
+7. If valid, TezX attaches:
+
+   ```ts
+   (ctx as any).token = token
+   ```
+
+You can also attach custom user data inside `validate()`.
+
+---
+
+## Examples
+
+### Static Token
+
+```ts
+const auth = bearerAuth({
+  validate: (token) => token === "dev-token"
+});
+
+app.get("/secure", auth, (ctx) => ctx.json({ ok: true }));
+```
+
+---
+
+### JWT Validation
+
+```ts
+import jwt from "tezx/jwt";
+
+const auth = bearerAuth({
+  validate: (token, ctx) => {
+    try {
+      ctx.user = jwt.verify(token, process.env.JWT_SECRET);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+});
+```
+
+---
+
+### Custom Unauthorized Response
+
+```ts
+const auth = bearerAuth({
+  validate: verifyToken,
+  onUnauthorized: (ctx, err) => {
+    return ctx.status(401).json({ error: "Unauthorized", reason: err?.message });
+  }
+});
+```
+
+---
+
+## Accessing the Token / User
+
+```ts
+app.get("/me", auth, (ctx) => {
+  const user = (ctx as any).user;
+  return ctx.json({ user });
+});
+```
+
+---
+
+## Notes
+
+* Always use HTTPS.
+* Tokens are sent on every request—keep them short-lived.
+* For JWTs, validate signature, expiry, issuer, and audience.
+* Avoid logging sensitive tokens.
+
+---

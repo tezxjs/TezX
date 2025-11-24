@@ -12,7 +12,7 @@ import { Middleware } from "../types/index.js";
  * app.use(logger());
  * ```
  */
-declare function logger(options?: {
+declare function logger<T extends Record<string, any> = {}, Path extends string = any>(options?: {
     enabled: boolean;
-}): Middleware;
+}): Middleware<T, Path>;
 export { logger as default, logger };

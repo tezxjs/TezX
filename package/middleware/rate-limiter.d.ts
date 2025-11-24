@@ -1,5 +1,4 @@
 import { Context } from "../core/context.js";
-import { TezXError } from "../core/error.js";
 import { HttpBaseResponse, Middleware } from "../types/index.js";
 export type RateLimiterOptions = {
     /**
@@ -42,10 +41,10 @@ export type RateLimiterOptions = {
      * @example
      * onError: (ctx, retryAfter) => {
      *   ctx.status = 429;
-     *   throw new TezXError( `Rate limit exceeded. Try again in ${retryAfter} seconds.`);
+     *   throw new Error( `Rate limit exceeded. Try again in ${retryAfter} seconds.`);
      * }
      */
-    onError?: (ctx: Context, retryAfter: number, error: TezXError) => HttpBaseResponse;
+    onError?: (ctx: Context, retryAfter: number, error: Error) => HttpBaseResponse;
 };
 /**
  * 🚦 Rate limiting middleware for request throttling
@@ -55,11 +54,7 @@ export type RateLimiterOptions = {
  * @requires
  *  *
 ```ts
-  import { getConnInfo } from "tezx/bun";
-  // or
-  import { getConnInfo } from "tezx/deno";
-  // or
-  import { getConnInfo } from "tezx/node";
+  import { getConnInfo } from "tezx/middleware";
 ```
  * @param {RateLimiterOptions} options - Configuration
  * @returns {Middleware} Middleware function
@@ -75,8 +70,8 @@ export type RateLimiterOptions = {
  * app.use(rateLimiter({
  *   maxRequests: 10,
  *   windowMs: 10_000,
- *   keyGenerator: (ctx) => ctx.user?.id || ctx.ip
+ *   keyGenerator: (ctx) => ctx.user?.id || ctx.remoteAddress.address
  * }));
  */
-declare const rateLimiter: (options: RateLimiterOptions) => Middleware;
+declare const rateLimiter: <T extends Record<string, any> = {}, Path extends string = any>(options: RateLimiterOptions) => Middleware<T, Path>;
 export { rateLimiter, rateLimiter as default };

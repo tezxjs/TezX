@@ -1,110 +1,91 @@
-# ⚡ TezX – High-Performance JavaScript Framework
+# ⚡ TezX – High-Performance JavaScript Framework for **Bun**
 
-**TezX** is a modern, high-performance, and lightweight JavaScript framework designed for speed, scalability, and cross-environment compatibility. It offers an intuitive API for routing, middleware management, and static file serving—making it ideal for building web applications with **Node.js**, **Deno**, and **Bun**.
+**TezX** is a modern, ultra-fast, and lightweight JavaScript framework built specifically for **Bun**.
+With a clean API, powerful routing, WebSocket support, middleware stacking, and native static file serving — TezX helps you build scalable applications with unmatched speed.
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tezxjs/TezX)
 
 ---
 
-## 🚀 Features at a Glance
+## 🚀 Why TezX (Built for Bun)?
 
-- ⚡ **Ultra-Fast Performance** – Built for speed and concurrency.
-- 🧩 **Minimal & Intuitive API** – Clean and easy to use.
-- 🗂 **Static File Serving** – Serve files with a single command.
-- 🔌 **Middleware Support** – Stack and compose custom logic.
-- 🧭 **Flexible Routing** – Dynamic and pattern-based routing.
-- 🔐 **Security-First Design** – Secure by default.
-- 📡 **Efficient HTTP Engine** – High-concurrency request handling.
-- 🌍 **Cross-Environment** – Works with Node.js, Deno, and Bun.
+* ⚡ **Blazing Fast** — Fully optimized for Bun’s event loop & native performance.
+* 🧩 **Minimal, Clean API** — Developer-friendly and intuitive.
+* 🗂 **Native Static Serving** — No external dependencies needed.
+* 🔌 **Powerful Middleware Engine** — Compose any logic effortlessly.
+* 🧭 **Advanced Routing** — Dynamic, nested, and pattern-based.
+* 🔐 **Secure by Default** — Built-in safe context handling.
+* 📡 **WebSocket Support** — Real-time apps made easy with `wsHandlers`.
+* ♻️ **Multi-Process Ready** — Via Bun’s `reusePort`.
 
 ---
 
 ## 📦 Installation
 
-### Node.js
-
-```bash
-npm install tezx
-# or
-yarn add tezx
-```
-
-### Bun
-
 ```bash
 bun add tezx
+# or
+npm install tezx
 ```
-
-<!--
-### Deno
-
-```ts
-import { TezX } from "https://deno.land/x/tezx/mod.ts";
-```
--->
 
 ---
 
-## ⚡ Quick Start
+## ⚡ Quick Start (Bun)
 
 ```ts
 import { TezX } from "tezx";
-import { logger } from "tezx/logger";
-import { createServer } from "node:http";
-import { mountTezXOnNode } from "tezx/node";
+import { logger } from "tezx/middleware";
+import { serveStatic } from "tezx/static";
+import { wsHandlers } from "tezx/ws";
 
 const app = new TezX();
-app.use(logger());
-app.static("/", "./static");
 
+// Middlewares
+app.use(logger());
+
+// Static files
+app.static(serveStatic("/", "./static"));
+
+// Route
 app.get("/", (ctx) =>
   ctx.html(`
     <h1>Welcome to TezX</h1>
-    <p>A modern, high-performance, cross-runtime JavaScript framework.</p>
+    <p>High-performance JavaScript framework optimized for Bun.</p>
   `)
 );
 
-const server = createServer();
-mountTezXOnNode(app, server);
+// Server
+const port = Number(process.env.PORT) || 3001;
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`🚀 TezX is running at http://localhost:${PORT}`);
+Bun.serve({
+  port,
+  reusePort: true,
+  fetch(req, server) {
+    return app.serve(req, server);
+  },
+  websocket: wsHandlers({
+    // Optional WebSocket config
+  }),
 });
+
+console.log(`🚀 TezX server running at http://localhost:${port}`);
 ```
 
 ---
 
-## ▶ Starting the Server
-
-### Node.js
+## ▶ Run the Server
 
 ```bash
-node server.js
-# or
-npm install -g nodemon
-nodemon server.js
-```
-
-### Bun
-
-```bash
-bun run server.js
-```
-
-### Deno
-
-```bash
-deno run --allow-all server.ts
+bun run server.ts
 ```
 
 ---
 
-## 🔌 Middleware Usage
+## 🔌 Middleware Example
 
 ```ts
 app.use((ctx, next) => {
-  console.log(`Incoming request: ${ctx.req.url}`);
+  console.log("➡ Request:", ctx.req.url);
   return next();
 });
 ```
@@ -114,21 +95,28 @@ app.use((ctx, next) => {
 ## 🗂 Static File Serving
 
 ```ts
-app.static("/public", "./public");
+import { serveStatic } from "tezx/static";
+
+app.static(serveStatic("/assets", "./assets"));
 ```
 
-Accessible via: `http://localhost:3000/public/filename.ext`
+Access via:
+
+```bash
+http://localhost:3001/assets/your-file.ext
+```
 
 ---
 
 ## 🧭 Routing
 
 ```ts
-app.get("/about", (ctx) => ctx.html("<h1>About Us</h1>"));
+app.get("/about", (ctx) => ctx.html("<h1>About TezX</h1>"));
 
-app.post("/submit", (ctx) =>
-  ctx.json({ message: "Form submitted successfully" })
-);
+app.post("/contact", async (ctx) => {
+  const body = await ctx.json();
+  return ctx.json({ received: body });
+});
 ```
 
 ---
@@ -137,7 +125,10 @@ app.post("/submit", (ctx) =>
 
 ```ts
 app.onError((err, ctx) => {
-  return ctx.status(500).json({ error: "Internal Server Error" });
+  return ctx.status(500).json({
+    error: "Internal Server Error",
+    message: err.message,
+  });
 });
 ```
 
@@ -145,38 +136,9 @@ app.onError((err, ctx) => {
 
 ## 🧪 Development Setup
 
-### Run Dev Server
+### `dev` script for Bun
 
-```bash
-npm run dev
-# or
-bun run dev
-```
-
-Access: [http://localhost:3000](http://localhost:3000)
-
----
-
-## ⚙️ Platform-Specific Scripts
-
-### Node.js – `package.json`
-
-```json
-{
-  "scripts": {
-    "build:esm": "tsc --outDir dist/mjs --removeComments",
-    "build:dts": "tsc --outDir dist/types --declaration --emitDeclarationOnly",
-    "build": "npm run build:esm && npm run build:dts",
-    "start": "node dist/index.js",
-    "nodemon": "nodemon src/index.ts",
-    "dev": "tsx watch src/index.ts"
-  }
-}
-```
-
----
-
-### Bun – `package.json`
+**package.json**
 
 ```json
 {
@@ -186,111 +148,62 @@ Access: [http://localhost:3000](http://localhost:3000)
 }
 ```
 
-#### Example: `src/index.ts`
+### Example: `src/index.ts`
 
 ```ts
+import app from "./app";
+
 Bun.serve({
   port: 3001,
   reusePort: true,
   fetch(req, server) {
     return app.serve(req, server);
   },
-  websocket: {
-    open(ws) {
-      console.log("WebSocket connected");
-      return ws.data?.open?.(ws);
-    },
-    message(ws, msg) {
-      return ws.data?.message?.(ws, msg);
-    },
-    close(ws, code, reason) {
-      return ws.data?.close?.(ws, { code, reason });
-    },
-    ping(ws, data) {
-      return ws.data?.ping?.(ws, data);
-    },
-    pong(ws, data) {
-      return ws.data?.pong?.(ws, data);
-    },
-    drain(ws) {
-      return ws.data?.drain?.(ws);
-    }
-  }
-});
-
-console.log(`🚀 Server running at http://localhost:${process.env.PORT}`);
-```
-
----
-
-### Deno – `package.json`
-
-```json
-{
-  "scripts": {
-    "dev": "deno run --watch --allow-all --unstable-sloppy-imports src/index.ts"
-  }
-}
-```
-
-#### Example: `src/index.ts`
-
-```ts
-Deno.serve({ port: Number(Deno.env.get("PORT") || 5000) }, (req, connInfo) => {
-  return app.serve(req, connInfo);
 });
 ```
-
----
-
-## 🏗 Build & Deployment
-
-### Compile TypeScript
-
-```bash
-npm run build
-```
-
-Outputs:
-
-- CommonJS (`dist/cjs`)
-- ESM (`dist/mjs`)
-- Type Declarations (`dist/types`)
 
 ---
 
 ## 🤝 Contributing
 
-We welcome all contributions! Here's how to get started:
+We welcome contributions!
 
-- Fork the repository
-- Create a new branch
-- Submit a pull request
-- Open issues for bugs or ideas
+1. Fork the repo
+2. Create a new branch
+3. Commit your changes
+4. Open a pull request
 
-👉 GitHub: [https://github.com/tezxjs](https://github.com/tezxjs)
+👉 GitHub: **[https://github.com/tezxjs](https://github.com/tezxjs)**
 
 ---
 
 ## 💖 Support TezX
 
-TezX is open-source and developed with love. If you find it helpful:
+If TezX helps you, consider supporting:
 
-- 🌟 Star the project on [GitHub](https://github.com/tezxjs/TezX)
-- 💸 [Sponsor on GitHub](https://github.com/sponsors/srakib17)
+* ⭐ Star on GitHub
+* 💸 Sponsor on GitHub: [https://github.com/sponsors/srakib17](https://github.com/sponsors/srakib17)
 
-<!-- - ☕ [Buy Me a Coffee](https://www.buymeacoffee.com/srakib17) -->
-
-Your support helps improve and maintain TezX for everyone.
+Your support helps improve the framework.
 
 ---
 
 ## 🙌 Sponsor
 
-[![papernxt](https://papernxt.com/favicon.ico)](https://papernxt.com)
+<a href="http://papernxt.com" target="_blank">
+  <img
+  src="https://papernxt.com/favicon.ico"
+  width="48"
+  hight="48"
+  alt="papernxt.com"
+  title="papernxt.com"
+  />
+</a>
 
 ---
 
 ## 📜 License
 
-This project is licensed under the [MIT License](./LICENSE).
+Licensed under the **MIT License**.
+
+---

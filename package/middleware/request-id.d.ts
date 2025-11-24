@@ -13,5 +13,5 @@ import { Middleware } from "../types/index.js";
  * app.use(requestID());
  * ```
  */
-declare const requestID: (headerName?: string, contextKey?: string) => Middleware;
+declare const requestID: <T extends Record<string, any> = {}, Path extends string = any>(headerName?: string, contextKey?: string) => Middleware<T, Path>;
 export { requestID as default, requestID };

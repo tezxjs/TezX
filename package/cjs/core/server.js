@@ -4,19 +4,18 @@ exports.TezX = void 0;
 const RadixRouter_js_1 = require("../registry/RadixRouter.js");
 const response_js_1 = require("../utils/response.js");
 const url_js_1 = require("../utils/url.js");
-const config_js_1 = require("./config.js");
+const index_js_1 = require("../config/index.js");
 const context_js_1 = require("./context.js");
-const error_js_1 = require("./error.js");
 const router_js_1 = require("./router.js");
 class TezX extends router_js_1.Router {
     #pathResolver;
     #notFound = response_js_1.notFoundResponse;
     #errorHandler = response_js_1.handleErrorResponse;
-    constructor({ basePath = "/", env = {}, debugMode = false, onPathResolve, routeRegistry = new RadixRouter_js_1.RadixRouter(), } = {}) {
+    constructor({ basePath = "/", debugMode = false, onPathResolve, routeRegistry = new RadixRouter_js_1.RadixRouter(), } = {}) {
         if (debugMode) {
-            config_js_1.GlobalConfig.debugMode = debugMode;
+            index_js_1.Config.debugMode = debugMode;
         }
-        super({ basePath, env });
+        super({ basePath });
         if (!routeRegistry) {
             throw new Error("routeRegistry is required for TezX initialization");
         }
@@ -37,7 +36,7 @@ class TezX extends router_js_1.Router {
         let res;
         async function dispatch(i) {
             if (i <= index)
-                throw new error_js_1.TezXError("next() called multiple times");
+                throw new Error("next() called multiple times");
             index = i;
             if (i < mLen) {
                 const fn = middlewares[i];
@@ -65,14 +64,14 @@ class TezX extends router_js_1.Router {
         return (ctx.res ??
             (ctx.body !== undefined ? ctx.send(ctx.body) : this.#notFound(ctx)));
     }
-    async #handleRequest(req, method, args) {
+    async #handleRequest(req, method, server) {
         if (!(req instanceof Request))
-            throw new error_js_1.TezXError("Invalid request object provided to tezX server.");
+            throw new Error("Invalid request object provided to tezX server.");
         const rawPath = (0, url_js_1.getPathname)(req.url);
         const pathname = this.#pathResolver
             ? await this.#pathResolver(rawPath)
             : rawPath;
-        const ctx = new context_js_1.Context(req, pathname, method, this.env, args);
+        const ctx = new context_js_1.Context(req, pathname, method, server);
         try {
             const staticHandler = this.staticFile?.[`${method} ${pathname}`];
             if (staticHandler) {
@@ -92,21 +91,22 @@ class TezX extends router_js_1.Router {
             return await this.#chain(ctx, mLen, route.middlewares, hLen, route.handlers);
         }
         catch (err) {
-            return this.#errorHandler?.((0, error_js_1.TezXErrorParse)(err), ctx);
+            let error = err instanceof Error ? err : new Error(String(err));
+            return this.#errorHandler?.(error, ctx);
         }
     }
-    async serve(req, ...args) {
+    async serve(req, server) {
         const method = (req.method ?? "GET").toUpperCase();
         if (method === "HEAD") {
             const getRequest = new Request(req.url, { ...req, method: "GET" });
-            const headResponse = await this.#handleRequest(getRequest, method, args);
+            const headResponse = await this.#handleRequest(getRequest, method, server);
             return new Response(null, {
                 status: headResponse.status,
                 statusText: headResponse.statusText,
                 headers: headResponse.headers,
             });
         }
-        return this.#handleRequest(req, method, args);
+        return this.#handleRequest(req, method, server);
     }
 }
 exports.TezX = TezX;

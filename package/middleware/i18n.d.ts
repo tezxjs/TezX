@@ -190,5 +190,5 @@ export type I18nOptions = {
      */
     cacheStorage?: I18nCacheAdapter;
 };
-declare const i18n: (options: I18nOptions) => Middleware;
+declare const i18n: <T extends Record<string, any> = {}, Path extends string = any>(options: I18nOptions) => Middleware<T, Path>;
 export { i18n as default, i18n };

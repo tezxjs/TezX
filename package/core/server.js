@@ -1,19 +1,18 @@
 import { RadixRouter } from "../registry/RadixRouter.js";
 import { handleErrorResponse, notFoundResponse } from "../utils/response.js";
 import { getPathname } from "../utils/url.js";
-import { GlobalConfig } from "./config.js";
+import { Config } from "../config/index.js";
 import { Context } from "./context.js";
-import { TezXError, TezXErrorParse } from "./error.js";
 import { Router } from "./router.js";
 export class TezX extends Router {
     #pathResolver;
     #notFound = notFoundResponse;
     #errorHandler = handleErrorResponse;
-    constructor({ basePath = "/", env = {}, debugMode = false, onPathResolve, routeRegistry = new RadixRouter(), } = {}) {
+    constructor({ basePath = "/", debugMode = false, onPathResolve, routeRegistry = new RadixRouter(), } = {}) {
         if (debugMode) {
-            GlobalConfig.debugMode = debugMode;
+            Config.debugMode = debugMode;
         }
-        super({ basePath, env });
+        super({ basePath });
         if (!routeRegistry) {
             throw new Error("routeRegistry is required for TezX initialization");
         }
@@ -34,7 +33,7 @@ export class TezX extends Router {
         let res;
         async function dispatch(i) {
             if (i <= index)
-                throw new TezXError("next() called multiple times");
+                throw new Error("next() called multiple times");
             index = i;
             if (i < mLen) {
                 const fn = middlewares[i];
@@ -62,14 +61,14 @@ export class TezX extends Router {
         return (ctx.res ??
             (ctx.body !== undefined ? ctx.send(ctx.body) : this.#notFound(ctx)));
     }
-    async #handleRequest(req, method, args) {
+    async #handleRequest(req, method, server) {
         if (!(req instanceof Request))
-            throw new TezXError("Invalid request object provided to tezX server.");
+            throw new Error("Invalid request object provided to tezX server.");
         const rawPath = getPathname(req.url);
         const pathname = this.#pathResolver
             ? await this.#pathResolver(rawPath)
             : rawPath;
-        const ctx = new Context(req, pathname, method, this.env, args);
+        const ctx = new Context(req, pathname, method, server);
         try {
             const staticHandler = this.staticFile?.[`${method} ${pathname}`];
             if (staticHandler) {
@@ -89,21 +88,22 @@ export class TezX extends Router {
             return await this.#chain(ctx, mLen, route.middlewares, hLen, route.handlers);
         }
         catch (err) {
-            return this.#errorHandler?.(TezXErrorParse(err), ctx);
+            let error = err instanceof Error ? err : new Error(String(err));
+            return this.#errorHandler?.(error, ctx);
         }
     }
-    async serve(req, ...args) {
+    async serve(req, server) {
         const method = (req.method ?? "GET").toUpperCase();
         if (method === "HEAD") {
             const getRequest = new Request(req.url, { ...req, method: "GET" });
-            const headResponse = await this.#handleRequest(getRequest, method, args);
+            const headResponse = await this.#handleRequest(getRequest, method, server);
             return new Response(null, {
                 status: headResponse.status,
                 statusText: headResponse.statusText,
                 headers: headResponse.headers,
             });
         }
-        return this.#handleRequest(req, method, args);
+        return this.#handleRequest(req, method, server);
     }
 }
 if (!globalThis.TezX) {

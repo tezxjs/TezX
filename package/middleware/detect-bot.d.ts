@@ -20,6 +20,13 @@ export type DetectBotOptions = {
      */
     enableRateLimiting?: boolean;
     /**
+     * 🔑 Client identifier generator function for rate limit
+     * @default (ctx) => `${ctx.req.remoteAddress.address}:${ctx.req.remoteAddress.port}`
+     * @example
+     * keyGenerator: (ctx) => ctx.user?.id || ctx.ip // Use user ID if authenticated
+     */
+    keyGenerator?: (ctx: Context) => string;
+    /**
      * ⚠️ Maximum allowed requests in the rate-limit window.
      * Only used when `enableRateLimiting` is true.
      * @default 30
@@ -110,4 +117,4 @@ export type DetectBotOptions = {
  * }));
  * ```
  */
-export declare const detectBot: (opts?: DetectBotOptions) => Middleware;
+export declare const detectBot: <T extends Record<string, any> = {}, Path extends string = any>(opts?: DetectBotOptions) => Middleware<T, Path>;

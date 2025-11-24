@@ -1,6 +1,6 @@
 import { ExtractParamsFromPath, HttpBaseResponse, ResHeaderKey, ResponseInit } from "../types/index.js";
 import { TezXRequest } from "./request.js";
-export declare class Context<TEnv extends Record<string, any> = {}, TPath extends string = any> {
+export declare class Context<TPath extends string = any> {
     #private;
     [key: string]: any;
     /**
@@ -9,8 +9,12 @@ export declare class Context<TEnv extends Record<string, any> = {}, TPath extend
      */
     readonly params: ExtractParamsFromPath<TPath>;
     /**
-     * The original Request object from the underlying platform (e.g., Node.js, Deno).
-     * Contains all headers and body data.
+     * The raw `Request` object received from Bun's server.
+     *
+     * This represents the original Fetch API `Request`
+     * before any parsing or modifications. Useful for
+     * accessing headers, body, method, URL, etc.
+     *
      * @type {Request}
      */
     rawRequest: Request;
@@ -33,11 +37,6 @@ export declare class Context<TEnv extends Record<string, any> = {}, TPath extend
      */
     res?: Response;
     /**
-     * Environment variables or shared state accessible in context.
-     * @type {Record<string, any> & TEnv}
-     */
-    env: Record<string, any> & TEnv;
-    /**
      * Request pathname (URL path without domain).
      * @readonly
      * @type {string}
@@ -49,23 +48,7 @@ export declare class Context<TEnv extends Record<string, any> = {}, TPath extend
      * @type {string}
      */
     readonly method: string;
-    /**
-     * Creates a new context instance.
-     *
-     * @param {Request} req - The native Request object.
-     * @param {ContextOptions<TEnv>} options - Context options including pathname, method, env, params, and args.
-     */
-    constructor(req: Request, pathname: string, method: string, env: Record<string, any> & TEnv, args: any[]);
-    /**
-     * Gets the current HTTP status code.
-     * @returns {number} The HTTP status code.
-     */
-    get getStatus(): number;
-    /**
-     * Sets the HTTP status code.
-     * @param {number} code - The HTTP status code.
-     */
-    set setStatus(code: number);
+    constructor(req: Request, pathname: string, method: string, server: Bun.Server);
     /**
      * Access the response headers.
      *
@@ -138,7 +121,7 @@ export declare class Context<TEnv extends Record<string, any> = {}, TPath extend
      * @example
      * ctx.status(404).text("Not found");
      */
-    status: (status: number) => this;
+    status(status: number): this;
     /**
      * Protected helper method to create a Response or PlainResponse
      * based on runtime environment (Node.js or Web).
@@ -162,33 +145,15 @@ export declare class Context<TEnv extends Record<string, any> = {}, TPath extend
     /**
      * Sends an HTML response.
      *
-     * Supports both:
-     * - Simple string: `ctx.html("<h1>Hello</h1>")`
-     * - Template literal: `ctx.html`<h1>${title}</h1>``
+     * @param {string} strings - The HTML string to return as the response body.
+     * @param {ResponseInit} [init] - Optional response initialization settings (status, headers, etc.).
      *
-     * Minimizes intermediate string allocations for lower GC overhead.
+     * @returns {HttpBaseResponse} The generated HTTP response with `text/html` content type.
      *
-     * @param {string | readonly string[]} strings - HTML string or template literal array.
-     * @param {...any[]} args - Values for template literals or a ResponseInit object if using a string.
-     * @returns {HttpBaseResponse} Constructed HTML response.
+     * @example
+     * return res.html("<h1>Hello World</h1>", { status: 200 });
      */
     html(strings: string, init?: ResponseInit): HttpBaseResponse;
-    html(strings: readonly string[], ...values: any[]): HttpBaseResponse;
-    /**
-     * Sends an XML response.
-     *
-     * Supports both:
-     * - Simple string: `ctx.xml("<note><to>User</to></note>")`
-     * - Template literal: `ctx.xml`<note><to>${user}</to></note>``
-     *
-     * Minimizes intermediate string allocations for lower GC overhead.
-     *
-     * @param {string | readonly string[]} strings - XML string or template literal array.
-     * @param {...any[]} args - Values for template literals or a ResponseInit object if using a string.
-     * @returns {HttpBaseResponse} Constructed XML response.
-     */
-    xml(strings: string, init?: ResponseInit): HttpBaseResponse;
-    xml(strings: readonly string[], ...values: any[]): HttpBaseResponse;
     /**
      * Sends a JSON response.
      *
@@ -203,14 +168,36 @@ export declare class Context<TEnv extends Record<string, any> = {}, TPath extend
      */
     json(json: object, init?: ResponseInit): HttpBaseResponse;
     /**
-     * Sends a response with automatic content type detection.
-     *
-     * Uses `determineContentTypeBody` utility to infer Content-Type.
-     *
-     * @param {*} body - Response body.
-     * @param {ResponseInit} [init] - Optional response init.
-     * @returns {HttpBaseResponse} The response object.
-     */
+    * Send a response with automatic content type detection.
+    *
+    * This method determines the proper `Content-Type` header based on the type of `body`.
+    * If a `Content-Type` is provided in `init.headers`, it will be used instead.
+    *
+    * Supported types:
+    * - `string` / `number` → "text/plain"
+    * - `object` → JSON serialized, "application/json"
+    * - `Uint8Array` / `ArrayBuffer` / `ReadableStream` → "application/octet-stream"
+    * - `Blob` / `File` → uses `body.type` or falls back to "application/octet-stream"
+    * - `null` / `undefined` → empty string, "text/plain"
+    * - any other → `String(body)`, "text/plain"
+    *
+    * @param {any} body - Response body of any type.
+    * @param {ResponseInit} [init] - Optional response init object, headers, status, etc.
+    * @returns {HttpBaseResponse} - A Bun-compatible response object.
+    *
+    * @example
+    * // Send a string
+    * ctx.send("Hello World");
+    *
+    * // Send JSON
+    * ctx.send({ user: "Alice", id: 123 });
+    *
+    * // Send binary
+    * ctx.send(new Uint8Array([1,2,3]));
+    *
+    * // Custom content-type
+    * ctx.send("Hello", { headers: { "Content-Type": "text/html" } });
+    */
     send(body: any, init?: ResponseInit): HttpBaseResponse;
     /**
      * Sends an HTTP redirect response to the specified URL.
@@ -224,41 +211,49 @@ export declare class Context<TEnv extends Record<string, any> = {}, TPath extend
      */
     redirect(url: string, status?: number): Response;
     /**
-     * Sends a file as a downloadable response.
-     *
-     * @param {string} filePath - Absolute file path on the server.
-     * @param {string} filename - Filename to present to the client.
-     * @returns {Promise<HttpBaseResponse>} Response that triggers download.
-     *
-     * @throws {Error} If file is not found.
-     *
-     * @example
-     * await ctx.download("/files/report.pdf", "report.pdf");
-     */
-    download(filePath: string, filename: string): Promise<HttpBaseResponse>;
-    /**
-     * Sends a file as a stream response.
-     *
-     * Automatically sets appropriate `Content-Type` and `Content-Length`.
-     * Adds `Content-Disposition` if filename is provided.
-     *
-     * @param {string} filePath - Absolute path to the file.
-     * @param {Object} [init] - Response options and optional download filename.
-     * @param {string} [init.filename] - Name to suggest for download.
-     * @returns {Promise<HttpBaseResponse>} A streamable file response.
-     *
-     * @throws {Error} If the file does not exist.
-     *
-     * @example
-     * await ctx.sendFile("/path/to/image.png");
-     */
+    * Sends a file using Bun's streaming API.
+    *
+    * Behaviors:
+    *  - If only `filePath` is provided → serves file normally.
+    *  - If `filename` is provided → forces browser download.
+    *  - If `download: true` is provided → forces download using original filename.
+    *
+    * Automatically sets:
+    *  - Content-Type (based on extension)
+    *  - Content-Length
+    *
+    * @param {string} filePath - Absolute path to the file.
+    * @param {Object} [init] - Optional settings.
+    * @param {boolean} [init.download] - Force download.
+    * @param {string} [init.filename] - Optional download filename.
+    * @param {ResponseInit["headers"]} [init.headers] - Additional headers.
+    *
+    * @returns {Promise<HttpBaseResponse>} Stream response.
+    *
+    * @throws {Error} If file does not exist.
+    *
+    * @example
+    * await ctx.sendFile("/assets/logo.png");
+    *
+    * @example
+    * await ctx.sendFile("/data/report.pdf", { download: true });
+    *
+    * @example
+    * await ctx.sendFile("/data/report.pdf", { filename: "my-report.pdf" });
+    */
     sendFile(filePath: string, init?: ResponseInit & {
         filename?: string;
+        download?: boolean;
     }): Promise<HttpBaseResponse>;
     /**
-     *@property bun [server]
-     *@property deno [connInfo]
-     *@property node [res, server]
+     * Returns the underlying Bun server instance.
+     *
+     * This getter provides protected-level access to the
+     * internal `Bun.Server` object, allowing subclasses to
+     * extend or interact with low-level server behavior.
+     *
+     * @public
+     * @returns {Bun.Server} The active Bun server instance.
      */
-    protected get args(): any;
+    get server(): Bun.Server;
 }

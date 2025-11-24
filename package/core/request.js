@@ -1,5 +1,4 @@
 import { url2query } from "../utils/url.js";
-import { TezXError } from "./error.js";
 export class TezXRequest {
     url;
     method;
@@ -81,11 +80,11 @@ export class TezXRequest {
             return this.#cachedFormObject;
         const ct = this.#contentType;
         if (!ct)
-            throw new TezXError("Missing Content-Type");
+            throw new Error("Missing Content-Type");
         if (ct === "application/x-www-form-urlencoded" ||
             ct === "multipart/form-data") {
             if (this.#bodyConsumed) {
-                throw new TezXError("Multipart body already consumed elsewhere");
+                throw new Error("Multipart body already consumed elsewhere");
             }
             this.#cachedFormObject = (await this.#rawRequest.formData());
             this.#bodyConsumed = true;

@@ -1,5 +1,4 @@
 import { Context } from "../core/context.js";
-import { TezXError } from "../core/error.js";
 import { HttpBaseResponse, Middleware } from "../types/index.js";
 export interface CacheRule {
     /** 🎯 Condition to determine if this rule applies */
@@ -20,11 +19,11 @@ export interface CacheOptions {
     rules?: readonly CacheRule[];
     /** 📝 Logging hook */
     /** 🚨 Error handler */
-    onError?: (error: TezXError, ctx: Context) => HttpBaseResponse;
+    onError?: (error: Error, ctx: Context) => HttpBaseResponse;
 }
 /**
  * ⚡ Ultra-lightweight, low-level cache control middleware.
  * Adds 'Cache-Control', 'Expires', and optional 'Vary' headers.
  */
-export declare const cacheControl: (opts: CacheOptions) => Middleware;
+export declare const cacheControl: <T extends Record<string, any> = {}, Path extends string = any>(opts: CacheOptions) => Middleware<T, Path>;
 export default cacheControl;

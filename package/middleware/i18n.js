@@ -1,4 +1,3 @@
-import { TezXError } from "../index.js";
 const i18n = (options) => {
     const { loadTranslations, defaultCacheDuration = 3600000, detectLanguage, defaultLanguage = "en", translationFunctionKey = "t", formatMessage = (msg, vars = {}) => {
         if (vars && msg.indexOf("{{") !== -1) {
@@ -81,7 +80,9 @@ const i18n = (options) => {
             return await next();
         }
         catch (error) {
-            throw new TezXError(error?.message ?? "i18n failed", 500, error?.stack);
+            ctx.status(500);
+            let err = error instanceof Error ? error : new Error(error);
+            throw err;
         }
     };
 };

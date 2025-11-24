@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RadixRouter = void 0;
-const error_js_1 = require("../core/error.js");
-const index_js_1 = require("../helper/index.js");
+const url_js_1 = require("../utils/url.js");
 class RadixRouter {
     root = { children: {} };
     name;
@@ -23,7 +22,7 @@ class RadixRouter {
                 }
                 else if (node.children[":"]?.paramName !== paramName ||
                     node.children[":"]?.isOptional !== isOptional) {
-                    throw new error_js_1.TezXError(`Conflicting param definition for ${paramName}`);
+                    throw new Error(`Conflicting param definition for ${paramName}`);
                 }
                 node = node.children[":"];
             }
@@ -121,7 +120,7 @@ class RadixRouter {
         return { success: false, node };
     }
     parsePattern(pattern) {
-        const segments = (0, index_js_1.sanitizePathSplit)(pattern);
+        const segments = (0, url_js_1.sanitizePathSplit)(pattern);
         const result = [];
         for (const segment of segments) {
             if (segment === "*") {

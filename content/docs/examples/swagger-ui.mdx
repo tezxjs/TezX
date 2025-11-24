@@ -1,0 +1,65 @@
+---
+title: Swagger UI
+description: Serve Swagger UI in TezX using OpenAPI JSON.
+---
+
+Serve interactive **Swagger UI** for your API directly from a TezX route.
+
+---
+```ts
+/**
+ * Serves Swagger UI at the specified route using an HTML template.
+ * 
+ * @param jsonPath - The relative or absolute path to the OpenAPI JSON file (default: "docs.json").
+ * @param swaggerVersion - The Swagger UI distribution version to use (default: "5.11.0").
+ * @param meta - Optional metadata to customize the Swagger UI HTML page.
+ * @param meta.title - The title to display in the browser tab (default: "SwaggerUI").
+ * @param meta.metaDescription - A short description for the page (used in <meta> tag).
+ * 
+ * @returns A middleware function that returns Swagger UI HTML when invoked with a context object.
+ * 
+ * @example
+ * app.get('/docs', swaggerUI('openapi.json'));
+ */
+export function swaggerUI(
+  jsonPath: string = "docs.json",
+  swaggerVersion: string = "5.11.0",
+  meta?: {
+    title?: string;
+    metaDescription?: string;
+  }
+) {
+  return (ctx: any) => {
+    return ctx.html(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${meta?.title || "SwaggerUI"}</title>
+  <meta name="description" content="${meta?.metaDescription || "SwaggerUI Documentation"}" />
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@${swaggerVersion}/swagger-ui.css" />
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@${swaggerVersion}/swagger-ui-bundle.js" crossorigin></script>
+  <script src="https://unpkg.com/swagger-ui-dist@${swaggerVersion}/swagger-ui-standalone-preset.js" crossorigin></script>
+  <script>
+   window.onload = () => {
+      window.ui = SwaggerUIBundle({
+        url: "${jsonPath}",
+        dom_id: '#swagger-ui',
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        layout: "StandaloneLayout",
+      });
+    };
+  </script>
+</body>
+</html>
+`);
+  };
+}
+```

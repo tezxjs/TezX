@@ -1,24 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.detectBot = void 0;
-const config_js_1 = require("../core/config.js");
 const rateLimit_js_1 = require("../utils/rateLimit.js");
-const runtime_js_1 = require("../utils/runtime.js");
 const detectBot = (opts = {}) => {
     const botUAs = opts.botUserAgents || ["bot", "spider", "crawl", "slurp"];
     let checkBot;
-    if (runtime_js_1.runtime === "bun") {
-        const botRegex = new RegExp(botUAs.join("|"), "i");
-        checkBot = (ua) => botRegex.test(ua);
-    }
-    else {
-        checkBot = (ua) => {
-            for (const b of botUAs)
-                if (ua.includes(b))
-                    return true;
-            return false;
-        };
-    }
+    const botRegex = new RegExp(botUAs.join("|"), "i");
+    checkBot = (ua) => botRegex.test(ua);
+    const keyGenerator = opts.keyGenerator ?? ((ctx) => {
+        const addr = ctx.req.remoteAddress;
+        return addr ? `${addr.address}:${addr.port}` : "unknown";
+    });
     const maxReq = opts.maxRequests || 30;
     const winMs = opts.windowMs || 60000;
     const enableRL = !!opts.enableRateLimiting;
@@ -36,16 +28,13 @@ const detectBot = (opts = {}) => {
             return onBot?.(ctx, "Blacklisted IP");
         }
         if (enableRL) {
-            const addr = ctx.req.remoteAddress;
-            if (!addr) {
-                config_js_1.GlobalConfig.debugging.warn("[TezX detectBot] Missing remoteAddress. Use `getConnInfo(ctx)` to enable rate limiting.");
+            const key = keyGenerator(ctx);
+            if (!key) {
+                return onBot?.(ctx, "Unable to determine client identity for rate limiting");
             }
-            else {
-                const key = `${addr.address}:${addr.port || 0}`;
-                const { check, entry } = (0, rateLimit_js_1.isRateLimit)(key, store, maxReq, winMs);
-                if (check && addr.address) {
-                    return onBot?.(ctx, `Rate limit exceeded. Retry after ${Math.ceil((entry.resetTime - Date.now()) / 1000)} seconds.`);
-                }
+            const { check, entry } = (0, rateLimit_js_1.isRateLimit)(key, store, maxReq, winMs);
+            if (check) {
+                return onBot?.(ctx, `Rate limit exceeded. Retry after ${Math.ceil((entry.resetTime - Date.now()) / 1000)} seconds.`);
             }
         }
         if (await opts.customBotDetector?.(ctx)) {

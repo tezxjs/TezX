@@ -52,7 +52,7 @@ export declare class TezX<T extends Record<string, any> = {}> extends Router<T> 
     #private;
     /** Internal route registry to hold all routes */
     protected router?: RouteRegistry;
-    constructor({ basePath, env, debugMode, onPathResolve, routeRegistry, }?: TezXConfig);
+    constructor({ basePath, debugMode, onPathResolve, routeRegistry, }?: TezXConfig);
     /**
      * Register a custom 404 (not found) handler.
      *
@@ -76,57 +76,25 @@ export declare class TezX<T extends Record<string, any> = {}> extends Router<T> 
      */
     onError(callback: ErrorHandler<T>): this;
     /**
-     * Main request handler compatible with multiple runtimes (Node.js, Deno, Bun).
+     * Handles incoming HTTP requests in a Bun environment.
      *
-     * This function can be passed directly to native HTTP servers to handle incoming requests.
+     * This is the core request handler for TezX in Bun. It processes
+     * the request through middleware and route handlers, returning a
+     * standard Fetch API `Response`.
      *
-     * ### Usage examples:
+     * Special handling for `HEAD` requests:
+     * - Converts `HEAD` to a `GET` request internally.
+     * - Returns headers and status, but no body, per HTTP spec.
      *
-     * #### Bun
-     * ```ts
-     * // Simple usage with Bun's built-in HTTP server
-     * app.serve(request, server);
-     *
-     * // Or with WebSocket support (required for ws handling)
-     * Bun.serve({
-     *   port: 3001,
-     *   reusePort: true, // enables SO_REUSEPORT for clustering
-     *   fetch: app.serve,
-     *   websocket: wsHandlers()
-     * });
-     * ```
-     *
-     * #### Deno
-     * ```ts
-     * // Using Deno’s serve method with connection info
-     * serve((req, connInfo) => app.serve(req, connInfo));
-     *
-     * // Or using Deno’s built-in Deno.serve with options
-     * Deno.serve({ port: 8080 }, app.serve);
-     * ```
-     *
-     * #### Node.js
-     * ```ts
-     * import { createServer } from "http";
-     * import { mountTezXOnNode } from "tezx/node";
-     *
-     * // Option 1: Manually convert and forward request/response
-     * const response = await app.serve(toWebRequest(req, req.method), req, res, server);
-     *
-     * // Option 2: Use provided utility to mount TezX app onto native HTTP server
-     * const server = createServer();
-     * mountTezXOnNode(app, server);
-     * server.listen(3000);
-     * ```
-     *
-     * @param {Request} req - Native Fetch API Request object.
-     * @param {...any} args - Runtime-specific arguments such as connection info (Deno), server instances, or response objects.
-     * @returns {Promise<Response>} The final response to be sent back to the client or the result of WebSocket handlers.
+     * @param {Request} req - The incoming Fetch API Request object.
+     * @param {Bun.Server} server - The Bun server instance.
+     * @returns {Promise<Response>} A Fetch API Response object, ready to be sent by Bun.
      *
      * @example
-     * ```ts
-     * const response = await app.serve(new Request("http://localhost/hello"));
-     * ```
+     * Bun.serve({
+     *   port: 3000,
+     *   fetch: (req) => app.serve(req, server),
+     * });
      */
-    serve(req: Request, ...args: any[]): Promise<Response>;
+    serve(req: Request, server: Bun.Server): Promise<Response>;
 }

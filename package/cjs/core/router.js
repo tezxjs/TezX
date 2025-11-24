@@ -1,17 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Router = void 0;
-const low_level_js_1 = require("../utils/low-level.js");
-const error_js_1 = require("./error.js");
+const url_js_1 = require("../utils/url.js");
 class Router {
-    env = {};
     router;
     route = [];
     staticFile = Object.create(null);
     basePath;
-    constructor({ basePath = "/", env = {} } = {}) {
+    constructor({ basePath = "/" } = {}) {
         this.basePath = basePath;
-        this.env = { ...env };
         this.get = this.get.bind(this);
         this.post = this.post.bind(this);
         this.put = this.put.bind(this);
@@ -22,21 +19,43 @@ class Router {
     }
     static(serveStatic) {
         if (Array.isArray(serveStatic?.files)) {
-            serveStatic?.files.forEach((r) => {
-                this.staticFile[`GET ${r?.route}`] = (ctx) => {
-                    if (serveStatic?.options?.cacheControl) {
-                        ctx.setHeader("Cache-Control", serveStatic?.options.cacheControl);
-                    }
-                    let headers = serveStatic?.options?.headers;
-                    if (headers) {
-                        for (const key in headers) {
-                            let value = headers?.[key];
-                            ctx.headers.set(key, value);
+            const strong = serveStatic?.options?.strongEtag ?? true;
+            const disabled = serveStatic?.options?.disableEtag;
+            if (disabled) {
+                serveStatic?.files.forEach((s) => {
+                    this.staticFile[`GET ${s?.route}`] = async (ctx) => {
+                        if (serveStatic?.options?.cacheControl) {
+                            ctx.setHeader("Cache-Control", serveStatic?.options.cacheControl);
                         }
-                    }
-                    return ctx.sendFile(r.fileSource);
-                };
-            });
+                        return ctx.sendFile(s.fileSource, {
+                            headers: serveStatic?.options?.headers,
+                        });
+                    };
+                });
+            }
+            else {
+                serveStatic?.files.forEach((s) => {
+                    this.staticFile[`GET ${s?.route}`] = async (ctx) => {
+                        if (serveStatic?.options?.cacheControl) {
+                            ctx.setHeader("Cache-Control", serveStatic?.options.cacheControl);
+                        }
+                        const stat = await Bun.file(s?.fileSource).stat();
+                        const raw = `${stat.size}-${Math.floor(stat.mtimeMs ?? Date.now())}`;
+                        let etagVal = strong ? `"${raw}"` : `W/"${raw}"`;
+                        ctx.headers.set("Etag", etagVal);
+                        const ifNoneMatch = ctx.req.header("if-none-match");
+                        if (ifNoneMatch === etagVal) {
+                            return new Response(null, {
+                                status: 304,
+                                headers: { "ETag": etagVal },
+                            });
+                        }
+                        return ctx.sendFile(s.fileSource, {
+                            headers: serveStatic?.options?.headers,
+                        });
+                    };
+                });
+            }
         }
         return this;
     }
@@ -129,8 +148,8 @@ class Router {
         return this;
     }
     #addRoute(method, path, handlers) {
-        let pattern = `/${(0, low_level_js_1.sanitizePathSplitBasePath)(this.basePath, path).join("/")}`;
-        this.router?.addRoute(method, pattern, handlers);
+        let pattern = `/${(0, url_js_1.sanitizePathSplitBasePath)(this.basePath, path).join("/")}`;
+        this.router?.addRoute?.(method, pattern, handlers);
         this.route.push({
             method: method,
             pattern: pattern,
@@ -139,7 +158,7 @@ class Router {
     }
     #registerRoute(method, path, ...args) {
         if (args.length === 0) {
-            throw new error_js_1.TezXError("At least one handler is required.");
+            throw new Error("At least one handler is required.");
         }
         let middlewares = [];
         let callback;
@@ -156,20 +175,19 @@ class Router {
             callback = args[0];
         }
         if (typeof callback !== "function") {
-            throw new error_js_1.TezXError("Route callback function is missing or invalid.");
+            throw new Error("Route callback function is missing or invalid.");
         }
         if (!middlewares.every((middleware) => typeof middleware === "function")) {
-            throw new error_js_1.TezXError("Middleware must be a function or an array of functions.");
+            throw new Error("Middleware must be a function or an array of functions.");
         }
         this.#addRoute(method, path, [...middlewares, callback]);
     }
     #addRouterInstance(path, router) {
-        this.env = { ...this.env, ...router.env };
         if (!(router instanceof Router)) {
-            throw new error_js_1.TezXError("Router instance is required.");
+            throw new Error("Router instance is required.");
         }
         router.route.forEach((r) => {
-            this.#addRoute(r?.method, `/${(0, low_level_js_1.sanitizePathSplitBasePath)(path, r?.pattern).join("/")}`, r?.handlers);
+            this.#addRoute(r?.method, `/${(0, url_js_1.sanitizePathSplitBasePath)(path, r?.pattern).join("/")}`, r?.handlers);
         });
         Object.assign(this.staticFile, router.staticFile);
     }

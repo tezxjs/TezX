@@ -1,0 +1,151 @@
+---
+title: Router Merging 
+description: TezX allows merging multiple routers into a parent app, enabling modular route management.
+---
+`TezX` allows merging multiple routers into a parent app, enabling modular route management. This ensures:
+
+* **Non-destructive merges** — existing routes remain intact.
+* **Hierarchical route structure** — sub-routers can maintain their own nested routes.
+* **Safe middleware scoping** — each router can define its own middlewares.
+
+---
+
+## Terminology
+
+| Term              | Meaning                                                                   |
+| ----------------- | ------------------------------------------------------------------------- |
+| **Parent Router** | The main `TezX` instance or a Router that aggregates multiple sub-routers |
+| **Sub-Router**    | A router that contains its own routes & middleware                        |
+| **Merged Router** | The result of merging sub-routers into the parent router                  |
+
+---
+
+## Pre-Merge Example
+
+Parent router before adding any sub-router:
+
+```bash
+Parent Router:
+├── /test
+│   ├── GET → handler1
+│   └── /1
+│       ├── GET → handler2
+```
+
+---
+
+## Adding a Sub-Router
+
+Sub-router structure:
+
+```bash
+Sub-Router:
+├── /products
+│   └── /2
+│       ├── GET → handler3
+```
+
+---
+
+## After Merge
+
+Merged router structure:
+
+```bash
+Merged Router:
+├── /test
+│   ├── GET → handler1
+│   └── /1
+│       ├── GET → handler2
+├── /products
+│   └── /2
+│       ├── GET → handler3
+```
+
+> All routes remain intact and merge **non-destructively**.
+
+---
+
+## Code Example
+
+```ts
+import { TezX, Router } from "tezx";
+
+// Parent router
+const app = new TezX();
+app.get("/test", (ctx) => ctx.text("Handler 1"));
+app.get("/test/1", (ctx) => ctx.text("Handler 2"));
+
+// Sub-router
+const productRouter = new Router();
+productRouter.get("/products/2", (ctx) => ctx.text("Handler 3"));
+
+// Merge the routers into parent
+app.use("/", productRouter);
+```
+
+---
+
+## Best Practices
+
+### 1. **Use Unique Prefixes**
+
+Prevent conflicts by using distinct prefixes:
+
+```ts
+const authRouter = new Router();
+authRouter.get("/login", (ctx) => ctx.text("Login"));
+
+app.use("/auth", authRouter);
+// Resulting route: /auth/login
+```
+
+---
+
+### 2. **Middleware Hygiene**
+
+Each router can define its own middlewares:
+
+```ts
+const api = new Router();
+
+api.use((ctx, next) => {
+  ctx.setHeader("x-api", "v1");
+  return next();
+});
+
+api.get("/status", (ctx) => ctx.json({ ok: true }));
+
+app.use("/api", api);
+```
+
+> Requests to `/api/status` automatically pass through the API middleware.
+
+---
+
+### 3. **Inspect Route Tree**
+
+Logging can help debug route structure:
+
+```ts
+console.log(app.routes);
+// Outputs a tree-like structure for verification
+```
+
+---
+
+### 4. **Safe Re-Merge Patterns**
+
+Avoid defining the same path across multiple routers:
+
+```ts
+// ❌ Avoid
+router1.get("/ping", ...);
+router2.get("/ping", ...);
+
+// ✅ Use prefixes
+app.use("/api", router1);
+app.use("/public", router2);
+```
+
+---

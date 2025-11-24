@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = exports.paginationHandler = void 0;
+exports.paginationHandler = exports.default = void 0;
 const paginationHandler = (options = {}) => {
     let { defaultPage = 1, defaultLimit = 10, maxLimit = 100, queryKeyPage = "page", queryKeyLimit = "limit", countKey = "total", dataKey = "data", getDataSource, } = options;
     return async function paginationHandler(ctx, next) {
@@ -50,5 +50,5 @@ const paginationHandler = (options = {}) => {
         return await next();
     };
 };
-exports.paginationHandler = paginationHandler;
 exports.default = paginationHandler;
+exports.paginationHandler = paginationHandler;

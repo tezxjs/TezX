@@ -1,4 +1,3 @@
-import { TezXError } from "../core/error.js";
 import { colorText } from "../utils/colors.js";
 function logger(options = { enabled: true }) {
     return async function logger(ctx, next) {
@@ -11,12 +10,13 @@ function logger(options = { enabled: true }) {
             let n = (await next());
             const elapsed = performance.now() - startTime;
             console.log(`${colorText("-->", "bold")} ${colorText(ctx.method, "bgBlue")} ${ctx.pathname} ` +
-                `${colorText(n ? ctx.getStatus : 404, "yellow")} ${colorText(`${elapsed.toFixed(2)}ms`, "magenta")}`);
+                `${colorText(ctx.res?.status ?? 404, "yellow")} ${colorText(`${elapsed.toFixed(2)}ms`, "magenta")}`);
             return n;
         }
         catch (err) {
             console.error(`${colorText("Error:", "red")}`, err.stack);
-            throw new TezXError(err.stack);
+            let error = err instanceof Error ? err : new Error(err);
+            throw error;
         }
     };
 }

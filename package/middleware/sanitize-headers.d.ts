@@ -34,5 +34,5 @@ export type SanitizeHeadersOptions = {
  *   normalizeKeys: true
  * }));
  */
-declare const sanitizeHeaders: (options?: SanitizeHeadersOptions) => Middleware;
+declare const sanitizeHeaders: <T extends Record<string, any> = {}, Path extends string = any>(options?: SanitizeHeadersOptions) => Middleware<T, Path>;
 export { sanitizeHeaders as default, sanitizeHeaders };

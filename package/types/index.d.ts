@@ -28,23 +28,15 @@ export type WebSocketEvent = {
         reason: string;
     }>;
     /**
-     * Triggered when an error occurs during the WebSocket lifecycle.
-     * Not supported in Bun.
-     */
-    error?: WebSocketHandler<Error | any>;
-    /**
      * Triggered when the socket drain event occurs.
-     * Not supported in Deno and Node.
      */
     drain?: WebSocketHandler;
     /**
      * Triggered when a ping frame is received from the client.
-     * Not supported in Deno.
      */
     ping?: WebSocketHandler<Buffer>;
     /**
      * Triggered when a pong frame is received from the client.
-     * Not supported in Deno.
      */
     pong?: WebSocketHandler<Buffer>;
 };
@@ -61,7 +53,7 @@ export type WebSocketOptions = {
     /**
      * Called when an error occurs during the upgrade process.
      */
-    onUpgradeError?: (err: TezXError, ctx: Context) => HttpBaseResponse;
+    onUpgradeError?: (err: Error, ctx: Context) => HttpBaseResponse;
 };
 /**
  * Represents a string key used for HTTP headers.
@@ -123,27 +115,71 @@ export interface CookieOptions {
     /** Controls cross-site request behavior. One of "Strict", "Lax", or "None". */
     sameSite?: "Strict" | "Lax" | "None";
 }
-/**
- * Represents the supported runtime adapter types.
- */
-export type Runtime = "bun" | "deno" | "node";
 import { Context } from "../core/context.js";
-import { TezXError } from "../core/error.js";
 import { RequestHeader, ResponseHeader } from "./headers.js";
 /**
  * Options to customize static file serving behavior.
  */
+/**
+ * Options for serving static files with a router or server.
+ *
+ * Use these options to control caching, headers, allowed extensions,
+ * and ETag behavior when serving static assets.
+ */
 export type StaticServeOption = {
-    /** Optional cache-control header value for static files, e.g. "max-age=3600". */
+    /**
+     * Optional `Cache-Control` header value for static files.
+     *
+     * Example: `"max-age=3600"` to cache files for 1 hour.
+     * If not provided, default cache control behavior of the server applies.
+     */
     cacheControl?: string;
-    /** Additional HTTP headers to set on static file responses. */
+    /**
+     * Additional HTTP headers to set on static file responses.
+     *
+     * Can be used to set headers like `X-Content-Type-Options`, `Strict-Transport-Security`, etc.
+     *
+     * Example:
+     * ```ts
+     * headers: {
+     *   "X-Content-Type-Options": "nosniff",
+     *   "X-Frame-Options": "DENY"
+     * }
+     * ```
+     */
     headers?: ResponseHeaders;
     /**
      * Allowed file extensions to serve.
+     *
      * If provided, only files with these extensions will be served.
-     * Example: ["html", "css", "js", "png"]
+     * Prevents serving unwanted files from the static directory.
+     *
+     * Example:
+     * ```ts
+     * extensions: ["html", "css", "js", "png", "jpg"]
+     * ```
      */
     extensions?: string[];
+    /**
+     * Set whether ETag should be strong or weak.
+     *
+     * - `true`: strong ETag (default)
+     * - `false`: weak ETag
+     *
+     * Strong ETag uses the full content hash of the file, weak ETag uses a simpler hash
+     * that may tolerate minor changes.
+     *
+     * @default true
+     */
+    strongEtag?: boolean;
+    /**
+     * Disable ETag generation completely for static files.
+     *
+     * Useful when you do not want to use conditional requests or caching based on ETag.
+     *
+     * @default false
+     */
+    disableEtag?: boolean;
 };
 /**
  * Represents the list of static files and their corresponding route paths.
@@ -200,7 +236,7 @@ export type HttpBaseResponse = Response | Promise<Response>;
  * @template T - Custom environment or app-level data.
  * @template Path - Type of the route path (optional).
  */
-export type Ctx<T extends Record<string, any> = {}, Path extends string = any> = Context<T, Path> & T & {
+export type Ctx<T extends Record<string, any> = {}, Path extends string = any> = Context<Path> & T & {
     [key: string]: any;
 };
 /**
@@ -234,7 +270,7 @@ export type Middleware<T extends Record<string, any> = {}, Path extends string =
  * @param ctx - The context object where the error occurred.
  * @returns An HTTP response or a promise that resolves to an HTTP response.
  */
-export type ErrorHandler<T extends Record<string, any> = {}> = (err: TezXError, ctx: Ctx<T>) => HttpBaseResponse;
+export type ErrorHandler<T extends Record<string, any> = {}> = (err: Error, ctx: Ctx<T>) => HttpBaseResponse;
 /**
  * Configuration options for parsing and validating multipart/form-data.
  */
