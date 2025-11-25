@@ -123,7 +123,7 @@ app.use("/login", validate({ adapter: joiAdapter }));
 | Option      | Type                                         | Default | Description                                   |          |                                |
 | ----------- | -------------------------------------------- | ------- | --------------------------------------------- | -------- | ------------------------------ |
 | `adapter`   | `SchemaAdapter`                              | —       | Schema validator implementation               |          |                                |
-| `onError`   | `(err: TezXError, ctx: Context) => Response` | —       | Custom error handler                          |          |                                |
+| `onError`   | `(err: Error, ctx: Context) => Response` | —       | Custom error handler                          |          |                                |
 | `source`    | `"body"                                      | "query" | "params"`                                     | `"body"` | Source of data to validate     |
 | `transform` | `(data: any) => any`                         | —       | Optional function to transform validated data |          |                                |
 | `parseBody` | `"json"                                      | "text"  | "formData"`                                   | `"json"` | Parser method for request body |
@@ -132,7 +132,7 @@ app.use("/login", validate({ adapter: joiAdapter }));
 
 ## Error Handling
 
-By default, `validate` throws a `TezXError` with **status 400** on validation failure.
+By default, `validate` throws a `Error` with **status 400** on validation failure.
 Custom error handling:
 
 ```ts
@@ -172,10 +172,3 @@ app.use(validate({ adapter: customAdapter }));
 ```
 
 ---
-
-## Notes
-
-* Works on **Node.js**, **Bun**, and **Edge** runtimes
-* Validates `body`, `query`, or `params`
-* Supports **async schema validation**
-* Seamlessly integrates with **TezX middleware**

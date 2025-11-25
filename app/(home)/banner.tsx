@@ -13,7 +13,7 @@ export default function Banner({ }: Props) {
             {/* CTA Buttons */}
             <div className="flex justify-center gap-4 py-10 lg:my-16">
                 <a
-                    href="/docs/get-started"
+                    href="/docs/getting-started/configuration"
                     className="px-6 py-3 rounded-xl bg-[#FF581E] text-white font-semibold hover:bg-[#e2511b] transition-all shadow"
                 >
                     Get Started

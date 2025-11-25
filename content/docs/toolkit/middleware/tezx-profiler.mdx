@@ -108,8 +108,6 @@ const storage = createRotatingFileStorage('./profiler.log', 1024 * 1024); // 1MB
 app.use(profiler({ storage }));
 ```
 
-* Automatically rotates file when size limit is reached.
-* Works with Node.js, Deno, and Bun file systems.
 
 ---
 
