@@ -117,10 +117,21 @@ Throughput:      7,029,244 ops/sec
 ## 🛠 Types
 
 ```ts
-type RouteMatchResult<T> = {
+export type RouteMatchResult<T extends Record<string, any> = any> = {
+  /**
+   * The HTTP method of the matched route (e.g., "GET", "POST").
+   */
   method: HTTPMethod;
-  middlewares: Middleware<T>[];
-  handlers: HandlerType<T>[];
+
+  /**
+   * The middleware functions that will be executed for this route.
+   */
+  match: Middleware<T>[];
+
+  /**
+   * An object containing route parameters extracted from the URL.
+   * The values can be strings, null (for optional params), or undefined.
+   */
   params: Record<string, string | null | undefined>;
 };
 

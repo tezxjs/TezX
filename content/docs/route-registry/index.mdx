@@ -37,6 +37,24 @@ export type HandlerType<T extends Record<string, any> = any> = (
 The `RouteRegistry` manages all **routes and middlewares** in a TezX application.
 
 ```ts
+export type RouteMatchResult<T extends Record<string, any> = any> = {
+  /**
+   * The HTTP method of the matched route (e.g., "GET", "POST").
+   */
+  method: HTTPMethod;
+
+  /**
+   * The middleware functions that will be executed for this route.
+   */
+  match: Middleware<T>[];
+
+  /**
+   * An object containing route parameters extracted from the URL.
+   * The values can be strings, null (for optional params), or undefined.
+   */
+  params: Record<string, string | null | undefined>;
+};
+
 export interface RouteRegistry {
   name: string;
   addRoute<T extends Record<string, any> = any>(

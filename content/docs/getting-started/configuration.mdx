@@ -15,7 +15,6 @@ This guide explains every option you can pass to the `TezX` constructor, includi
 import { TezX } from "tezx";
 
 const app = new TezX({
-  debugMode: true,
   basePath: "/api",
 });
 ```
@@ -28,8 +27,6 @@ Here’s the configuration shape:
 
 ```ts
 export type TezXConfig = {
-  debugMode?: boolean;
-  onPathResolve?: (pathname: string) => string;
   routeRegistry?: RouteRegistry; // plug in custom router
 } & RouterConfig;
 
@@ -42,19 +39,7 @@ export type RouterConfig = {
 
 ## Available Options
 
-### 1. `debugMode`
-
-* **Type**: `boolean`
-* **Default**: `false`
-* **What it does**: Enables verbose request/error logging for development.
-
-```ts
-const app = new TezX({ debugMode: true });
-```
-
----
-
-### 2. `basePath`
+### 1. `basePath`
 
 * **Type**: `string`
 * **What it does**: Prefixes all routes with a global path (ideal for **API versioning**).
@@ -68,20 +53,7 @@ app.get("/users", (ctx) => ctx.text("v1 Users"));
 
 ---
 
-### 3. `onPathResolve`
-
-* **Type**: `(pathname: string) => string`
-* **What it does**: Hook to rewrite or normalize request paths before routing.
-
-```ts
-const app = new TezX({
-  onPathResolve: (path) => path.toLowerCase().replace(/\/+$/, ""),
-});
-```
-
----
-
-### 4. `routeRegistry`
+### 2. `routeRegistry`
 
 * **Type**: `RouteRegistry`
 * **What it does**: Supply your own **custom router** implementation.
@@ -102,7 +74,6 @@ import { TezX } from "tezx";
 import { PowerfulCustomRouter } from "./PowerfulCustomRouter";
 const customRouter = new PowerfulCustomRouter();
 const app = new TezX({
-  debugMode: true,
   routeRegistry: customRouter,
 });
 ```
@@ -128,7 +99,6 @@ router.addRoute("GET", "/hello", [
 ]);
 
 const app = new TezX({
-  debugMode: true,
   routeRegistry: router,
   basePath: "/api",
 });
@@ -147,9 +117,7 @@ app.use("/api", async (ctx, next) => {
 
 | Option          | Type                               | Purpose                                  |
 | --------------- | ---------------------------------- | ---------------------------------------- |
-| `debugMode`     | `boolean`                          | Enable verbose request/error logging     |
 | `basePath`      | `string`                           | Add global prefix to all routes          |
-| `onPathResolve` | `(pathname: string) => string`     | Normalize/transform paths before routing |
 | `routeRegistry` | `RouteRegistry`                    | Use a custom router implementation       |
 
 ---
@@ -158,6 +126,5 @@ app.use("/api", async (ctx, next) => {
 
 * Use **`basePath`** for API versioning (e.g., `/v1`, `/v2`).
 * Inject a **custom router** (`routeRegistry`) for fine-grained control.
-* Use **`onPathResolve`** to normalize paths (lowercasing, trimming).
 
 ---

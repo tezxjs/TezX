@@ -23,9 +23,6 @@ import { logger } from "tezx/middleware";
 // Initialize TezX
 const app = new TezX({
   routeRegistry: new CustomRouter(),            // Custom route tree
-  debugMode: true,                              // Enable verbose logging
-  onPathResolve: (path) =>
-    path.replace(/\/+$/, "").toLowerCase(),     // Optional normalization
 });
 
 // Register global middleware
@@ -61,8 +58,6 @@ project/
 | Option          | Type                       | Description                                       |
 | --------------- | -------------------------- | ------------------------------------------------- |
 | `routeRegistry` | `Router`                   | Custom router implementing the `Router` interface |
-| `debugMode`     | `boolean`                  | Enables detailed middleware-level logging         |
-| `onPathResolve` | `(path: string) => string` | Normalizes or rewrites incoming request paths     |
 | `basePath`      | `string`                   | Global prefix applied to all routes               |
 
 ---

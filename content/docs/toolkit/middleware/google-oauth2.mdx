@@ -48,7 +48,7 @@ npm create tezx@latest google-auth -- --template google-oauth2 --y
 import { TezX } from 'tezx';
 import { GoogleOauthClient, getGoogleOAuthURL, verifyGoogleToken } from '@tezx/google-oauth2';
 
-const app = new TezX({ debugMode: true });
+const app = new TezX({ });
 
 // 1. Initialize OAuth2 client
 const client = GoogleOauthClient({
