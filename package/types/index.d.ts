@@ -238,6 +238,12 @@ export type HttpBaseResponse = Response | Promise<Response>;
  */
 export type Ctx<T extends Record<string, any> = {}, Path extends string = any> = Context<Path> & T & {
     [key: string]: any;
+    /**
+     * Response body, can be string, Buffer, stream, etc. like context propagation.
+     * @private
+     * @type {*}
+     */
+    body: any;
 };
 /**
  * A callback (handler) for a route.
@@ -348,11 +354,7 @@ export type RouteMatchResult<T extends Record<string, any> = any> = {
     /**
      * The middleware functions that will be executed for this route.
      */
-    middlewares: Middleware<T>[];
-    /**
-     * The final route handlers (callbacks or middlewares) to be executed.
-     */
-    handlers: HandlerType<T>;
+    match: Middleware<T>[];
     /**
      * An object containing route parameters extracted from the URL.
      * The values can be strings, null (for optional params), or undefined.

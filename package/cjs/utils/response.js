@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.notFoundResponse = void 0;
 exports.mergeHeaders = mergeHeaders;
 exports.handleErrorResponse = handleErrorResponse;
-const index_js_1 = require("../config/index.js");
 let notFoundResponse = (ctx) => {
     const { method, pathname } = ctx;
     return ctx.text(`${method}: '${pathname}' could not find\n`, {
@@ -11,24 +10,25 @@ let notFoundResponse = (ctx) => {
     });
 };
 exports.notFoundResponse = notFoundResponse;
-function mergeHeaders(existing, initHeaders) {
+function mergeHeaders(existing, init) {
     if (!existing)
-        return new Headers(initHeaders);
-    if (!initHeaders)
+        return new Headers(init);
+    if (!init)
         return existing;
     const out = new Headers(existing);
-    const tmp = new Headers(initHeaders);
-    for (const [k, v] of tmp) {
-        if (k.toLowerCase() === "set-cookie")
-            out.append(k, v);
-        else
-            out.set(k, v);
+    for (const key in init) {
+        const val = init[key];
+        if (val && key.toLowerCase() === "set-cookie") {
+            out.append(key, val);
+        }
+        else if (val) {
+            out.set(key, val);
+        }
     }
     return out;
 }
 async function handleErrorResponse(err = new Error("Internal Server Error"), ctx) {
     if (err instanceof Error) {
-        index_js_1.Config.debugging.error(err?.message);
         return ctx.status(500).send(err.message ?? "Internal Server Error");
     }
     return await handleErrorResponse(new Error(err), ctx);

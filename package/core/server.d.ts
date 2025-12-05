@@ -2,37 +2,10 @@ import { Callback, ErrorHandler, RouteRegistry } from "../types/index.js";
 import { Router, RouterConfig } from "./router.js";
 export type TezXConfig = {
     /**
-     * 🔄 Hook to transform or normalize the incoming request pathname before routing.
-     *
-     * This function allows you to customize how incoming paths are handled.
-     * You can use it to:
-     * - Remove trailing slashes
-     * - Normalize casing
-     * - Rewrite certain paths dynamically
-     * - Add localization or versioning prefixes
-     *
-     * @example
-     * ```ts
-     * onPathResolve: (pathname) => pathname.replace(/\/+$/, "").toLowerCase()
-     * ```
-     *
-     * @param pathname - The raw incoming request path (e.g., `/Api/Users/`)
-     * @returns The transformed or resolved path used for routing (e.g., `/api/users`)
-     */
-    onPathResolve?: (pathname: string) => string;
-    /**
      * Custom route registry instance used internally to store routes.
      * If not provided, the router will use the default CombineRouteRegistry.
      */
     routeRegistry?: RouteRegistry;
-    /**
-     * Enables or disables debugging for the middleware.
-     * When set to `true`, detailed debug logs will be output,
-     * useful for tracking the flow of requests and identifying issues.
-     *
-     * @default false
-     */
-    debugMode?: boolean;
 } & RouterConfig;
 /**
  * TezX is an ultra-fast, flexible request router and server handler.
@@ -52,7 +25,7 @@ export declare class TezX<T extends Record<string, any> = {}> extends Router<T> 
     #private;
     /** Internal route registry to hold all routes */
     protected router?: RouteRegistry;
-    constructor({ basePath, debugMode, onPathResolve, routeRegistry, }?: TezXConfig);
+    constructor({ basePath, routeRegistry, }?: TezXConfig);
     /**
      * Register a custom 404 (not found) handler.
      *

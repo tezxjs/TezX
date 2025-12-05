@@ -36,12 +36,18 @@ export class RadixRouter {
     search(method, path) {
         let params = {};
         let middlewares = [];
-        const { success, node } = this._match(method, this.root, path?.split("/")?.filter(Boolean), 0, params, middlewares);
-        if (success && node) {
-            const handlers = node.handlers?.[method] ?? [];
-            return { method, params, handlers, middlewares };
+        const segments = path?.split("/")?.filter(Boolean);
+        const { success, node } = this._match(method, this.root, segments, 0, params, middlewares);
+        if (!success || !node) {
+            return { method, params: {}, match: [] };
         }
-        return { method, params: {}, handlers: [], middlewares };
+        const list = node.handlers?.[method];
+        if (list) {
+            for (let i = 0; i < list.length; i++) {
+                middlewares.push(list[i]);
+            }
+        }
+        return { method, params, match: middlewares };
     }
     _match(method, node, segments, index, params, middlewares) {
         if (node?.handlers?.ALL) {

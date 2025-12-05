@@ -12,7 +12,6 @@ class Context {
     params = {};
     rawRequest;
     #server;
-    #body;
     url;
     res;
     pathname;
@@ -43,12 +42,6 @@ class Context {
     }
     get req() {
         return (this.#req ??= new request_js_1.TezXRequest(this.rawRequest, this.method, this.pathname, this.params));
-    }
-    get body() {
-        return this.#body;
-    }
-    set body(value) {
-        this.#body = value;
     }
     status(status) {
         this.#status = status;

@@ -103,16 +103,6 @@ export declare class Context<TPath extends string = any> {
      */
     get req(): TezXRequest<TPath>;
     /**
-     * Gets the response body.
-     * @returns {*} The response body.
-     */
-    get body(): any;
-    /**
-     * Sets the response body.
-     * @param {*} value - The response body.
-     */
-    set body(value: any);
-    /**
      * Sets the HTTP response status code.
      *
      * @param {number} status - HTTP status code to set (e.g., 200, 404).
