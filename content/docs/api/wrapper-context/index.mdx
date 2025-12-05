@@ -43,22 +43,14 @@ console.log(ctx.headers.get("content-type"));
 // Purpose: Get or set headers for the request/response
 ```
 
-### 8. **`body: any`**
-
-```ts
-ctx.body = "<h1>Hello</h1>"; // Response body (get/set)
-console.log(ctx.body);
-// Purpose: Directly set or read the response body
-```
-
-### 9. **`status(code: number): this`**
+### 8. **`status(code: number): this`**
 
 ```ts
 ctx.status(404).text("Not Found"); 
 // Purpose: Set the HTTP status code and chain response methods
 ```
 
-### 10. **`setHeader(key, value, options?)`**
+### 9. **`setHeader(key, value, options?)`**
 
 ```ts
 ctx.setHeader("X-Powered-By", "tezx");

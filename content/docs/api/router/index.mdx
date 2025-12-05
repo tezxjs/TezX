@@ -69,12 +69,12 @@ TezX Router revolves around a few key ideas:
 
 ```ts
 app.get("/hello", (ctx) => {
-  ctx.body = "Hello from TezX!";
+ return ctx.text("Hello from TezX!");
 });
 ```
 
 * `ctx` contains request info, parameters, and response methods.
-* Set responses using `ctx.body`, `ctx.text()`, or `ctx.json()`.
+* Set responses using `ctx.text()`, or `ctx.json()`.
 
 ---
 
