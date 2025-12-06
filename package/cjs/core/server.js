@@ -7,10 +7,9 @@ const url_js_1 = require("../utils/url.js");
 const context_js_1 = require("./context.js");
 const router_js_1 = require("./router.js");
 class TezX extends router_js_1.Router {
-    #pathResolver;
     #notFound = response_js_1.notFoundResponse;
     #errorHandler = response_js_1.handleErrorResponse;
-    constructor({ basePath = "/", routeRegistry = new RadixRouter_js_1.RadixRouter(), } = {}) {
+    constructor({ basePath = "/", routeRegistry = new RadixRouter_js_1.RadixRouter() } = {}) {
         super({ basePath });
         if (!routeRegistry) {
             throw new Error("routeRegistry is required for TezX initialization");
@@ -30,24 +29,27 @@ class TezX extends router_js_1.Router {
         let index = -1;
         const dispatch = (i) => {
             if (i <= index)
-                throw new Error("next() called multiple times");
+                return Promise.reject(new Error("next() called multiple times"));
             index = i;
             const fn = stack[i];
             if (!fn)
                 return ctx.res;
-            const result = fn(ctx, () => dispatch(i + 1));
-            if (!(result instanceof Promise)) {
-                if (result instanceof Response)
-                    ctx.res = result;
-                return ctx.res;
+            try {
+                const result = fn(ctx, () => dispatch(i + 1));
+                if (!(result instanceof Promise)) {
+                    if (result instanceof Response)
+                        ctx.res = result;
+                    return result ?? ctx.res;
+                }
+                return result.then((res) => {
+                    if (res instanceof Response)
+                        ctx.res = res;
+                    return res ?? ctx.res;
+                }, (err) => Promise.reject(err));
             }
-            return result.then((res) => {
-                if (res instanceof Response)
-                    ctx.res = res;
-                return ctx.res;
-            }, (err) => {
-                throw err;
-            });
+            catch (err) {
+                return Promise.reject(err);
+            }
         };
         return dispatch(0);
     }
@@ -66,9 +68,13 @@ class TezX extends router_js_1.Router {
             if (mLen === 0)
                 return this.#notFound(ctx);
             ctx.params = params;
-            if (mLen === 1)
-                return await middlewares[0](ctx) ?? this.#notFound(ctx);
-            return await this.#composeChain(ctx, middlewares) ?? this.#notFound(ctx);
+            if (mLen === 1) {
+                ctx.res = await middlewares[0](ctx);
+            }
+            else {
+                ctx.res = await this.#composeChain(ctx, middlewares);
+            }
+            return ctx.res ?? this.#notFound(ctx);
         }
         catch (err) {
             let error = err instanceof Error ? err : new Error(String(err));
@@ -76,10 +82,9 @@ class TezX extends router_js_1.Router {
         }
     }
     async serve(req, server) {
-        const method = req.method || "GET";
+        const method = req.method;
         if (method === "HEAD") {
-            const headReq = new Request(req, { method: "GET" });
-            const res = await this.#handleRequest(headReq, "GET", server);
+            const res = await this.#handleRequest(req, "GET", server);
             return new Response(null, {
                 status: res.status,
                 statusText: res.statusText,

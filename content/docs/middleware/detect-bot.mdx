@@ -68,7 +68,7 @@ detectBot({
 
 ```ts
 detectBot({
-  isBlacklisted: (ctx) => ctx.req.remoteAddress.address === "192.168.0.42",
+  isBlacklisted: (ctx) => ctx.ip === "192.168.0.42",
 });
 ```
 
@@ -94,16 +94,6 @@ detectBot({
 3. Rate-limit check (optional)
 4. Custom bot detector
 5. If none match → request continues to the next middleware
-
----
-
-## Rate-Limiting Note
-
-```ts
-import { getConnInfo } from "tezx/middleware";
-```
-
-The middleware uses `ctx.req.remoteAddress` for IP identification.
 
 ---
 

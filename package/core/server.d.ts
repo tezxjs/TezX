@@ -25,7 +25,7 @@ export declare class TezX<T extends Record<string, any> = {}> extends Router<T> 
     #private;
     /** Internal route registry to hold all routes */
     protected router?: RouteRegistry;
-    constructor({ basePath, routeRegistry, }?: TezXConfig);
+    constructor({ basePath, routeRegistry }?: TezXConfig);
     /**
      * Register a custom 404 (not found) handler.
      *

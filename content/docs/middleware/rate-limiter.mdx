@@ -11,7 +11,7 @@ By default, it identifies clients using their IP address via `getConnInfo()`.
 ## Import
 
 ```ts
-import { rateLimiter, getConnInfo } from "tezx/middleware";
+import { rateLimiter } from "tezx/middleware";
 ```
 
 ---
@@ -25,7 +25,6 @@ export type RateLimiterOptions = {
 
   keyGenerator?: (ctx: Context) => string;
   // Generate a unique client key
-  // default: ctx.req.remoteAddress.address from getConnInfo()
 
   storage?: {
     get: (key: string) => { count: number; resetTime: number } | undefined;
@@ -65,9 +64,6 @@ export type RateLimiterOptions = {
 ## Default Usage
 
 ```ts
-// Apply getConnInfo first
-app.use(getConnInfo());
-
 app.use(
   rateLimiter({
     maxRequests: 100,
@@ -88,7 +84,7 @@ app.use(
   rateLimiter({
     maxRequests: 10,
     windowMs: 10_000, // 10 seconds
-    keyGenerator: (ctx) => ctx.user?.id || ctx.req.remoteAddress.address,
+    keyGenerator: (ctx) => ctx.user?.id 
   })
 );
 ```
@@ -172,16 +168,15 @@ app.use(
 
 ```ts
 import { TezX } from "tezx";
-import { rateLimiter, getConnInfo, logger, cors } from "tezx/middleware";
+import { rateLimiter, logger, cors } from "tezx/middleware";
 
 app.use(cors());
 app.use(logger());
-app.use(getConnInfo());
 app.use(
   rateLimiter({
     maxRequests: 100,
     windowMs: 60_000,
-    keyGenerator: (ctx) => ctx.user?.id || ctx.req.remoteAddress.address,
+    keyGenerator: (ctx) => ctx.user?.id
   })
 );
 
@@ -189,13 +184,5 @@ app.get("/api/data", async (ctx) => {
   ctx.json({ success: true, data: ["item1", "item2"] });
 });
 ```
-
----
-
-### Usage Summary
-
-1. Use `getConnInfo()` **before** the middleware to extract client IP.
-2. Configure `maxRequests` and `windowMs` for your API.
-3. Optionally provide `keyGenerator`, `storage`, and `onError` for full customization.
 
 ---

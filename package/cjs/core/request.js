@@ -8,7 +8,6 @@ class TezXRequest {
     pathname;
     #rawRequest;
     params = {};
-    remoteAddress = {};
     #bodyConsumed = false;
     #rawBodyArrayBuffer;
     #cachedText;

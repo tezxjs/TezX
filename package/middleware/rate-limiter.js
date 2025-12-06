@@ -1,3 +1,4 @@
+import { getConnInfo } from "../helper/index.js";
 import { createRateLimitDefaultStorage, isRateLimit } from "../utils/rateLimit.js";
 const rateLimiter = (options) => {
     const { maxRequests, windowMs, keyGenerator = (ctx) => {
@@ -9,9 +10,8 @@ const rateLimiter = (options) => {
         const clientIp = ctx.req.header("client-ip");
         if (clientIp)
             return clientIp;
-        const addr = ctx.req.remoteAddress?.address || "unknown";
-        const port = ctx.req.remoteAddress?.port || "0";
-        return `${addr}:${port}`;
+        const { port, address } = getConnInfo(ctx) ?? {};
+        return `${address}:${port}`;
     }, storage = createRateLimitDefaultStorage(), onError = (ctx, retryAfter, error) => {
         ctx.status(429);
         throw new Error(`Rate limit exceeded. Try again in ${retryAfter} seconds.`);
@@ -30,4 +30,4 @@ const rateLimiter = (options) => {
         return await next();
     };
 };
-export { rateLimiter, rateLimiter as default };
+export { rateLimiter as default, rateLimiter };

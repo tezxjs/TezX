@@ -4,7 +4,6 @@ export * from "./cache-control.js";
 export * from "./cors.js";
 export * from "./detect-bot.js";
 export * from "./etag.js";
-export * from "./getConnInfo.js";
 export * from "./i18n.js";
 export * from "./logger.js";
 export * from "./pagination.js";

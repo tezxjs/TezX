@@ -39,8 +39,9 @@ const paginationHandler = (options = {}) => {
                 pagination,
             };
             ctx.body = body;
-            if (next) {
-                return await next();
+            let res = await next();
+            if (res) {
+                return res;
             }
             return ctx.json(body);
         }

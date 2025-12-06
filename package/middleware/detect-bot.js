@@ -1,3 +1,4 @@
+import { getConnInfo } from "../helper/index.js";
 import { createRateLimitDefaultStorage, isRateLimit } from "../utils/rateLimit.js";
 export const detectBot = (opts = {}) => {
     const botUAs = opts.botUserAgents || ["bot", "spider", "crawl", "slurp"];
@@ -5,7 +6,7 @@ export const detectBot = (opts = {}) => {
     const botRegex = new RegExp(botUAs.join("|"), "i");
     checkBot = (ua) => botRegex.test(ua);
     const keyGenerator = opts.keyGenerator ?? ((ctx) => {
-        const addr = ctx.req.remoteAddress;
+        const addr = getConnInfo(ctx);
         return addr ? `${addr.address}:${addr.port}` : "unknown";
     });
     const maxReq = opts.maxRequests || 30;

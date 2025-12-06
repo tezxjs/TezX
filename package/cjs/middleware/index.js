@@ -20,7 +20,6 @@ __exportStar(require("./cache-control.js"), exports);
 __exportStar(require("./cors.js"), exports);
 __exportStar(require("./detect-bot.js"), exports);
 __exportStar(require("./etag.js"), exports);
-__exportStar(require("./getConnInfo.js"), exports);
 __exportStar(require("./i18n.js"), exports);
 __exportStar(require("./logger.js"), exports);
 __exportStar(require("./pagination.js"), exports);

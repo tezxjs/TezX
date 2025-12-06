@@ -1,4 +1,4 @@
-import { ExtractParamsFromPath, HTTPMethod, NetAddr, ReqHeaderKey, RequestHeaders } from "../types/index.js";
+import { ExtractParamsFromPath, HTTPMethod, ReqHeaderKey, RequestHeaders } from "../types/index.js";
 /**
  * A wrapper around the raw HTTP request that provides convenient access to URL, headers, body parsing, and route parameters.
  *
@@ -26,18 +26,6 @@ export declare class TezXRequest<Path extends string = any> {
      * @type {ExtractParamsFromPath<Path>}
      */
     readonly params: ExtractParamsFromPath<Path>;
-    /**
-     * Remote address details of the connected client.
-     * @requires injectRemoteAddress middleware.
-     * @typedef {Object} NetAddr
-     * @property {string} [transport] - Transport protocol (e.g., "tcp", "udp").
-     * @property {"IPv4" | "IPv6" | "Unix"} [family] - Address family.
-     * @property {string} [hostname] - Hostname or IP address.
-     * @property {number} [port] - Port number.
-     * @type {NetAddr}
-     * @default {}
-     */
-    remoteAddress: NetAddr;
     /**
      * Creates an instance of TezXRequest.
      *

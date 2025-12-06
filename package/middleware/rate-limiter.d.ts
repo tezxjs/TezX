@@ -1,4 +1,4 @@
-import { Context } from "../core/context.js";
+import { Context } from "../index.js";
 import { HttpBaseResponse, Middleware } from "../types/index.js";
 export type RateLimiterOptions = {
     /**
@@ -14,15 +14,16 @@ export type RateLimiterOptions = {
      */
     windowMs: number;
     /**
-     * 🔑 Client identifier generator function
-     * @default (ctx) => `${ctx.req.remoteAddress.address}:${ctx.req.remoteAddress.port}`
+     * 🔑 Function to generate a client identifier for rate-limiting.
+     * By default, it uses `X-Forwarded-For`, `Client-IP`, or `getConnInfo(ctx)`.
      * @example
-     * keyGenerator: (ctx) => ctx.user?.id || ctx.ip // Use user ID if authenticated
+     * keyGenerator: (ctx) => ctx.user?.id || ctx.ip
      */
     keyGenerator?: (ctx: Context) => string;
     /**
-     * 🔄 Custom cache storage implementation (e.g., using `Map`, `Redis`, etc.).
-     * By default, it uses a `Map<string, { count: number; resetTime: number }>`.
+     * 🔄 Custom cache/storage implementation.
+     * Must provide `get`, `set`, and `clearExpired` methods.
+     * @default In-memory Map via `createRateLimitDefaultStorage()`
      */
     storage?: {
         get: (key: string) => {
@@ -36,42 +37,39 @@ export type RateLimiterOptions = {
         clearExpired: () => void;
     };
     /**
-     * 🛑 Custom rate limit exceeded handler
-     * @default Sends 429 status with Retry-After header
-     * @example
-     * onError: (ctx, retryAfter) => {
-     *   ctx.status = 429;
-     *   throw new Error( `Rate limit exceeded. Try again in ${retryAfter} seconds.`);
-     * }
+     * 🛑 Custom handler when rate limit is exceeded.
+     * @default Throws 429 status with Retry-After header
      */
     onError?: (ctx: Context, retryAfter: number, error: Error) => HttpBaseResponse;
 };
 /**
- * 🚦 Rate limiting middleware for request throttling
+ * 🚦 Rate Limiter Middleware
  *
- * Enforces maximum request limits per client with sliding window.
- * Currently supports in-memory storage only (Redis coming soon).
- * @requires
- *  *
-```ts
-  import { getConnInfo } from "tezx/middleware";
-```
- * @param {RateLimiterOptions} options - Configuration
- * @returns {Middleware} Middleware function
+ * Throttles requests per client based on a sliding window.
+ * Supports custom client identification and storage backends.
+ *
+ * Client IP detection uses (in order):
+ * 1. `X-Forwarded-For` header
+ * 2. `Client-IP` header
+ * 3. `getConnInfo(ctx)` fallback
+ *
+ * ```ts
+ * import { getConnInfo } from "tezx/helper";
+ * ```
+ *
+ * @param options RateLimiterOptions
+ * @returns Middleware function
  *
  * @example
  * // Basic rate limiting (100 requests/minute)
- * app.use(rateLimiter({
- *   maxRequests: 100,
- *   windowMs: 60_000
- * }));
+ * app.use(rateLimiter({ maxRequests: 100, windowMs: 60_000 }));
  *
  * // Custom client identification
  * app.use(rateLimiter({
  *   maxRequests: 10,
  *   windowMs: 10_000,
- *   keyGenerator: (ctx) => ctx.user?.id || ctx.remoteAddress.address
+ *   keyGenerator: (ctx) => ctx.user?.id
  * }));
  */
 declare const rateLimiter: <T extends Record<string, any> = {}, Path extends string = any>(options: RateLimiterOptions) => Middleware<T, Path>;
-export { rateLimiter, rateLimiter as default };
+export { rateLimiter as default, rateLimiter };

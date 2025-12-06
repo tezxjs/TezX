@@ -1,4 +1,5 @@
 import { ExtractParamsFromPath, HttpBaseResponse, ResHeaderKey, ResponseInit, WebSocketEvent } from "../types/index.js";
+import { ContentType } from "../utils/mimeTypes.js";
 import { TezXRequest } from "./request.js";
 export declare class Context<TPath extends string = any> {
     #private;
@@ -113,6 +114,35 @@ export declare class Context<TPath extends string = any> {
      */
     status(status: number): this;
     /**
+     * Creates a native Response object with optional body, Content-Type, and headers.
+     *
+     * This function always overwrites the `Content-Type` header if `type` is provided.
+     * It merges any existing headers from the context (`this.#headers`) with headers
+     * provided in `init.headers`.
+     *
+     * @param {BodyInit | null} body - The response body. Can be string, Blob, ArrayBuffer, Uint8Array, or null.
+     * @param {string | null} type - The MIME type to set in the `Content-Type` header. If null, no Content-Type is set.
+     * @param {ResponseInit} [init={}] - Optional response initialization object (status, statusText, headers).
+     * @param {number} [init.status] - HTTP status code (default is `this.#status`).
+     * @param {string} [init.statusText] - Optional status text for the response.
+     * @param {HeadersInit} [init.headers] - Additional headers to merge with context headers.
+     *
+     * @returns {Response} A native Fetch API Response object.
+     *
+     * @example
+     * // Simple text response
+     * const res = createResponse("Hello World", "text/plain");
+     *
+     * @example
+     * // JSON response
+     * const res = createResponse(JSON.stringify({ ok: true }), "application/json", { status: 200 });
+     *
+     * @example
+     * // Custom headers
+     * const res = createResponse("Hello", "text/plain", { headers: { "X-Custom": "test" } });
+     */
+    createResponse(body: BodyInit | null, type: ContentType | null, init?: ResponseInit): Response;
+    /**
      * Protected helper method to create a Response or PlainResponse
      * based on runtime environment (Node.js or Web).
      *
@@ -157,38 +187,6 @@ export declare class Context<TPath extends string = any> {
      * ctx.json({ success: true });
      */
     json(json: object, init?: ResponseInit): HttpBaseResponse;
-    /**
-    * Send a response with automatic content type detection.
-    *
-    * This method determines the proper `Content-Type` header based on the type of `body`.
-    * If a `Content-Type` is provided in `init.headers`, it will be used instead.
-    *
-    * Supported types:
-    * - `string` / `number` → "text/plain"
-    * - `object` → JSON serialized, "application/json"
-    * - `Uint8Array` / `ArrayBuffer` / `ReadableStream` → "application/octet-stream"
-    * - `Blob` / `File` → uses `body.type` or falls back to "application/octet-stream"
-    * - `null` / `undefined` → empty string, "text/plain"
-    * - any other → `String(body)`, "text/plain"
-    *
-    * @param {any} body - Response body of any type.
-    * @param {ResponseInit} [init] - Optional response init object, headers, status, etc.
-    * @returns {HttpBaseResponse} - A Bun-compatible response object.
-    *
-    * @example
-    * // Send a string
-    * ctx.send("Hello World");
-    *
-    * // Send JSON
-    * ctx.send({ user: "Alice", id: 123 });
-    *
-    * // Send binary
-    * ctx.send(new Uint8Array([1,2,3]));
-    *
-    * // Custom content-type
-    * ctx.send("Hello", { headers: { "Content-Type": "text/html" } });
-    */
-    send(body: any, init?: ResponseInit): HttpBaseResponse;
     /**
      * Sends an HTTP redirect response to the specified URL.
      *

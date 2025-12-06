@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.detectBot = void 0;
+const index_js_1 = require("../helper/index.js");
 const rateLimit_js_1 = require("../utils/rateLimit.js");
 const detectBot = (opts = {}) => {
     const botUAs = opts.botUserAgents || ["bot", "spider", "crawl", "slurp"];
@@ -8,7 +9,7 @@ const detectBot = (opts = {}) => {
     const botRegex = new RegExp(botUAs.join("|"), "i");
     checkBot = (ua) => botRegex.test(ua);
     const keyGenerator = opts.keyGenerator ?? ((ctx) => {
-        const addr = ctx.req.remoteAddress;
+        const addr = (0, index_js_1.getConnInfo)(ctx);
         return addr ? `${addr.address}:${addr.port}` : "unknown";
     });
     const maxReq = opts.maxRequests || 30;

@@ -1,0 +1,57 @@
+---
+title: getConnInfo
+description: Retrieves detailed connection information of the client making the current request. This function is typically used in middleware for rate-limiting, bot detection, or logging purposes.
+---
+
+## Import
+
+```ts
+import { getConnInfo } from "tezx/helper";
+```
+
+## Usage
+
+```ts
+import { getConnInfo } from "tezx/helper";
+
+const clientInfo = getConnInfo(ctx);
+console.log(clientInfo);
+// Output example:
+// {
+//   address: "192.168.1.101",
+//   port: 54321,
+//   transport: "tcp",
+//   family: "IPv4"
+// }
+```
+
+## Parameters
+
+* **ctx**: `Context` – The current request context object.
+
+## Returns
+
+`NetAddr | undefined` – An object containing the client’s connection details, or `undefined` if unavailable.
+
+### Properties
+
+| Property    | Type                | Description                             |
+| ----------- | ------------------- | --------------------------------------- |
+| `address`   | `string`            | The client’s IP address.                |
+| `port`      | `number` (optional) | The client’s port number, if available. |
+| `transport` | `"tcp"              \| "udp"                                   \| string` | The transport protocol used (TCP, UDP, etc.). |
+| `family`    | `"IPv4"             \| "IPv6"                                  \| "Unix"` | The address family of the client connection.  |
+
+## Example: Using in Middleware
+
+```ts
+import { getConnInfo } from "tezx/helper";
+
+export const logClientInfo = async (ctx, next) => {
+  const client = getConnInfo(ctx);
+  console.log(`Incoming request from ${client?.address}:${client?.port} (${client?.family})`);
+  await next();
+};
+```
+
+---

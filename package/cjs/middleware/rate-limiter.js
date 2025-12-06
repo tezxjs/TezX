@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = exports.rateLimiter = void 0;
+exports.rateLimiter = exports.default = void 0;
+const index_js_1 = require("../helper/index.js");
 const rateLimit_js_1 = require("../utils/rateLimit.js");
 const rateLimiter = (options) => {
     const { maxRequests, windowMs, keyGenerator = (ctx) => {
@@ -12,9 +13,8 @@ const rateLimiter = (options) => {
         const clientIp = ctx.req.header("client-ip");
         if (clientIp)
             return clientIp;
-        const addr = ctx.req.remoteAddress?.address || "unknown";
-        const port = ctx.req.remoteAddress?.port || "0";
-        return `${addr}:${port}`;
+        const { port, address } = (0, index_js_1.getConnInfo)(ctx) ?? {};
+        return `${address}:${port}`;
     }, storage = (0, rateLimit_js_1.createRateLimitDefaultStorage)(), onError = (ctx, retryAfter, error) => {
         ctx.status(429);
         throw new Error(`Rate limit exceeded. Try again in ${retryAfter} seconds.`);
@@ -33,5 +33,5 @@ const rateLimiter = (options) => {
         return await next();
     };
 };
-exports.rateLimiter = rateLimiter;
 exports.default = rateLimiter;
+exports.rateLimiter = rateLimiter;

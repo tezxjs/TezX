@@ -5,3 +5,6 @@ export default {
     useFormData,
     generateID, generateRandomBase64, generateUUID
 };
+export function getConnInfo(ctx) {
+    return ctx?.server?.requestIP?.(ctx.rawRequest);
+}

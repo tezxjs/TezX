@@ -311,7 +311,11 @@ export interface FormDataOptions {
  */
 type TransportType = "tcp" | "udp" | "unix" | "pipe" | "unixpacket";
 /**
- * A normalized network address description.
+ * Remote address details of the connected client.
+ * @property {string} [transport] - Transport protocol (e.g., "tcp", "udp").
+ * @property {"IPv4" | "IPv6" | "Unix"} [family] - Address family.
+ * @property {string} [hostname] - Hostname or IP address.
+ * @property {number} [port] - Port number.
  */
 export type NetAddr = {
     /** Transport protocol used by the connection. */

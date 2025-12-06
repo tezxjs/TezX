@@ -28,7 +28,7 @@ export class Context {
             return this;
         const _key = key.toLowerCase();
         const append = options?.append || _key === "set-cookie";
-        const target = this.res?.headers ?? (this.#headers ??= new Headers());
+        const target = this.headers;
         if (append) {
             target.append(_key, value);
         }
@@ -44,10 +44,11 @@ export class Context {
         this.#status = status;
         return this;
     }
-    #newResponse(body, type, init = {}) {
-        let headers = mergeHeaders(this.#headers, init.headers);
-        if (!headers.has("Content-Type"))
+    createResponse(body, type, init = {}) {
+        const headers = mergeHeaders(this.#headers, init.headers);
+        if (type) {
             headers.set("Content-Type", type);
+        }
         return new Response(body, {
             status: init.status ?? this.#status,
             statusText: init.statusText,
@@ -55,50 +56,16 @@ export class Context {
         });
     }
     newResponse(body, init = {}) {
-        let headers = mergeHeaders(this.#headers, init.headers);
-        return new Response(body, {
-            status: init.status ?? this.#status,
-            statusText: init.statusText,
-            headers,
-        });
+        return this.createResponse(body, null, init);
     }
     text(content, init) {
-        return this.#newResponse(content, "text/plain; charset=utf-8", init);
+        return this.createResponse(content, "text/plain; charset=utf-8", init);
     }
     html(strings, init) {
-        return this.#newResponse(strings, "text/html; charset=utf-8", init);
+        return this.createResponse(strings, "text/html; charset=utf-8", init);
     }
     json(json, init) {
-        return this.#newResponse(JSON.stringify(json), "application/json; charset=utf-8", init);
-    }
-    send(body, init) {
-        let _body;
-        let type;
-        if (body === null || body === undefined) {
-            _body = "";
-            type = "text/plain";
-        }
-        else if (typeof body === "string" || typeof body === "number") {
-            _body = body;
-            type = "text/plain";
-        }
-        else if (body instanceof Uint8Array || body instanceof ArrayBuffer || (typeof ReadableStream !== "undefined" && body instanceof ReadableStream)) {
-            _body = body;
-            type = "application/octet-stream";
-        }
-        else if (body instanceof Blob || (typeof File !== "undefined" && body instanceof File)) {
-            _body = body;
-            type = body.type || "application/octet-stream";
-        }
-        else if (typeof body === "object") {
-            _body = JSON.stringify(body);
-            type = "application/json";
-        }
-        else {
-            _body = String(body);
-            type = "text/plain";
-        }
-        return this.#newResponse(_body, type, init);
+        return this.createResponse(JSON.stringify(json), "application/json; charset=utf-8", init);
     }
     redirect(url, status = 302) {
         const headers = new Headers(this.#headers);
@@ -119,18 +86,15 @@ export class Context {
         if (init?.filename) {
             headers["Content-Disposition"] = `attachment; filename="${init?.filename}"`;
         }
+        let contentType = null;
         if (init?.download || init?.filename) {
-            headers["Content-Type"] = "application/octet-stream";
-            return this.newResponse(stream, {
-                status: init?.status ?? this.#status,
-                statusText: init?.statusText,
-                headers,
-            });
+            contentType = "application/octet-stream";
         }
-        const ext = extensionExtract(filePath);
-        const mimeType = mimeTypes[ext] ?? defaultMimeType;
-        headers["Content-Type"] = mimeType;
-        return this.newResponse(stream, {
+        else {
+            const ext = extensionExtract(filePath);
+            contentType = mimeTypes[ext] ?? defaultMimeType;
+        }
+        return this.createResponse(stream, contentType, {
             status: init?.status ?? this.#status,
             statusText: init?.statusText,
             headers,
