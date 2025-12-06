@@ -23,7 +23,7 @@ app.get("/events", (ctx) => { ... });
 
 ---
 
-## Headers set automatically
+## Headers set
 
 ```http
 Content-Type: text/event-stream
@@ -31,7 +31,7 @@ Cache-Control: no-cache
 Connection: keep-alive
 ```
 
-> You can override or customize headers inside `ctx.send(stream, { headers })`.
+> You can override or customize headers inside `ctx.newResponse(stream, { headers })`.
 
 ---
 
@@ -62,7 +62,7 @@ app.get("/events", (ctx) => {
     },
   });
 
-  return ctx.send(stream, {
+  return ctx.newResponse(stream, {
     headers: {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",

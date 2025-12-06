@@ -82,20 +82,6 @@ app.get("/plain", (ctx) => ctx.text("Just text"));
 
 ---
 
-### `ctx.send(body, status?, headers?)`
-
-Smart responder (auto-detects type).
-
-```ts
-app.get("/send", (ctx) => ctx.send({ user: "admin" }));
-```
-
-* `object` → JSON
-* `string` → plain text
-* `Buffer`/`Uint8Array` → binary
-
----
-
 ### `ctx.redirect(url, status?, headers?)`
 
 Redirect user.
@@ -149,7 +135,6 @@ app.get("/raw", (ctx) =>
 | JSON API response      | `ctx.json()`       |
 | HTML rendering         | `ctx.html()`       |
 | Plain text output      | `ctx.text()`       |
-| Dynamic content (auto) | `ctx.send()`       |
 | External redirects     | `ctx.redirect()`   |
 | Static asset serving   | `ctx.sendFile()`   |
 | Full manual control    | Native `Response`  |

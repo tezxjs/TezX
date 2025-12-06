@@ -66,7 +66,7 @@ Etag<T = {}, Path extends string = any>(options?: { strongEtag?: boolean }): Mid
 
 ```ts
 app.get("/api/user", async (ctx) => {
-    return ctx.send({ id: 1, name: "Alice" });
+    return ctx.json({ id: 1, name: "Alice" });
 });
 
 // Automatically generates ETag

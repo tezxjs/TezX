@@ -22,19 +22,6 @@ app.get("/events", (ctx) => { ... });
 * Automatically handles connection cleanup when the client disconnects.
 
 ---
-
-## Headers set automatically
-
-```http
-Content-Type: text/event-stream
-Cache-Control: no-cache
-Connection: keep-alive
-```
-
-> You can override or customize headers inside `ctx.send(stream, { headers })`.
-
----
-
 ## Example
 
 ```ts
@@ -62,7 +49,7 @@ app.get("/events", (ctx) => {
     },
   });
 
-  return ctx.send(stream, {
+  return ctx.newResponse(stream, {
     headers: {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
