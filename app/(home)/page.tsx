@@ -59,12 +59,6 @@ export async function generateMetadata(): Promise<Metadata> {
         follow: true,
       },
     },
-
-    themeColor: [
-      { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-      { media: "(prefers-color-scheme: dark)", color: "#0A0F1F" },
-    ],
-
     icons: {
       icon: "/favicon.ico",
       // apple: "/apple-touch-icon.png",
