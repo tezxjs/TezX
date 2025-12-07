@@ -39,7 +39,7 @@ export class RadixRouter {
         const segments = path?.split("/")?.filter(Boolean);
         const { success, node } = this._match(method, this.root, segments, 0, params, middlewares);
         const list = node?.handlers?.[method];
-        if (!success && list) {
+        if (success && list) {
             for (let i = 0; i < list.length; i++) {
                 middlewares.push(list[i]);
             }
