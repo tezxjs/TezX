@@ -16,7 +16,6 @@ export async function GET(
   return new ImageResponse(
     (
       <DefaultImage
-        icon={<img src="http://localhost:3000/favicon.ico" height={32} width={32} />}
         title={page.data.title}
         primaryColor='#FF581E'
         primaryTextColor='#FF581E'

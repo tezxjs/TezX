@@ -1,10 +1,11 @@
-# 🔐 @tezx/rbac
+---
+title: RBAC
+description: A powerful, fully type-safe Role-Based Access Control (RBAC) plugin for [TezX](https://www.npmjs.com/package/tezx), designed to help you control access to routes, APIs, and resources using simple, template-based permission keys with full IntelliSense support.
+---
 
 A powerful, fully type-safe **Role-Based Access Control (RBAC)** plugin for [TezX](https://www.npmjs.com/package/tezx), designed to help you **control access to routes, APIs, and resources** using simple, template-based permission keys with full IntelliSense support.
 
----
-
-## 🚀 Highlights
+## Highlights
 
 - 🎯 Type-safe permission system (`T extends string[]`)
 - 🧠 IntelliSense-based permission enforcement
@@ -19,7 +20,7 @@ A powerful, fully type-safe **Role-Based Access Control (RBAC)** plugin for [Tez
 
 ---
 
-## 📦 Installation
+## Installation
 
 ```bash
 npm install @tezx/rbac
@@ -41,7 +42,7 @@ npm install @tezx/rbac
 
 ---
 
-## ⚠️ Required: `ctx.user.role`
+## Required: `ctx.user.role`
 
 To work correctly, you **must set** `ctx.user.role` before using RBAC.
 
@@ -67,7 +68,7 @@ ctx.user = {
 
 ---
 
-## 🧑‍💻 Usage Example
+## Usage Example
 
 ```ts
 
@@ -94,7 +95,7 @@ app.get('/admin/users', rbac.authorize('user:create'), async (ctx) => {
 
 ---
 
-## 📌 RBAC Lifecycle
+## RBAC Lifecycle
 
 | Step | Action                                                            |
 | ---- | ----------------------------------------------------------------- |
@@ -105,7 +106,7 @@ app.get('/admin/users', rbac.authorize('user:create'), async (ctx) => {
 
 ---
 
-### 🔁 Replace `role` with Unique Role IDs (Advanced)
+### Replace `role` with Unique Role IDs (Advanced)
 
 RBAC system supports mapping **dynamic role identifiers** (like database IDs or UUIDs) instead of hardcoded role names.
 
@@ -134,7 +135,7 @@ loadPermissions: async () => ({
 
 > ✅ Internally, `RBAC` merges all permissions based on the provided `ctx.user.role`, whether it's `string` or `string[]`.
 
-#### ⚠️ Important
+#### Important
 
 Make sure the role ID you assign in `ctx.user.role` **exactly matches** the keys in your permission map.
 
@@ -157,7 +158,7 @@ loadPermissions: async () => ({
 
 ---
 
-## 🧩 Plugin API
+## Plugin API
 
 ### `rbac.plugin(config)`
 
@@ -183,7 +184,7 @@ app.post('/orders', rbac.authorize('order:read'), handler);
 
 ---
 
-## 💡 IntelliSense with Template Types
+## IntelliSense with Template Types
 
 ```ts
 type Permissions = ['user:create', 'order:read', 'admin:panel'];
@@ -195,7 +196,7 @@ const rbac = new RBAC<Permissions>();
 
 ---
 
-## ❌ Custom Deny Example
+## Custom Deny Example
 
 ```ts
 rbac.plugin({
@@ -212,7 +213,7 @@ rbac.plugin({
 
 ---
 
-## 🔍 Real-World Structure
+## Real-World Structure
 
 ```ts
 const permissionMap = {
@@ -235,7 +236,7 @@ RBAC will combine permissions from both roles.
 
 ---
 
-## 🔥 Debug Tip
+## Debug Tip
 
 To check permissions being applied at runtime:
 
@@ -245,7 +246,7 @@ console.log(ctx.user.permissions); // all merged permissions
 
 ---
 
-## 📚 Types Summary
+## Types Summary
 
 ```ts
 type RolePermissionMap<T extends string[]> = Record<string, T[number][]>;
@@ -258,7 +259,7 @@ type DenyError<T extends string[]> = {
 
 ---
 
-## 📦 Exported API
+## Exported API
 
 ```ts
 import RBAC, { plugin, authorize } from '@tezx/rbac';
@@ -266,7 +267,7 @@ import RBAC, { plugin, authorize } from '@tezx/rbac';
 
 ---
 
-## 🧪 Test Route Example
+## Test Route Example
 
 ```ts
 app.get('/secure', rbac.authorize('admin:panel'), async (ctx) => {
@@ -276,7 +277,7 @@ app.get('/secure', rbac.authorize('admin:panel'), async (ctx) => {
 
 ---
 
-## ✅ Best Practices
+## Best Practices
 
 - 🔄 Always assign `ctx.user.role` in `authChecker`
 - 🧠 Define permissions centrally as union literal type

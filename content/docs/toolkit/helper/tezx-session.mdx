@@ -1,0 +1,204 @@
+---
+title: Session Management
+description: Build scalable applications with pluggable session storage, secure cookies, and developer-friendly TypeScript APIs.
+---
+
+Build scalable applications with **pluggable session storage**, **secure cookies**, and **developer-friendly TypeScript APIs**.
+
+---
+
+## Features
+
+* ✅ **Type-Safe sessions** with full generics support
+* 🔐 Secure, HTTP-only session cookies
+* 🧠 Pluggable storages: Memory, Redis, Custom adapters
+* 🔄 Simple middleware: `useSession()`, `createSession()`, `destroySession()`
+* 🌐 CORS-friendly (`credentials: "include"`)
+* 🧩 Works in microservices, SSR, and server-rendered frameworks
+* ⚡ Lightweight, minimal, and framework-agnostic design
+
+---
+
+## 📦 Installation
+
+```bash
+npm install @tezx/session
+```
+
+or
+
+```bash
+pnpm add @tezx/session
+```
+
+---
+
+## ⚡ Quick Example
+
+```ts
+import { TezX } from "tezx";
+import { SessionManager } from "@tezx/session";
+
+const app = new TezX();
+
+const sessionManager = new SessionManager({
+  sessionName: "tezx.sid",
+  cookie: {
+    maxAge: 1000 * 60 * 30,
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+  },
+});
+
+// Load session before routes
+app.use(sessionManager.useSession());
+
+// Login → create session
+app.post("/login", async (ctx) => {
+  await sessionManager.createSession({ userId: 99, role: "admin" }, ctx);
+  return ctx.json({ success: true });
+});
+
+// Protected route → read session
+app.get("/profile", (ctx) => {
+  return ctx.json({ session: ctx.session?.data });
+});
+
+// Logout → destroy session
+app.post("/logout", async (ctx) => {
+  await ctx.session?.destroy();
+  return ctx.json({ loggedOut: true });
+});
+```
+
+---
+
+# API Documentation
+
+## SessionManager Class
+
+### Methods Overview
+
+| Method             | Description                             |
+| ------------------ | --------------------------------------- |
+| `createSession()`  | Creates/saves a session and sets cookie |
+| `useSession()`     | Middleware to load session from cookie  |
+| `destroySession()` | Deletes session and clears cookie       |
+
+---
+
+## `createSession(data, ctx)`
+
+Creates a new session.
+
+* Generates a session ID
+* Saves data into storage
+* Automatically sets a secure cookie
+
+```ts
+await sessionManager.createSession({ userId: 101 }, ctx);
+```
+
+---
+
+## `useSession()`
+
+Middleware that runs on every request:
+
+* Reads cookie
+* Loads session from storage
+* Injects `ctx.session` (with `.data`, `.save()`, `.destroy()`)
+
+```ts
+app.use(sessionManager.useSession());
+```
+
+---
+
+## `destroySession()`
+
+Manually destroy a session:
+
+```ts
+await sessionManager.destroySession(sessionId);
+```
+
+Or from `ctx.session`:
+
+```ts
+await ctx.session?.destroy();
+```
+
+---
+
+# Configuration
+
+```ts
+const sessionManager = new SessionManager({
+  sessionName: "my_session",
+  cookie: {
+    maxAge: 1000 * 60 * 30,
+    secure: true,
+    httpOnly: true,
+    sameSite: "lax",
+  },
+  storage: new MemoryStore(), // Default or custom adapter
+});
+```
+
+### Options
+
+| Option          | Type                          | Description                            |
+| --------------- | ----------------------------- | -------------------------------------- |
+| sessionName     | `string`                      | Cookie key name                        |
+| sessionId       | `(ctx) => string`             | Custom session ID generator (optional) |
+| cookie.maxAge   | `number`                      | Lifetime in ms                         |
+| cookie.secure   | `boolean`                     | Only send cookie over HTTPS            |
+| cookie.httpOnly | `boolean`                     | JavaScript cannot access cookie        |
+| cookie.sameSite | `"lax" \| "strict" \| "none"` | Cookie cross-site policy               |
+| storage         | `SessionStorageAdapter`       | Custom storage engine                  |
+
+---
+
+# CORS + Cookies
+
+Frontend must include credentials:
+
+```js
+fetch("/profile", { credentials: "include" });
+```
+
+Backend must allow:
+
+* `Access-Control-Allow-Origin`
+* `Access-Control-Allow-Credentials: true`
+
+---
+
+# Type Safety Example
+
+```ts
+const sessionManager = new SessionManager<{ userId: number; role: string }>();
+
+await sessionManager.createSession({ userId: 1, role: "admin" }, ctx);
+```
+
+Then everywhere:
+
+```ts
+ctx.session.data.userId; // number
+ctx.session.data.role;   // string
+```
+
+---
+
+# Advanced Topics
+
+* Redis, MongoDB, File or Custom storage adapters
+* Session ID regeneration on login/logout
+* Auto session cleanup + expiry hooks
+* Encrypt session data before saving
+* Shared cookie sessions across sub-domains
+
+---

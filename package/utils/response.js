@@ -23,7 +23,7 @@ export function mergeHeaders(existing, init) {
 }
 export async function handleErrorResponse(err = new Error("Internal Server Error"), ctx) {
     if (err instanceof Error) {
-        return ctx.status(500).send(err.message ?? "Internal Server Error");
+        return ctx.status(500).text(err.message ?? "Internal Server Error");
     }
     return await handleErrorResponse(new Error(err), ctx);
 }
