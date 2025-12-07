@@ -41,11 +41,8 @@ class RadixRouter {
         let middlewares = [];
         const segments = path?.split("/")?.filter(Boolean);
         const { success, node } = this._match(method, this.root, segments, 0, params, middlewares);
-        if (!success || !node) {
-            return { method, params: {}, match: [] };
-        }
-        const list = node.handlers?.[method];
-        if (list) {
+        const list = node?.handlers?.[method];
+        if (!success && list) {
             for (let i = 0; i < list.length; i++) {
                 middlewares.push(list[i]);
             }
