@@ -1,4 +1,4 @@
-import { Context } from "../core/context.js";
+import { Context } from "../index.js";
 import { CookieOptions } from "../types/index.js";
 /**
  * Get the value of a specific cookie by name from the request context.

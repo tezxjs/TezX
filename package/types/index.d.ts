@@ -115,7 +115,7 @@ export interface CookieOptions {
     /** Controls cross-site request behavior. One of "Strict", "Lax", or "None". */
     sameSite?: "Strict" | "Lax" | "None";
 }
-import { Context } from "../core/context.js";
+import { BaseContext, Context } from "../index.js";
 import { RequestHeader, ResponseHeader } from "./headers.js";
 /**
  * Options to customize static file serving behavior.
@@ -236,7 +236,7 @@ export type HttpBaseResponse = Response | Promise<Response>;
  * @template T - Custom environment or app-level data.
  * @template Path - Type of the route path (optional).
  */
-export type Ctx<T extends Record<string, any> = {}, Path extends string = any> = Context<Path> & T & {
+export type Ctx<T extends Record<string, any> = {}, Path extends string = any> = BaseContext<Path> & T & {
     [key: string]: any;
     /**
      * Response body, can be string, Buffer, stream, etc. like context propagation.

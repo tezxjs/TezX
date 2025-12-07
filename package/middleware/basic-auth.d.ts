@@ -1,4 +1,4 @@
-import { Context } from "../core/context.js";
+import { Context } from "../index.js";
 import { HttpBaseResponse, Middleware } from "../types/index.js";
 /**
  * Options for Basic Authentication middleware.

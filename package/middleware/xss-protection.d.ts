@@ -1,4 +1,4 @@
-import { Context } from "../core/context.js";
+import { Context } from "../index.js";
 import { Middleware } from "../types/index.js";
 export type XSSProtectionOptions = {
     /**
