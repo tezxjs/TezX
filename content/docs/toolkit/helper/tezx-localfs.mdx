@@ -1,0 +1,144 @@
+---
+title: TezX LocalFS
+description: LocalFS is a lightweight, runtime-compatible file storage library for Bun applications. It allows you to save, read, delete, and serve files locally with automatic duplicate renaming, MIME type validation, and optional filename sanitization.
+---
+
+**LocalFS** is a lightweight, runtime-compatible file storage library for **Bun** applications. It allows you to save, read, delete, and serve files locally with automatic duplicate renaming, MIME type validation, and optional filename sanitization.
+
+---
+
+## Features
+
+- Save browser `File` objects to disk.
+- Optional automatic renaming for duplicate filenames (`file_1.txt`, `file_2.txt`).
+- Allowed MIME types and maximum file size validation.
+- Optional filename sanitization.
+- Public URL generation for serving files via a router.
+- Works seamlessly in Bun and Node.js environments.
+- Easy integration with **TezX Router**.
+
+---
+
+## Installation
+
+```bash
+# Using npm
+npm install @tezx/localfs
+
+# Using Bun
+bun add @tezx/localfs
+````
+
+---
+
+## Usage
+
+### TypeScript Example
+
+```ts
+import LocalFS from "@tezx/localfs";
+
+// Initialize storage
+const fs = new LocalFS({
+  basePath: "uploads",        // Where files will be stored
+  publicUrl: "/uploads",      // URL to serve publicly
+  sanitize: true,             // Sanitize filenames
+  autoRenameOnConflict: true, // Automatically rename duplicates
+  maxFileSize: 10 * 1024 * 1024, // Max file size: 10MB
+  allowedTypes: ["image/*", "application/pdf"], // Allowed MIME types
+});
+
+// Saving a file
+const file = new File(["Hello world"], "hello.txt", { type: "text/plain" });
+const info = await fs.saveFile(file, { folder: "docs" });
+
+console.log(info);
+/*
+{
+  savedPath: "uploads/docs/hello.txt",
+  filename: "hello.txt",
+  publicUrl: "/uploads/docs/hello.txt"
+}
+*/
+
+// Reading a file
+const content = await fs.readFile("docs/hello.txt");
+console.log(new TextDecoder().decode(content));
+
+// Deleting a file
+await fs.deleteFile("docs/hello.txt");
+
+// Serve files publicly via TezX Router
+import { Router } from "tezx";
+const router = Router();
+router.use(fs.serveFileResponse());
+```
+
+---
+
+## API
+
+### `new LocalFS(options?: LocalFSOptions)`
+
+Creates a new LocalFS instance.
+
+**Options:**
+
+| Option                 | Type     | Default           | Description                        |
+| ---------------------- | -------- | ----------------- | ---------------------------------- |
+| `basePath`             | string   | `"uploads"`       | Base folder to store files         |
+| `publicUrl`            | string   | `"/uploads"`      | Base URL for public access         |
+| `allowPublicAccess`    | boolean  | `true`            | Enable public serving of files     |
+| `autoRenameOnConflict` | boolean  | `true`            | Auto-rename duplicate files        |
+| `maxFileSize`          | number   | `5 * 1024 * 1024` | Maximum allowed file size in bytes |
+| `allowedTypes`         | string[] | `["image/*"]`     | Allowed MIME types or patterns     |
+| `sanitize`             | boolean  | `false`           | Sanitize filenames before saving   |
+
+---
+
+### `saveFile(file: File, option?: { filename?: string, folder?: string }) => Promise<SavedFileInfo>`
+
+Saves a file to disk.
+
+**Parameters:**
+
+- `file`: Browser/Fetch `File` object
+- `option.filename`: Optional override for file name
+- `option.folder`: Optional sub-folder under `basePath`
+
+**Returns:** `Promise<SavedFileInfo>`
+
+`SavedFileInfo` contains:
+
+- `savedPath`: Absolute path on disk
+- `filename`: Final filename used
+- `publicUrl`: Public URL (if enabled)
+
+---
+
+### `readFile(filename: string) => Promise<ArrayBuffer>`
+
+Reads a file from disk.
+
+- `filename`: Relative path under `basePath` or absolute path
+- Returns: `ArrayBuffer` of file content
+
+---
+
+### `deleteFile(filename: string) => Promise<void>`
+
+Deletes a file from disk.
+
+- `filename`: Relative path under `basePath`
+- No-op if the file doesn't exist
+
+---
+
+### `serveFileResponse(config?: { onError?: (error: string, ctx: Context) => Response | Promise<Response> }) => Router`
+
+Returns a TezX `Router` instance that serves files publicly under `publicUrl`.
+
+- `config.onError`: Optional error handler
+- Throws error if `allowPublicAccess` is false
+
+---
