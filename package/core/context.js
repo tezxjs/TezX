@@ -1,6 +1,5 @@
-import { defaultMimeType, mimeTypes } from "../utils/mimeTypes.js";
+import { defaultMimeType } from "../utils/mimeTypes.js";
 import { mergeHeaders } from "../utils/response.js";
-import { extensionExtract } from "../utils/utils.js";
 import { TezXRequest } from "./request.js";
 export class Context {
     #status = 200;
@@ -86,15 +85,7 @@ export class Context {
         if (init?.filename) {
             headers["Content-Disposition"] = `attachment; filename="${init?.filename}"`;
         }
-        let contentType = null;
-        if (init?.download || init?.filename) {
-            contentType = "application/octet-stream";
-        }
-        else {
-            const ext = extensionExtract(filePath);
-            contentType = mimeTypes[ext] ?? defaultMimeType;
-        }
-        return this.createResponse(stream, contentType, {
+        return this.createResponse(stream, (init?.download || init?.filename) ? "application/octet-stream" : file?.type ?? defaultMimeType, {
             status: init?.status ?? this.#status,
             statusText: init?.statusText,
             headers,

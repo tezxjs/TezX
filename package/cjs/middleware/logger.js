@@ -11,7 +11,7 @@ function logger(options = { enabled: true }) {
             }
             console.log(`${(0, colors_js_1.colorText)("<--", "bold")} ${(0, colors_js_1.colorText)(ctx.method, "bgMagenta")} ${ctx.pathname}`);
             const startTime = performance.now();
-            let n = (await next());
+            let n = (await next?.());
             const elapsed = performance.now() - startTime;
             console.log(`${(0, colors_js_1.colorText)("-->", "bold")} ${(0, colors_js_1.colorText)(ctx.method, "bgBlue")} ${ctx.pathname} ` +
                 `${(0, colors_js_1.colorText)(ctx.res?.status ?? 404, "yellow")} ${(0, colors_js_1.colorText)(`${elapsed.toFixed(2)}ms`, "magenta")}`);

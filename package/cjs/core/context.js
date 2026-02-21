@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Context = void 0;
 const mimeTypes_js_1 = require("../utils/mimeTypes.js");
 const response_js_1 = require("../utils/response.js");
-const utils_js_1 = require("../utils/utils.js");
 const request_js_1 = require("./request.js");
 class Context {
     #status = 200;
@@ -89,15 +88,7 @@ class Context {
         if (init?.filename) {
             headers["Content-Disposition"] = `attachment; filename="${init?.filename}"`;
         }
-        let contentType = null;
-        if (init?.download || init?.filename) {
-            contentType = "application/octet-stream";
-        }
-        else {
-            const ext = (0, utils_js_1.extensionExtract)(filePath);
-            contentType = mimeTypes_js_1.mimeTypes[ext] ?? mimeTypes_js_1.defaultMimeType;
-        }
-        return this.createResponse(stream, contentType, {
+        return this.createResponse(stream, (init?.download || init?.filename) ? "application/octet-stream" : file?.type ?? mimeTypes_js_1.defaultMimeType, {
             status: init?.status ?? this.#status,
             statusText: init?.statusText,
             headers,

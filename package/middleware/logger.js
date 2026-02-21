@@ -7,7 +7,7 @@ function logger(options = { enabled: true }) {
             }
             console.log(`${colorText("<--", "bold")} ${colorText(ctx.method, "bgMagenta")} ${ctx.pathname}`);
             const startTime = performance.now();
-            let n = (await next());
+            let n = (await next?.());
             const elapsed = performance.now() - startTime;
             console.log(`${colorText("-->", "bold")} ${colorText(ctx.method, "bgBlue")} ${ctx.pathname} ` +
                 `${colorText(ctx.res?.status ?? 404, "yellow")} ${colorText(`${elapsed.toFixed(2)}ms`, "magenta")}`);
