@@ -37,7 +37,7 @@ export class Router<T extends Record<string, any> = {}> {
   protected router?: RouteRegistry;
 
   /** Array tracking registered routes and their handlers */
-  protected route: {
+  protected routes: {
     method: string;
     pattern: string;
     handlers: HandlerType;
@@ -529,7 +529,7 @@ export class Router<T extends Record<string, any> = {}> {
   #addRoute(method: HTTPMethod, path: string, handlers: HandlerType) {
     let pattern = `/${sanitizePathSplitBasePath(this.basePath, path).join("/")}`;
     this.router?.addRoute?.(method, pattern, handlers);
-    this.route.push({
+    this.routes.push({
       method: method,
       pattern: pattern,
       handlers: handlers,
@@ -593,7 +593,7 @@ export class Router<T extends Record<string, any> = {}> {
     if (!(router instanceof Router)) {
       throw new Error("Router instance is required.");
     }
-    router.route.forEach((r) => {
+    router.routes.forEach((r) => {
       this.#addRoute(
         r?.method,
         `/${sanitizePathSplitBasePath(path, r?.pattern).join("/")}`,

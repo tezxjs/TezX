@@ -1,7 +1,7 @@
 import { sanitizePathSplitBasePath } from "../utils/url.js";
 export class Router {
     router;
-    route = [];
+    routes = [];
     staticFile = Object.create(null);
     basePath;
     constructor({ basePath = "/" } = {}) {
@@ -147,7 +147,7 @@ export class Router {
     #addRoute(method, path, handlers) {
         let pattern = `/${sanitizePathSplitBasePath(this.basePath, path).join("/")}`;
         this.router?.addRoute?.(method, pattern, handlers);
-        this.route.push({
+        this.routes.push({
             method: method,
             pattern: pattern,
             handlers: handlers,
@@ -183,7 +183,7 @@ export class Router {
         if (!(router instanceof Router)) {
             throw new Error("Router instance is required.");
         }
-        router.route.forEach((r) => {
+        router.routes.forEach((r) => {
             this.#addRoute(r?.method, `/${sanitizePathSplitBasePath(path, r?.pattern).join("/")}`, r?.handlers);
         });
         Object.assign(this.staticFile, router.staticFile);

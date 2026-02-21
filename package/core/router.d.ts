@@ -23,7 +23,7 @@ export declare class Router<T extends Record<string, any> = {}> {
     /** Internal route registry to hold all routes */
     protected router?: RouteRegistry;
     /** Array tracking registered routes and their handlers */
-    protected route: {
+    protected routes: {
         method: string;
         pattern: string;
         handlers: HandlerType;

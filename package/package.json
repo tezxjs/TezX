@@ -1,6 +1,6 @@
 {
   "name": "tezx",
-  "version": "4.0.8",
+  "version": "4.0.9",
   "description": "TezX is a modern, ultra-lightweight, and high-performance JavaScript framework built specifically for Bun. It provides a minimal yet powerful API, seamless environment management, and a high-concurrency HTTP engine for building fast, scalable web applications.",
   "type": "module",
   "main": "cjs/index.js",

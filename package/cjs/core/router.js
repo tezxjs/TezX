@@ -4,7 +4,7 @@ exports.Router = void 0;
 const url_js_1 = require("../utils/url.js");
 class Router {
     router;
-    route = [];
+    routes = [];
     staticFile = Object.create(null);
     basePath;
     constructor({ basePath = "/" } = {}) {
@@ -150,7 +150,7 @@ class Router {
     #addRoute(method, path, handlers) {
         let pattern = `/${(0, url_js_1.sanitizePathSplitBasePath)(this.basePath, path).join("/")}`;
         this.router?.addRoute?.(method, pattern, handlers);
-        this.route.push({
+        this.routes.push({
             method: method,
             pattern: pattern,
             handlers: handlers,
@@ -186,7 +186,7 @@ class Router {
         if (!(router instanceof Router)) {
             throw new Error("Router instance is required.");
         }
-        router.route.forEach((r) => {
+        router.routes.forEach((r) => {
             this.#addRoute(r?.method, `/${(0, url_js_1.sanitizePathSplitBasePath)(path, r?.pattern).join("/")}`, r?.handlers);
         });
         Object.assign(this.staticFile, router.staticFile);
