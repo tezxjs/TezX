@@ -1,4 +1,3 @@
-
 import { version } from "../../version";
 type Props = {}
 export default function Banner({ }: Props) {
