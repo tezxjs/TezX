@@ -246,112 +246,112 @@ export class RadixRouter implements RouteRegistry {
   }
 }
 
-// // Define test routes
-// const routes = [
-//   "/",
-//   "/users",
-//   "/users/:id",
-//   "/users/:id/profile",
-//   "/posts/:postId?",
-//   "/files/*",
-//   "/admin/settings",
-//   "/search/:term?",
-//   "/categories/:categoryId/products/:productId",
-//   "/about",
-// ];
+// Define test routes
+const routes = [
+  "/",
+  "/users",
+  "/users/:id",
+  "/users/:id/profile",
+  "/posts/:postId?",
+  "/files/*",
+  "/admin/settings",
+  "/search/:term?",
+  "/categories/:categoryId/products/:productId",
+  "/about",
+];
 
-// // Add routes
+// Add routes
 
-// // Define test paths to match
-// const testPaths = [
-//   "/",
-//   "/users",
-//   "/users/123",
-//   "/users/123/profile",
-//   "/posts",
-//   "/posts/456",
-//   "/files/path/to/file.txt",
-//   "/admin/settings",
-//   "/search",
-//   "/search/nodejs",
-//   "/categories/12/products/999",
-//   "/notfound",
-// ];
+// Define test paths to match
+const testPaths = [
+  "/",
+  "/users",
+  "/users/123",
+  "/users/123/profile",
+  "/posts",
+  "/posts/456",
+  "/files/path/to/file.txt",
+  "/admin/settings",
+  "/search",
+  "/search/nodejs",
+  "/categories/12/products/999",
+  "/notfound",
+];
 
-// const router = new RadixRouter();
-// let x = function xx() {
+const router = new RadixRouter();
+let x = function xx() {
+  return {
+    body: "3453455",
+  };
+};
+// router.addRoute("ALL", "/*", [() => { }]);
+
+// router.addRoute("ALL", "/hello/:h/", [x, x, x, x]);
+// router.addRoute("ALL", "/hello/:h/", [x, x, x, x]);
+
+// router.addRoute("GET", "/hello/:h/", [function xx() {
 //   return {
-//     body: "3453455",
-//   };
-// };
-// // router.addRoute("ALL", "/*", [() => { }]);
-
-// // router.addRoute("ALL", "/hello/:h/", [x, x, x, x]);
-// // router.addRoute("ALL", "/hello/:h/", [x, x, x, x]);
-
-// // router.addRoute("GET", "/hello/:h/", [function xx() {
-// //   return {
-// //     body: "3453455"
-// //   }
-// // }]);
-// // console.log(router.search('GET', '/hello/f'))
-// // router.addRoute("GET", "/hello/:h/", [function yy() {
-// //   return {
-// //     body: 'ehllo'
-// //   }
-// // }]);
-
-// for (const route of routes) {
-//   router.addRoute("GET", route, [() => { }]);
-// }
-
-// // console.log(router)
-// // Benchmark parameters
-// const ITERATIONS = 100_000;
-// const TOTAL_MATCHES = testPaths.length * ITERATIONS;
-
-// console.log(
-//   `Benchmarking ${testPaths.length} routes, ${ITERATIONS} iterations each...`,
-// );
-
-// const start = performance.now();
-
-// for (let i = 0; i < ITERATIONS; i++) {
-//   for (const path of testPaths) {
-//     router.search("GET", path);
-//     router.search("ALL", path);
+//     body: "3453455"
 //   }
-// }
+// }]);
+// console.log(router.search('GET', '/hello/f'))
+// router.addRoute("GET", "/hello/:h/", [function yy() {
+//   return {
+//     body: 'ehllo'
+//   }
+// }]);
 
-// const end = performance.now();
-// const duration = end - start;
-// function report(name: string, totalOps: number, totalTimeMs: number) {
-//   const totalTimeNs = totalTimeMs * 1e6; // ms → ns
-//   const avgNs = totalTimeNs / totalOps;
-//   const avgUs = avgNs / 1000;
-//   const opsSec = 1e9 / avgNs;
+for (const route of routes) {
+  router.addRoute("GET", route, [() => { }]);
+}
 
-//   console.log(`\n[${name}]`);
-//   console.log(`  Total ops     : ${totalOps.toLocaleString()}`);
-//   console.log(`  Total time    : ${totalTimeMs.toFixed(2)} ms`);
-//   console.log(
-//     `  Avg per op    : ${avgNs.toFixed(2)} ns (${avgUs.toFixed(6)} µs)`,
-//   );
-//   console.log(`  Throughput    : ${opsSec.toFixed(0)} ops/sec`);
-// }
+// console.log(router)
+// Benchmark parameters
+const ITERATIONS = 100_000;
+const TOTAL_MATCHES = testPaths.length * ITERATIONS;
 
-// // Benchmarking 12 routes, 100000 iterations each...
+console.log(
+  `Benchmarking ${testPaths.length} routes, ${ITERATIONS} iterations each...`,
+);
 
-// // [RadixRouter.search()]
-// //   Total ops: 1, 200,000
-// //   Total time: 170.72 ms
-// //   Avg per op: 142.26 ns(0.142263 µs)
-// // Throughput: 7029244 ops / sec
-// // 🚀 Server running at http://localhost:3002
+const start = performance.now();
 
-// report("RadixRouter.search()", TOTAL_MATCHES, duration);
+for (let i = 0; i < ITERATIONS; i++) {
+  for (const path of testPaths) {
+    router.search("GET", path);
+    router.search("ALL", path);
+  }
+}
 
-// console.log(`Completed ${TOTAL_MATCHES} matches in ${duration.toFixed(2)} ms`);
-// console.log(
-//   `Average per match: ${((duration / TOTAL_MATCHES) * 1000).toFixed(6)} µs`,
-// );
+const end = performance.now();
+const duration = end - start;
+function report(name: string, totalOps: number, totalTimeMs: number) {
+  const totalTimeNs = totalTimeMs * 1e6; // ms → ns
+  const avgNs = totalTimeNs / totalOps;
+  const avgUs = avgNs / 1000;
+  const opsSec = 1e9 / avgNs;
+
+  console.log(`\n[${name}]`);
+  console.log(`  Total ops     : ${totalOps.toLocaleString()}`);
+  console.log(`  Total time    : ${totalTimeMs.toFixed(2)} ms`);
+  console.log(
+    `  Avg per op    : ${avgNs.toFixed(2)} ns (${avgUs.toFixed(6)} µs)`,
+  );
+  console.log(`  Throughput    : ${opsSec.toFixed(0)} ops/sec`);
+}
+
+// Benchmarking 12 routes, 100000 iterations each...
+
+// [RadixRouter.search()]
+//   Total ops: 1, 200,000
+//   Total time: 170.72 ms
+//   Avg per op: 142.26 ns(0.142263 µs)
+// Throughput: 7029244 ops / sec
+// 🚀 Server running at http://localhost:3002
+
+report("RadixRouter.search()", TOTAL_MATCHES, duration);
+
+console.log(`Completed ${TOTAL_MATCHES} matches in ${duration.toFixed(2)} ms`);
+console.log(
+  `Average per match: ${((duration / TOTAL_MATCHES) * 1000).toFixed(6)} µs`,
+);
