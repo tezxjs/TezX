@@ -1,0 +1,136 @@
+---
+title: GitHub OAuth2 Middleware
+description: Authenticate users via GitHub using @tezx/github-oauth2 for TezX framework.
+---
+
+GitHub OAuth2.0 middleware for the [TezX](https://github.com/tezxjs/TezX) web framework.  
+Securely authenticate users via GitHub and define custom sign-in, session, and token handling logic.
+
+---
+
+## Setup GitHub OAuth App
+
+1. Visit: [GitHub Developer Settings](https://github.com/settings/developers)
+2. Click **"New OAuth App"**
+3. Fill in details:
+   - Name: `My GitHub Login App`
+   - Homepage URL: `http://localhost:3000`
+   - Authorization callback URL: `http://localhost:3000/auth/github/callback`
+4. Save and copy your **Client ID** and **Client Secret**
+
+---
+
+## Installation
+
+```bash
+npm install @tezx/github-oauth2
+```
+```
+bun add @tezx/github-oauth2
+````
+
+#### Template
+
+```bash
+npm create tezx@latest github-auth -- --template github-oauth2 --y
+```
+```
+bun create tezx@latest github-auth -- --template github-oauth2 --y
+```
+
+---
+
+## Example Usage
+
+```ts
+import { TezX } from 'tezx';
+import {
+  GitHubOauthClient,
+  getGithubOAuthURL,
+  verifyGithubToken
+} from '@tezx/github-oauth2';
+
+const app = new TezX({ });
+
+// Initialize OAuth client
+const client = GitHubOauthClient({
+  clientId: process.env.GITHUB_CLIENT_ID!,
+  clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+  redirectUri: 'http://localhost:3000'
+});
+
+// Step 1: Redirect user to GitHub login
+app.get('github', getGithubOAuthURL({ authClient: client }), (ctx) => {
+  return ctx.redirect(ctx.github.oauth_url);
+});
+
+// Step 2: Verify GitHub token and handle user session
+app.get('/', verifyGithubToken({
+  authClient: client,
+  Callbacks: (ctx) => ({
+    session: async (session, user) => {
+      console.log('Session:', session);
+      console.log('User:', user);
+      return session;
+    }
+  })
+}), async (ctx) => {
+  return ctx.json({ success: ctx.github.user });
+});
+```
+
+---
+
+## API Reference
+
+### `GitHubOauthClient(config: GithubOauthClient): GitHubAuthClient`
+
+Creates an OAuth client instance.
+
+| Parameter    | Type   | Description                    |
+| ------------ | ------ | ------------------------------ |
+| clientId     | string | GitHub OAuth App client ID     |
+| clientSecret | string | GitHub OAuth App client secret |
+| redirectUri  | string | URI GitHub should redirect to  |
+
+---
+
+### `getGithubOAuthURL(options: OAuthURLParams)`
+
+Generates the GitHub OAuth URL and stores it in `ctx.github.oauth_url`.
+
+| Parameter   | Type              | Description                                                      |
+| ----------- | ----------------- | ---------------------------------------------------------------- |
+| authClient  | GitHubOauthClient | The OAuth client instance                                        |
+| scopes      | string[]          | (Optional) OAuth scopes (default: `['read:user', 'user:email']`) |
+| state       | string            | (Optional) CSRF protection state value                           |
+| allowSignup | boolean           | (Optional) Allow GitHub signups (default: true)                  |
+
+---
+
+### `verifyGithubToken(options: { authClient: GitHubOauthClient, Callbacks: Callbacks })`
+
+Middleware to validate the token returned from GitHub and handle user info.
+
+| Parameter  | Type                       | Description                  |
+| ---------- | -------------------------- | ---------------------------- |
+| authClient | GitHubOauthClient          | The initialized OAuth client |
+| Callbacks  | `(ctx) => CallbacksReturn` | Optional lifecycle methods   |
+
+---
+
+### CallbacksReturn
+
+| Method                   | Description                                                       |
+| ------------------------ | ----------------------------------------------------------------- |
+| `signIn(user)`           | Called after user is authenticated. Return `true` to allow login. |
+| `jwt(token, user?)`      | Customize JWT token if applicable.                                |
+| `session(session, user)` | Customize the session object before sending to client.            |
+
+---
+
+💡 Notes:
+
+* Supports **session management**, JWT customization, and flexible login flows.
+* Fully compatible with **TezX v4+ for Bun**, Node.js, and Deno.
+* Works seamlessly with **custom callback logic** for advanced user handling.

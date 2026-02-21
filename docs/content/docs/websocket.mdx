@@ -1,0 +1,86 @@
+---
+title: WebSocket
+description: Add real-time communication to your Bun applications with TezX. This middleware enables native WebSocket support, full event handling, and seamless integration with your routes.
+---
+
+Add real-time communication to your `Bun` applications with `TezX`. This middleware enables native `WebSocket` support, full event handling, and seamless integration with your routes.
+
+## Import
+
+```ts
+import { upgradeWebSocket, wsHandlers } from "tezx/ws";
+```
+
+---
+
+## Types
+
+```ts
+type WebSocketEvent = {
+  open?: (ws: WebSocket, ctx?: Context) => void;
+  message?: (ws: WebSocket, data: string | Buffer | ArrayBuffer) => void;
+  close?: (ws: WebSocket, info: { code: number; reason: string }) => void;
+  ping?: (ws: WebSocket, data: Buffer) => void;
+  pong?: (ws: WebSocket, data: Buffer) => void;
+  drain?: (ws: WebSocket) => void;
+};
+type WebSocketCallback = (ctx: Context) => WebSocketEvent;
+type WebSocketOptions = {
+  onUpgradeError?: (err: Error, ctx: Context) => HttpBaseResponse;
+};
+```
+
+---
+
+## Basic Usage
+
+```ts
+app.use(
+  "/chat",
+  upgradeWebSocket((ctx) => ({
+    open(ws) { console.log("Connected"); },
+    message(ws, data) { ws.send(`Echo: ${data}`); },
+    close(ws, { code, reason }) { console.log("Closed", code, reason); },
+  }))
+);
+```
+
+---
+
+## Bun Server Setup
+
+```ts
+Bun.serve({
+  port: 3000,
+  fetch: app.serve,
+  websocket: wsHandlers()
+});
+```
+
+---
+
+## Upgrade Error Handling
+
+```ts
+app.use(
+  "/chat",
+  upgradeWebSocket((ctx) => ({
+    open(ws) { console.log("Connected"); }
+  }), {
+    onUpgradeError: (err, ctx) => ctx.text("Upgrade failed: " + err.message, 400),
+  })
+);
+```
+
+---
+
+## Advanced Events
+
+```ts
+message(ws, data) { ws.send("Hello"); },
+ping(ws, buffer) { console.log("Ping:", buffer); },
+pong(ws, buffer) { console.log("Pong:", buffer); },
+drain(ws) { console.log("Backpressure relieved"); }
+```
+
+---

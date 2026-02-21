@@ -1,0 +1,167 @@
+---
+title: JWT Utility
+description: Provides JWT signing and verification using HMAC (HS256 or HS512) for secure token-based authentication Bun environments (with Web Crypto API).
+---
+
+Provides JWT `signing` and `verification` using `HMAC` (HS256 or HS512) for secure token-based authentication `Bun` environments (with `Web Crypto` API).
+
+## Import
+
+```ts
+import { sign, verify } from "tezx/jwt";
+// or default import
+import JWT from "tezx/jwt";
+```
+
+---
+
+## Features
+
+* Sign payloads as JWT with **HS256** or **HS512**.
+* Automatic **expiration handling**.
+* Verify JWTs and ensure **signature integrity** using constant-time comparison.
+* Works in **Node, Bun, and browser** environments.
+* Uses **Web Crypto API** for secure HMAC.
+
+---
+
+## Types
+
+```ts
+type Alg = "HS256" | "HS512";
+```
+
+* `HS256` → HMAC with SHA-256
+* `HS512` → HMAC with SHA-512
+
+---
+
+## `sign(payload, options?)`
+
+Signs a payload and returns a **JWT string**.
+
+```ts
+async function sign(
+  payload: Record<string, any>,
+  options?: {
+    secret?: string;          // Secret key for signing (default: globalThis.JWT_SECRET or "tezx_secret")
+    algorithm?: Alg;          // Signing algorithm (default: "HS256")
+    expiresIn?: string|number // Expiration e.g., "2h", "7d", or seconds (default: 24h)
+  }
+): Promise<string>;
+```
+
+### Example
+
+```ts
+import { sign } from "tezx/jwt";
+
+const token = await sign(
+  { userId: 123, role: "admin" },
+  { expiresIn: "1h", algorithm: "HS512" }
+);
+
+console.log("JWT:", token);
+```
+
+* Supports **string-based expiry** like `"10s"`, `"5m"`, `"2h"`, `"1d"`.
+* Automatically adds `iat` (issued at) and `exp` (expiry) claims.
+
+---
+
+## `verify(token, secret?)`
+
+Verifies a JWT and returns the **payload** or `null` if invalid/expired.
+
+```ts
+async function verify(
+  token: string,
+  secret?: string // Secret key for verification (default: globalThis.JWT_SECRET or "tezx_secret")
+): Promise<Record<string, any> | null>;
+```
+
+### Example
+
+```ts
+import { verify } from "tezx/jwt";
+
+const payload = await verify(token);
+if (!payload) {
+  console.log("Invalid or expired token");
+} else {
+  console.log("Payload:", payload);
+}
+```
+
+* Checks **signature** using HMAC.
+* Checks **expiration** (`exp` claim) automatically.
+* Uses **constant-time comparison** to prevent timing attacks.
+
+---
+
+## Usage Example (Full Flow)
+
+```ts
+import { sign, verify } from "tezx/jwt";
+
+async function main() {
+  // Sign token
+  const token = await sign({ userId: 42, role: "user" }, { expiresIn: "1h" });
+  console.log("Generated JWT:", token);
+
+  // Verify token
+  const payload = await verify(token);
+  if (payload) {
+    console.log("Verified payload:", payload);
+  } else {
+    console.log("Invalid or expired token");
+  }
+}
+
+main();
+```
+
+---
+
+## Implementation Notes
+
+* Uses **Web Crypto API** (`crypto.subtle`) for HMAC signing.
+* Supports **base64url encoding** (no padding).
+* Default secret key: `globalThis.JWT_SECRET || "tezx_secret"`.
+* Supports **async signing and verification**.
+* Adds standard JWT claims:
+
+  * `iat` → issued at
+  * `exp` → expiration time
+
+---
+
+## Security Tips
+
+* Use a **strong secret key**.
+* Set reasonable **`expiresIn`** for tokens.
+* Prefer **HS512** for higher security if payload size is small.
+* Always **verify tokens** before trusting payloads.
+
+---
+
+## Default Export
+
+```ts
+import JWT from "tezx/jwt";
+
+const token = await JWT.sign({ userId: 1 });
+const payload = await JWT.verify(token);
+```
+
+---
+
+This documentation is fully compatible with importing from:
+
+```ts
+import { sign, verify } from "tezx/jwt";
+```
+
+It covers **signing, verifying, options, examples, and security recommendations**.
+
+---

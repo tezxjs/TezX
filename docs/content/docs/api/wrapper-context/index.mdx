@@ -1,0 +1,188 @@
+---
+title: Context
+description: The Context class is the central abstraction for handling requests and responses in TezX. It wraps a request, manages headers, status codes, body, and provides helper methods for sending different types of responses including text, HTML, JSON, files, and redirects.
+---
+
+The `Context` class is the central abstraction for handling requests and responses in `TezX`. It wraps a `request`, manages headers, status codes, body, and provides helper methods for sending different types of responses including `text`, `HTML`, `JSON`, `files`, and `redirects`.
+
+## **1. Properties**
+
+### 1. **`url: string`**
+
+```ts
+console.log(ctx.url); // "https://example.com/listings?page=2"
+// Purpose: Access the full request URL including query string
+```
+
+### 2. **`pathname: string`**
+
+```ts
+console.log(ctx.pathname); // "/listings"
+// Purpose: Get the pathname part of the URL without query parameters
+```
+
+### 3. **`method: string`**
+
+```ts
+if (ctx.method === "POST") { /* handle post */ }
+// Purpose: Check the HTTP method of the incoming request
+```
+
+### 6. **`req: TezXRequest<Path>`**
+
+```ts
+const body = await ctx.req.json();
+// Purpose: Access and parse the request body as JSON
+```
+
+### 7. **`headers: Headers`**
+
+```ts
+ctx.headers.set("X-Custom", "value");
+console.log(ctx.headers.get("content-type"));
+// Purpose: Get or set headers for the request/response
+```
+
+### 8. **`status(code: number): this`**
+
+```ts
+ctx.status(404).text("Not Found"); 
+// Purpose: Set the HTTP status code and chain response methods
+```
+
+### 9. **`setHeader(key, value, options?)`**
+
+```ts
+ctx.setHeader("X-Powered-By", "tezx");
+ctx.setHeader("Set-Cookie", "id=1; Path=/; HttpOnly", { append: true });
+ctx.setHeader("Set-Cookie", "token=abcd; Path=/; HttpOnly", { append: true });
+return ctx.text("headers set");
+// Purpose: Add or append a single header to the response
+```
+
+---
+
+## **2. Methods for Responses**
+
+```ts
+// Plain text
+app.get("/", (ctx) => ctx.text("Welcome to TezX 🚀"));
+// Purpose: Send a simple text response
+
+// JSON API
+app.get("/status", (ctx) => ctx.json({ ok: true, uptime: process.uptime() }));
+// Purpose: Send a JSON response, useful for APIs
+
+// HTML page
+app.get("/hello", (ctx) => ctx.html`<h1>Hello, ${ctx.username ?? "Guest"}!</h1>`);
+// Purpose: Send HTML content with template literals
+
+```
+
+---
+
+## **2. Dynamic Params & Queries**
+
+```ts
+// Route parameter
+app.get("/user/:id", (ctx) => {
+  return ctx.json({ userId: ctx.req.params.id });
+});
+// Purpose: Extract dynamic route parameters
+
+// Query string
+app.get("/search", (ctx) => {
+  return ctx.json({ q: ctx.req.query.q || "nothing" });
+});
+// Purpose: Access query parameters from the URL
+```
+
+---
+
+## **3. Form Data / File Upload**
+
+```ts
+// Handle multipart form upload
+app.post("/upload", async (ctx) => {
+  const form = await ctx.req.formData();
+  const file = form.get("file"); // File | null
+  const username = form.get("username");
+  
+  return ctx.json({ uploadedBy: username, hasFile: !!file });
+});
+// Purpose: Parse form data including file uploads
+```
+
+**HTML for testing:**
+
+```html
+<form action="/upload" method="post" enctype="multipart/form-data">
+  <input type="text" name="username" placeholder="Your Name" />
+  <input type="file" name="file" />
+  <button type="submit">Upload</button>
+</form>
+```
+
+---
+
+## **4. Headers & Status**
+
+```ts
+app.get("/secure", (ctx) => {
+  ctx.status(401)
+     .setHeader("WWW-Authenticate", "Bearer")
+     .json({ error: "Unauthorized" });
+});
+// Purpose: Send a response with custom status and header
+
+// Multiple cookies
+app.get("/cookies", (ctx) => {
+  ctx.setHeader("Set-Cookie", "id=1; Path=/; HttpOnly", { append: true });
+  ctx.setHeader("Set-Cookie", "token=abc; Path=/; HttpOnly", { append: true });
+  return ctx.text("Cookies set");
+});
+// Purpose: Set multiple cookies in a response
+```
+
+---
+
+## **5. Redirects**
+
+```ts
+app.get("/old", (ctx) => ctx.redirect("/new"));          
+// Purpose: Temporary redirect (HTTP 302)
+
+app.get("/permanent", (ctx) => ctx.redirect("/new", 301)); 
+// Purpose: Permanent redirect (HTTP 301)
+```
+
+---
+
+## **6. File Responses**
+
+```ts
+
+// Serve file inline (streaming)
+app.get("/video", (ctx) => ctx.sendFile("./media/video.mp4"));
+// Purpose: Stream a file for inline viewing
+
+// Serve with custom download filename
+app.get("/image", (ctx) => ctx.sendFile("./media/pic.png", { filename: "photo.png" }));
+// Purpose: Serve a file while specifying a download filename
+```
+
+---
+
+## **7. Chainable Response**
+
+```ts
+app.post("/create", async (ctx) => {
+  const body = await ctx.req.json();
+  return ctx
+    .status(201)
+    .setHeader("x-resource-id", "42")
+    .json({ message: "Created", data: body });
+});
+// Purpose: Demonstrate chaining of status, headers, and JSON response
+```
+---

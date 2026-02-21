@@ -1,0 +1,88 @@
+---
+title: TezX DevTools
+description: Developer-friendly diagnostics and inspector panel for TezX apps. Inspect routes, middlewares, cookies, env variables, and add custom debug tabs.
+---
+
+> Developer-friendly diagnostics panel for TezX apps. Inspect routes, middlewares, cookies, environment variables, and add custom debug tabs.
+
+---
+
+## Installation
+
+```bash
+npm install @tezx/devtools tezx
+# or
+bun install @tezx/devtools tezx
+# or
+yarn add @tezx/devtools tezx
+```
+
+---
+
+## Quick Usage
+
+```ts
+import { TezX } from "tezx";
+import DevTools from "@tezx/devtools";
+
+const app = new TezX();
+
+app.get("/devtools", DevTools(app, {
+  // Optional:
+  // disableTabs: ['cookies', 'routes'],
+  // extraTabs: (ctx) => [ ... ]
+}));
+```
+
+Visit: [http://localhost:3000/devtools](http://localhost:3000/devtools)
+
+* Real-time dashboard showing app diagnostics.
+
+---
+
+## Built-in Tabs
+
+| Tab           | Description                                           |
+| ------------- | ----------------------------------------------------- |
+| `routes`      | Lists all loaded routes with method, path, and source |
+| `middlewares` | Shows registered middlewares and their routes         |
+| `cookies`     | Displays request cookies parsed from `ctx`            |
+| `.env`        | Lists environment variables loaded via `.env`         |
+
+---
+
+## API
+
+```ts
+DevTools(app: TezX<any>, options?: Options): Callback
+```
+
+### Options
+
+| Option        | Type              | Description       |                       | 
+| ------------- | ----------------- | ----------------- | --------------------- | 
+| `extraTabs`   | `(ctx) => TabType \| Promise<TabType>` | Add custom tab panels | 
+| `disableTabs` | `Array<'cookies' \| 'routes'\| '.env'\| 'middlewares'>` | Hide built-in tabs |
+
+---
+
+## Types
+
+```ts
+type Tab = "cookies" | "routes" | ".env" | "middlewares";
+
+type TabType = {
+  doc_title: string;
+  label: string;
+  tab: Tab | string;
+  content: string; // Rendered HTML
+}[];
+
+type Options = {
+  extraTabs?: (ctx: Context) => Promise<TabType> | TabType;
+  disableTabs?: Tab[];
+};
+```
+
+---
+

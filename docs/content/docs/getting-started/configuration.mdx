@@ -1,0 +1,130 @@
+---
+title: Configuration Guide
+description: The TezX framework is highly configurable, letting you fine-tune routing, environment handling, middleware, and even plug in your own custom router.
+---
+
+The `TezX` framework is **highly configurable**, letting you fine-tune routing, environment handling, middleware, and even plug in your own **custom router**.
+
+This guide explains every option you can pass to the `TezX` constructor, including **advanced use cases with `routeRegistry`**.
+
+---
+
+## Quick Example
+
+```ts
+import { TezX } from "tezx";
+
+const app = new TezX({
+  basePath: "/api",
+});
+```
+
+---
+
+## `TezXConfig` at a Glance
+
+Here’s the configuration shape:
+
+```ts
+export type TezXConfig = {
+  routeRegistry?: RouteRegistry; // plug in custom router
+} & RouterConfig;
+
+export type RouterConfig = {
+  basePath?: string;
+};
+```
+
+---
+
+## Available Options
+
+### 1. `basePath`
+
+* **Type**: `string`
+* **What it does**: Prefixes all routes with a global path (ideal for **API versioning**).
+
+```ts
+const app = new TezX({ basePath: "/v1" });
+
+app.get("/users", (ctx) => ctx.text("v1 Users"));
+// → accessible at /v1/users
+```
+
+---
+
+### 2. `routeRegistry`
+
+* **Type**: `RouteRegistry`
+* **What it does**: Supply your own **custom router** implementation.
+* **Why**: Lets you control route resolution, sub-routing, and middleware execution at a lower level.
+
+---
+
+## 🧩 Using a Custom Router (`routeRegistry`)
+
+You can pass any router implementing the `RouteRegistry` interface to `TezX`.
+
+This gives you **complete control** over how routes are matched and middleware is executed.
+
+### Example: Plugging in a Custom Router
+
+```ts
+import { TezX } from "tezx";
+import { PowerfulCustomRouter } from "./PowerfulCustomRouter";
+const customRouter = new PowerfulCustomRouter();
+const app = new TezX({
+  routeRegistry: customRouter,
+});
+```
+
+### How It Works
+
+* `TezX` internally calls `routeRegistry.search(method, path)` to resolve handlers.
+* Middleware registered with `"ALL"` runs before method-specific handlers.
+* Supports all HTTP methods + route parameters.
+
+---
+
+## 🛠 Real-World Example: Sub-Routing with Custom Router
+
+```ts
+import { TezX } from "tezx";
+import { CustomRouter } from "./CustomRouter";
+
+const router = new CustomRouter();
+
+router.addRoute("GET", "/hello", [
+  async (ctx) => ctx.text("Hello from custom router!"),
+]);
+
+const app = new TezX({
+  routeRegistry: router,
+  basePath: "/api",
+});
+
+app.use("/api", async (ctx, next) => {
+  console.log(`[Middleware] ${ctx.method} ${ctx.pathname}`);
+  await next();
+});
+
+// Start server with Bun, Deno, or Node.js
+```
+
+---
+
+## 📦 Summary of Options
+
+| Option          | Type                               | Purpose                                  |
+| --------------- | ---------------------------------- | ---------------------------------------- |
+| `basePath`      | `string`                           | Add global prefix to all routes          |
+| `routeRegistry` | `RouteRegistry`                    | Use a custom router implementation       |
+
+---
+
+## ✅ Best Practices
+
+* Use **`basePath`** for API versioning (e.g., `/v1`, `/v2`).
+* Inject a **custom router** (`routeRegistry`) for fine-grained control.
+
+---

@@ -1,0 +1,142 @@
+---
+title: Response
+description: The TezX framework provides a rich response system via the ctx object. This system makes it easy to return JSON, HTML, text, files, redirects, and custom responses with a clean API.
+---
+
+The `TezX` framework provides a rich response system via the `ctx` object. This system makes it easy to return `JSON`, `HTML`, `text`, `files`, `redirects`, and custom responses with a clean API.
+
+## Core Type Definitions
+
+```ts
+export type NextCallback = () => Promise<void>; // continue middleware chain
+
+export type HttpBaseResponse = Response | Promise<Response>;
+
+export type Ctx<T extends Record<string, any> = {}, Path extends string = any> =
+  Context<T, Path> & T & Record<string, any>;
+
+export type Callback<T = {}, Path extends string = any> =
+  (ctx: Ctx<T, Path>) => HttpBaseResponse;
+
+export type Middleware<T = {}, Path extends string = any> =
+  (ctx: Ctx<T, Path>, next: NextCallback) =>
+    HttpBaseResponse | Promise<HttpBaseResponse | void> | NextCallback;
+
+export type ErrorHandler<T = {}> =
+  (err: Error, ctx: Ctx<T>) => HttpBaseResponse;
+```
+
+---
+
+## Native Response
+
+For full control, return a native `Response`:
+
+```ts
+app.get("/data", (ctx) => {
+  ctx.setHeader("Content-Type", "text/plain" )
+  return new Response("Hello World", {
+    status: 200,
+    headers: ctx.header(),
+  });
+});
+```
+
+---
+
+## Response Utilities on `ctx`
+
+### `ctx.json(body, status?, headers?)`
+
+Send JSON.
+
+```ts
+app.get("/json", (ctx) => ctx.json({ success: true }, 200));
+```
+
+* **Content-Type**: `application/json`
+
+---
+
+### `ctx.html(html, status?, headers?)`
+
+Send HTML.
+
+```ts
+app.get("/html", (ctx) => ctx.html("<h1>Welcome</h1>"));
+```
+
+* **Content-Type**: `text/html`
+
+---
+
+### `ctx.text(text, status?, headers?)`
+
+Send plain text.
+
+```ts
+app.get("/plain", (ctx) => ctx.text("Just text"));
+```
+
+* **Content-Type**: `text/plain`
+
+---
+
+### `ctx.redirect(url, status?, headers?)`
+
+Redirect user.
+
+```ts
+app.get("/go", (ctx) => ctx.redirect("https://example.com"));
+```
+
+* **Default Status**: `302`
+* **Header**: `Location`
+
+---
+
+### `ctx.sendFile(filePath, options)`
+
+Serve a file from your server. Automatically sets MIME type and streams efficiently. Supports download too.
+
+```ts
+// Serve normally
+app.get("/banner", (ctx) => ctx.sendFile("/assets/banner.jpg"));
+
+// Download with custom filename
+app.get("/manual", (ctx) =>
+  ctx.sendFile("/assets/manual.pdf", { filename: "guide.pdf" })
+);
+
+// Force download as binary
+app.get("/raw", (ctx) =>
+  ctx.sendFile("/data/archive.zip", { download: true })
+);
+```
+
+#### Options
+
+| Name       | Type                                       | Description                                            |
+| ---------- | ------------------------------------------ | ------------------------------------------------------ |
+| `filename` | `string`                                   | Set filename to force download.                        |
+| `download` | `boolean`                                  | Force download as binary (`application/octet-stream`). |
+| headers    | `Record<string,string>` (via ResponseInit) | Optional headers like `status` or extra `headers`.     |
+
+* **Download mode:** `filename` or `download` sets `Content-Disposition` and `Content-Type: application/octet-stream`.
+* **Normal mode:** Automatically detects MIME type and streams file.
+* Throws `404` if file not found.
+
+---
+
+## Best Practices
+
+| Use Case               | Recommended Method |
+| ---------------------- | ------------------ |
+| JSON API response      | `ctx.json()`       |
+| HTML rendering         | `ctx.html()`       |
+| Plain text output      | `ctx.text()`       |
+| External redirects     | `ctx.redirect()`   |
+| Static asset serving   | `ctx.sendFile()`   |
+| Full manual control    | Native `Response`  |
+
+---

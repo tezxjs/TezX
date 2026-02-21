@@ -1,0 +1,63 @@
+# Request ID Middleware
+
+## Overview
+
+The `requestID` middleware assigns a unique request ID to each incoming request. This helps with request tracking, debugging, and logging.
+
+## Features
+
+- Assigns a unique request ID to each request.
+- Uses an existing request ID from headers if available.
+- Stores the request ID in the request context for easy access.
+- Sets the request ID in the response headers.
+
+## Installation
+
+Ensure your project is set up to use this middleware in an Express-like environment or a framework that supports middleware functions.
+
+## Usage
+
+### Import the `requestID` Middleware
+
+```ts
+import { requestID } from "tezx/middleware/request-id";
+```
+
+### Apply the Middleware
+
+```ts
+app.use(requestID());
+```
+
+## Function Signature
+
+```ts
+export const requestID = (headerName?: string): Middleware;
+```
+
+### Parameters
+
+- `headerName` _(optional, string)_: Custom header name for the request ID. Defaults to `"X-Request-ID"`.
+
+### Return Value
+
+Returns a middleware function that assigns and tracks request IDs.
+
+## Implementation Details
+
+1. Checks if the request already has an ID in the specified header.
+2. If not, generates a new request ID using `generateID()`.
+3. Adds the request ID to the response headers.
+4. Proceeds to the next middleware in the stack.
+
+## Example Response Header
+
+```bash
+X-Request-ID: req-123456789
+```
+
+## Notes
+
+- Ensure this middleware is included early in the stack to track all requests.
+- Customizing the header name allows flexibility in integration with different systems.
+- Using a consistent request ID helps in debugging and tracing requests across services.

@@ -1,0 +1,188 @@
+---
+title: rateLimiter
+description: The rateLimiter is a middleware for request throttling. It enforces maximum request limits per client using a sliding window and supports custom client identification, custom storage, and custom error handling.
+---
+The `rateLimiter` is a middleware for request throttling. It enforces maximum request limits per client using a sliding window and supports custom client identification, custom storage, and custom error handling.
+
+By default, it identifies clients using their IP address via `getConnInfo()`.
+
+---
+
+## Import
+
+```ts
+import { rateLimiter } from "tezx/middleware";
+```
+
+---
+
+## Options
+
+```ts
+export type RateLimiterOptions = {
+  maxRequests: number;   // Maximum requests per window
+  windowMs: number;      // Time window in milliseconds
+
+  keyGenerator?: (ctx: Context) => string;
+  // Generate a unique client key
+
+  storage?: {
+    get: (key: string) => { count: number; resetTime: number } | undefined;
+    set: (key: string, value: { count: number; resetTime: number }) => void;
+    clearExpired: () => void;
+  };
+  // Optional custom storage (Map, Redis, etc.)
+
+  onError?: (
+    ctx: Context,
+    retryAfter: number,
+    error: Error
+  ) => HttpBaseResponse;
+  // Custom response when limit exceeded
+};
+```
+
+---
+
+## Behavior
+
+* Each client is identified by a **key** (default: IP via `getConnInfo()`, or custom via `keyGenerator`).
+
+* Requests are counted per **time window (`windowMs`)**.
+
+* Response headers added automatically:
+
+  * `X-RateLimit-Limit` — max requests allowed
+  * `X-RateLimit-Remaining` — requests left in the current window
+  * `X-RateLimit-Reset` — timestamp (ms) when window resets
+  * `Retry-After` — seconds until the window resets (sent only on limit exceeded)
+
+* If a client exceeds `maxRequests`, the `onError` callback is invoked (default: throws `429 Too Many Requests`).
+
+---
+
+## Default Usage
+
+```ts
+app.use(
+  rateLimiter({
+    maxRequests: 100,
+    windowMs: 60_000, // 1 minute
+  })
+);
+```
+
+* Limits each client to 100 requests per minute.
+* Returns standard rate-limit headers and `429` when exceeded.
+
+---
+
+## Custom Client Key
+
+```ts
+app.use(
+  rateLimiter({
+    maxRequests: 10,
+    windowMs: 10_000, // 10 seconds
+    keyGenerator: (ctx) => ctx.user?.id 
+  })
+);
+```
+
+* Allows user-based rate limiting instead of IP-based.
+* Useful behind proxies or load balancers.
+
+---
+
+## Custom Storage Example (Redis)
+
+```ts
+import { redisClient } from "./redisClient";
+
+const redisStorage = {
+  get: async (key: string) => {
+    const val = await redisClient.get(key);
+    return val ? JSON.parse(val) : undefined;
+  },
+  set: async (key: string, value: { count: number; resetTime: number }) => {
+    await redisClient.set(key, JSON.stringify(value), "PX", value.resetTime - Date.now());
+  },
+  clearExpired: () => {}, // Redis automatically handles expiration
+};
+
+app.use(
+  rateLimiter({
+    maxRequests: 50,
+    windowMs: 60_000,
+    storage: redisStorage,
+  })
+);
+```
+
+---
+
+## Custom Error Handler
+
+```ts
+app.use(
+  rateLimiter({
+    maxRequests: 5,
+    windowMs: 60_000,
+    onError: (ctx, retryAfter) => {
+      return ctx.status(429).json({
+        success: false,
+        message: `Too many requests. Try again in ${retryAfter} seconds.`,
+      });
+    },
+  })
+);
+```
+
+* Enables custom JSON, HTML, or other responses.
+* `Retry-After` header is still automatically sent.
+
+---
+
+## Headers Sent by Middleware
+
+| Header                  | Description                                 |
+| ----------------------- | ------------------------------------------- |
+| `X-RateLimit-Limit`     | Maximum requests per window                 |
+| `X-RateLimit-Remaining` | Requests remaining in the current window    |
+| `X-RateLimit-Reset`     | Timestamp (ms) when the window resets       |
+| `Retry-After`           | Seconds until next allowed request (on 429) |
+
+---
+
+## Best Practices
+
+* Set `maxRequests` and `windowMs` according to API traffic.
+* Use `keyGenerator` for user-based rate limiting when needed.
+* For multiple servers, use Redis or other distributed store.
+* Always include `Retry-After` header.
+* Combine with `logger`, `cors`, and other middlewares for robust APIs.
+
+---
+
+## Full Integration Example
+
+```ts
+import { TezX } from "tezx";
+import { rateLimiter, logger, cors } from "tezx/middleware";
+
+app.use(cors());
+app.use(logger());
+app.use(
+  rateLimiter({
+    maxRequests: 100,
+    windowMs: 60_000,
+    keyGenerator: (ctx) => ctx.user?.id
+  })
+);
+
+app.get("/api/data", async (ctx) => {
+  ctx.json({ success: true, data: ["item1", "item2"] });
+});
+```
+
+---

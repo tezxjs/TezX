@@ -1,0 +1,192 @@
+---
+title: Context Propagation
+description: Context propagation allows type-safe, request-scoped state sharing across middleware and route handlers. Built on TypeScript, it enables -
+---
+
+Context propagation allows type-safe, request-scoped state sharing across middleware and route handlers. Built on TypeScript, it enables -
+
+* Fine-grained control over request data
+* Modular architecture
+* Developer productivity with strict typing and tooling support
+
+---
+
+## **1. Conceptual Overview**
+
+1. Type-safe context shape
+2. Scoped to individual requests
+3. Mutable across middleware
+4. Extended through type composition
+
+---
+
+## **2. Defining a Typed Context**
+
+Create a strongly-typed interface to define your request context structure:
+
+```ts
+interface CustomContext {
+  user?: { id: number; email: string }; // Optional user data
+  requestId: string;                    // Required unique identifier per request
+}
+```
+
+---
+
+## **3. Typed Router / App Instantiation**
+
+Pass the context type to Router or TezX for strict type enforcement:
+
+```ts
+import { TezX } from "tezx";
+
+const app = new TezX<CustomContext>();
+```
+
+---
+
+## **4. Injecting Data via Middleware**
+
+Use middleware to enrich the context during the request lifecycle:
+
+```ts
+app.use(async (ctx, next) => {
+  ctx.user = await authenticate(ctx.req);
+  return next();
+});
+
+app.use((ctx, next) => {
+  ctx.requestId = crypto.randomUUID();
+  return next();
+});
+```
+
+---
+
+## **5. Typed Context Access in Handlers**
+
+Access your context properties safely with full TypeScript support:
+
+```ts
+app.get("/me", (ctx) => {
+  return ctx.json({
+    requestId: ctx.requestId,
+    email: ctx.user?.email ?? "Anonymous",
+  });
+});
+```
+
+---
+
+## **6. Context Composition**
+
+Scale context by composing smaller domain-specific types:
+
+```ts
+interface AuthContext {
+  user: { id: number; email: string };
+  session: { token: string; expires: Date };
+}
+
+interface MetricsContext {
+  logger: Logger;
+  startTime: number;
+}
+
+type AppContext = AuthContext & MetricsContext;
+
+const app = new TezX<AppContext>();
+```
+
+---
+
+## **7. Validation Middleware**
+
+Ensure critical fields are present at runtime:
+
+```ts
+app.use((ctx, next) => {
+  if (!ctx.requestId) throw new Error("Missing request ID");
+  return next();
+});
+```
+
+---
+
+## **8. Type Safety Guards**
+
+TypeScript prevents invalid usage:
+
+```ts
+// ❌ Property 'newProp' does not exist
+ctx.newProp = "value";
+
+// ❌ Type mismatch
+ctx.requestId = 123; // should be a string
+```
+
+---
+
+## **9. Optional Properties Handling**
+
+Use safe access patterns for optional context data:
+
+```ts
+app.get("/dashboard", (ctx) => {
+  if (!ctx.user) return ctx.status(401).json({ error: "Unauthorized" });
+
+  return ctx.json({ email: ctx.user.email });
+});
+```
+
+---
+
+## **10. Best Practices**
+
+1. **Order Matters**
+   Set required context early and validate immediately:
+
+   ```ts
+   app.use((ctx, next) => {
+     ctx.requestId = crypto.randomUUID();
+     return next();
+   });
+
+   app.use((ctx, next) => {
+     if (!ctx.requestId) throw new Error("Missing ID");
+     return next();
+   });
+   ```
+
+2. **Immutability**
+   Prefer immutable patterns when modifying nested objects:
+
+   ```ts
+   ctx.user = { ...ctx.user, email: "updated@example.com" };
+   ```
+
+3. **Testing with Mock Context**
+   Test logic in isolation with mock context:
+
+   ```ts
+   const mockCtx: CustomContext = {
+     requestId: "req-test-001",
+     user: { id: 1, email: "test@example.com" },
+   };
+
+   const response = await handler(mockCtx);
+   ```
+
+---
+
+
+## **12. Why Context Propagation?**
+
+| Benefit            | Description                                                            |
+| ------------------ | ---------------------------------------------------------------------- |
+| 🔐 Type Safety     | Compile-time validation prevents access errors and invalid mutations   |
+| 🧩 Modularity      | Enables context slicing and extension across layers                    |
+| ⚙️ Maintainability | Clear structure for evolving app concerns like auth, logging, sessions |
+| 🚀 Scalability     | Composable and predictable patterns for large applications             |
+
+---

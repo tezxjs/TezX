@@ -1,0 +1,108 @@
+---
+title: Middleware Merging 
+description: This outlines how two router trees with nested middlewares are intelligently merged to preserve execution order and structure.
+---
+
+This outlines how two router trees with nested middlewares are intelligently merged to preserve execution order and structure.
+
+## **Before Merging**
+
+### **Root Router Tree (`RootMiddlewares`)**
+
+```plaintext
+RootMiddlewares
+└── "/test"                             # path
+    ├── middlewares: [m1]              # existing middleware
+    └── children:
+        └── "/test/1"
+            ├── middlewares: [m2]
+```
+
+* `/test`: Contains middleware `[m1]`.
+* `/test/1`: A subroute with its own middleware `[m2]`.
+
+---
+
+## **New Router Tree to Merge (`RouterMiddlewares`)**
+
+### **Incoming Subrouter**
+
+```plaintext
+RouterMiddlewares
+└── "/test"
+    ├── middlewares: [m3]              # additional middleware to merge
+    └── children:
+        └── "/test/2"
+            ├── middlewares: [m4]
+```
+
+* `/test`: New middleware `[m3]` for same path.
+* `/test/2`: New child route under `/test`.
+
+---
+
+## **After Merging (`RootMiddlewares`)**
+
+```plaintext
+RootMiddlewares
+└── "/test"
+    ├── middlewares: [m1, m3]          # merged middlewares
+    └── children:
+        ├── "/test/1"
+        │   ├── middlewares: [m2]
+        └── "/test/2"
+            ├── middlewares: [m4]      # newly added
+```
+
+* Middleware arrays are **merged**: `[m1] + [m3] → [m1, m3]`.
+* All existing children remain untouched (`/test/1`).
+* New children are **appended** (`/test/2`).
+
+---
+
+## **Mermaid Diagram: Middleware Merge Flow**
+
+<Mermaid
+  chart={`
+  flowchart TD
+    A["/test (m1)"] --> B["/test/1 (m2)"]
+    A --> C["/test/2 (m4)"]
+    A --- D["Merged Middlewares: m1 + m3"]
+`}/>
+
+* Shows how `/test` merges middlewares (`m1 + m3`) and retains all children.
+
+---
+
+## **`when` API**
+
+```ts
+/**
+ * Registers a route or middleware stack for a specific HTTP method.
+ *
+ * @param method - HTTP method (e.g., "GET", "POST", "ALL" for middleware).
+ * @param path - Path to match (e.g., "/api", "/test").
+ * @param handlers - Array of middleware or route handler functions.
+ */
+when(method: HttpMethod | HttpMethod[], path: string, handlers: Handler[]): void;
+```
+
+* `method = "ALL"` → **middleware applied to all HTTP methods**.
+* Used internally when adding reusable or nested routers.
+
+---
+
+## **Automatic Middleware Registration Logic**
+
+When merging routes via a registry:
+
+```ts
+if (middlewares?.length) {
+  this.#addRoute("ALL", path, middlewares);
+}
+```
+
+* Ensures **all middleware layers** from incoming routers are preserved.
+* Middleware at the same path is **concatenated, not replaced**.
+
+---

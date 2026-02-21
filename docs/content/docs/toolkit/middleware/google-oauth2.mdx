@@ -1,0 +1,191 @@
+---
+title: Google OAuth2 Middleware
+description: Authenticate users via Google using @tezx/google-oauth2 for TezX v4+ (Bun).
+---
+
+Provides secure OAuth2 authentication with Google for TezX framework.  
+Supports session management, JWT customization, and flexible login flows.
+
+---
+
+## Setup Google OAuth App
+
+1. Visit: [Google Cloud Console](https://console.developers.google.com/apis/credentials)
+2. Click **Create Credentials → OAuth 2.0 Client IDs**
+3. Fill in details:
+   - Application type: Web Application
+   - Name: `My Google Login App`
+   - Authorized redirect URIs: `http://localhost:3000/auth/callback`
+4. Save and copy **Client ID** and **Client Secret**
+
+---
+
+## Installation (Bun)
+
+```bash
+bun add @tezx/google-oauth2 @googleapis/oauth2
+```
+```
+bun install @tezx/google-oauth2 @googleapis/oauth2
+```
+
+#### Template
+
+```bash
+bun create tezx@latest google-auth -- --template google-oauth2 --y
+```
+```
+npm create tezx@latest google-auth -- --template google-oauth2 --y
+```
+
+> Environment variables `Bun.env.GOOGLE_CLIENT_ID` and `Bun.env.GOOGLE_CLIENT_SECRET` from env.
+
+---
+
+## Quick Start (Bun v4+)
+
+```ts
+import { TezX } from 'tezx';
+import { GoogleOauthClient, getGoogleOAuthURL, verifyGoogleToken } from '@tezx/google-oauth2';
+
+const app = new TezX({ });
+
+// 1. Initialize OAuth2 client
+const client = GoogleOauthClient({
+  clientId: Bun.env.GOOGLE_CLIENT_ID!,
+  clientSecret: Bun.env.GOOGLE_CLIENT_SECRET!,
+  redirectUri: 'http://localhost:3000/auth/callback',
+});
+
+// 2. Route to start Google login
+app.get('/auth/google', getGoogleOAuthURL({
+  authClient: client,
+  scopes: ['openid', 'email', 'profile'],
+}), (ctx) => {
+  return ctx.redirect(ctx.google?.oauth_url);
+});
+
+// 3. Callback route, verify token and establish session
+app.get('/auth/callback', verifyGoogleToken({
+  authClient: client,
+  onError: (err) => {
+    console.error('OAuth Error:', err);
+  },
+  onSuccess: (tokens) => {
+    console.log('Tokens:', tokens);
+  },
+  Callbacks: (ctx) => ({
+    signIn: async (user) => {
+      return user.email.endsWith('@yourcompany.com'); // domain restriction
+    },
+    jwt: async (token, user) => {
+      token.role = user.email_verified ? 'member' : 'guest';
+      return token;
+    },
+    session: async (session, user) => {
+      session.user = {
+        id: user.sub,
+        email: user.email,
+        name: user.name,
+        picture: user.picture,
+      };
+      return session;
+    },
+  }),
+}), async (ctx) => {
+  return ctx.json({ success: true });
+});
+```
+
+---
+
+## API Reference
+
+### `GoogleOauthClient(config) → OAuth2Client`
+
+| Parameter    | Type   | Description                |
+| ------------ | ------ | -------------------------- |
+| clientId     | string | Google OAuth Client ID     |
+| clientSecret | string | Google OAuth Client Secret |
+| redirectUri  | string | Registered redirect URI    |
+
+---
+
+### `getGoogleOAuthURL(params) → Middleware`
+
+Generates and stores the Google authentication URL in `ctx.google?.oauth_url`.
+
+| Parameter            | Type         | Description                                           |                     |
+| -------------------- | ------------ | ----------------------------------------------------- | ------------------- |
+| authClient           | OAuth2Client | Initialized OAuth client                              |                     |
+| scopes               | string[]     | OAuth scopes (default `['openid','email','profile']`) |                     |
+| loginHint            | string       | Optional, user email hint                             |                     |
+| prompt               | string       | Default `'consent select_account'`                    |                     |
+| accessType           | 'online'     | 'offline'                                             | Default `'offline'` |
+| includeGrantedScopes | boolean      | Default `true`                                        |                     |
+
+---
+
+### `verifyGoogleToken(params) → Middleware`
+
+Validates OAuth callback, exchanges code for tokens, verifies ID token, and executes callbacks.
+
+| Parameter  | Type                              | Description              |
+| ---------- | --------------------------------- | ------------------------ |
+| authClient | OAuth2Client                      | Initialized OAuth client |
+| onError    | (err: string) => void             | Error handler            |
+| onSuccess  | (tokens: any) => void             | Success handler          |
+| Callbacks  | (ctx: Context) => CallbacksReturn | Lifecycle callbacks      |
+
+---
+
+### CallbacksReturn
+
+| Method                   | Description                                         |
+| ------------------------ | --------------------------------------------------- |
+| `signIn(user)`           | Validate user sign-in. Return `true` to allow login |
+| `jwt(token, user?)`      | Customize JWT token                                 |
+| `session(session, user)` | Customize session object                            |
+
+---
+
+### User & Credentials Types
+
+```ts
+export type GoogleUser = {
+  iss: string;
+  azp: string;
+  aud: string;
+  sub: string;
+  email: string;
+  email_verified: boolean;
+  name: string;
+  picture: string;
+};
+
+export interface Credentials {
+  access_token?: string;
+  refresh_token?: string;
+  expiry_date?: number;
+  id_token?: string;
+  token_type?: string;
+  scope?: string;
+}
+```
+
+---
+
+## Security & Best Practices
+
+* Use **state parameter** to prevent CSRF attacks.
+* Use `prompt='consent'` and `accessType='offline'` for refresh tokens.
+* Limit requested **scopes** to minimum required.
+* Securely store **refresh_token** if long-lived access is needed.
+
+---
+
+## Development (Bun)
+
+```bash
+bun run src/index.ts
+```

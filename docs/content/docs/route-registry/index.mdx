@@ -1,0 +1,122 @@
+---
+title: Route Registry
+description: TezX provides a flexible router system to register and manage routes with middlewares and callback handlers.
+---
+
+TezX provides a **flexible router system** to register and manage routes with middlewares and callback handlers.
+
+---
+
+## `HandlerType<T>`
+
+The `HandlerType` defines the **array of handlers** (middlewares and callbacks) that can be attached to a route.
+
+```ts
+export type HandlerType<T extends Record<string, any> = any> = (
+  | Callback<T>
+  | Middleware<T>
+)[];
+```
+
+### Type Parameters
+
+* `T` – The type of the request **context/environment** for this route (defaults to `any`).
+
+### Description
+
+* Each element in the array can be either:
+
+  * A `Callback<T>` – A final route handler that sends a response.
+  * A `Middleware<T>` – Pre-processing logic applied before the callback.
+* Using an array allows **multiple middlewares per route**, executed sequentially.
+
+---
+
+## `RouteRegistry`
+
+The `RouteRegistry` manages all **routes and middlewares** in a TezX application.
+
+```ts
+export type RouteMatchResult<T extends Record<string, any> = any> = {
+  /**
+   * The HTTP method of the matched route (e.g., "GET", "POST").
+   */
+  method: HTTPMethod;
+
+  /**
+   * The middleware functions that will be executed for this route.
+   */
+  match: Middleware<T>[];
+
+  /**
+   * An object containing route parameters extracted from the URL.
+   * The values can be strings, null (for optional params), or undefined.
+   */
+  params: Record<string, string | null | undefined>;
+};
+
+export interface RouteRegistry {
+  name: string;
+  addRoute<T extends Record<string, any> = any>(
+    method: HTTPMethod,
+    path: string,
+    handler: HandlerType<T>
+  ): void;
+  search(method: HTTPMethod, path: string): RouteMatchResult;
+}
+```
+
+### Properties
+
+| Property | Type     | Description                       |
+| -------- | -------- | --------------------------------- |
+| `name`   | `string` | The name of this router instance. |
+
+### Methods
+
+#### `addRoute(method, path, handler)`
+
+Registers a route or middleware for a specific HTTP method.
+
+```ts
+addRoute<T extends Record<string, any> = any>(
+  method: HTTPMethod,
+  path: string,
+  handler: HandlerType<T>
+): void;
+```
+
+**Parameters:**
+
+| Parameter | Type             | Description                                                                                |
+| --------- | ---------------- | ------------------------------------------------------------------------------------------ |
+| `method`  | `HTTPMethod`     | HTTP method (e.g., `"GET"`, `"POST"`). Use `"ALL"` for middlewares applied to all methods. |
+| `path`    | `string`         | Route path (e.g., `"/users"`, `"/api/items"`).                                             |
+| `handler` | `HandlerType<T>` | Array of middlewares and callbacks to handle this route.                                   |
+
+---
+
+#### `search(method, path)`
+
+Finds a registered route matching the given HTTP method and path.
+
+```ts
+search(method: HTTPMethod, path: string): RouteMatchResult;
+```
+
+**Parameters:**
+
+| Parameter | Type         | Description                                     |
+| --------- | ------------ | ----------------------------------------------- |
+| `method`  | `HTTPMethod` | HTTP method to match (e.g., `"GET"`).           |
+| `path`    | `string`     | Path string to match against registered routes. |
+
+**Returns:**
+
+* `RouteMatchResult` – The result of the route match, typically including:
+
+  * The handler array.
+  * Route parameters (if using dynamic segments).
+  * Any metadata associated with the route.
+
+---

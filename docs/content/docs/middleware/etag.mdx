@@ -1,0 +1,106 @@
+---
+title: Etag
+description: Automatically generates ETag headers for HTTP responses in Bun. Provides strong/weak ETag support and returns 304 Not Modified if the client already has the same ETag.
+---
+Automatically generates **ETag headers** for HTTP responses in **Bun**.
+Provides **strong/weak ETag support** and returns **304 Not Modified** if the client already has the same ETag.
+
+---
+
+## 🔹 Import
+
+```ts
+import Etag from "tezx/middleware/etag";
+```
+
+---
+
+## 🔹 Usage
+
+Apply globally to all routes:
+
+```ts
+import { Etag } from "tezx/middleware";
+
+app.use(Etag());
+```
+
+Or configure **weak ETag**:
+
+```ts
+app.use(Etag({ strongEtag: false }));
+```
+
+---
+
+## 🔹 Features
+
+* Automatically calculates **MD5 hash** of the response body.
+* Adds the **ETag** header to responses.
+* Supports **strong (default)** or **weak** ETag:
+
+  * Strong: `"abc123"`
+  * Weak: `W/"abc123"`
+* Checks `If-None-Match` header from the client.
+
+  * If matched, returns **304 Not Modified**.
+* Skips responses with **status ≥ 400**.
+* Works with **all response body types** (`string`, `JSON`, `Uint8Array`, `Blob`, etc.).
+* Compatible with Bun’s **streaming and large file responses**.
+
+---
+
+## 🔹 Parameters
+
+```ts
+Etag<T = {}, Path extends string = any>(options?: { strongEtag?: boolean }): Middleware<T, Path>
+```
+
+| Option       | Type    | Default | Description                                              |
+| ------------ | ------- | ------- | -------------------------------------------------------- |
+| `strongEtag` | boolean | true    | If `true`, uses strong ETag. If `false`, uses weak ETag. |
+
+---
+
+## 🔹 Example: Simple JSON Response
+
+```ts
+app.get("/api/user", async (ctx) => {
+    return ctx.json({ id: 1, name: "Alice" });
+});
+
+// Automatically generates ETag
+// Returns 304 if client sends matching If-None-Match
+```
+
+---
+
+## 🔹 Example: Downloadable File with ETag
+
+```ts
+app.get("/files/report.pdf", async (ctx) => {
+    return ctx.sendFile("/path/to/report.pdf");
+});
+
+// ETag header ensures clients can cache large files efficiently
+```
+
+---
+
+## 🔹 Notes
+
+1. **Performance**: The middleware clones the response body to compute ETag without consuming the original stream.
+2. **Memory-efficient**: Large files may require caution; ETag calculation reads the entire body.
+3. **Compatibility**: Works with any Bun HTTP response type, including `string`, `JSON`, `Uint8Array`, `Blob`, or `ReadableStream`.
+4. **Caching**: Works best when combined with `Cache-Control` headers.
+
+---
+
+## 🔹 Developer Tips
+
+* Use **strong ETag** for precise caching of dynamic content.
+* Use **weak ETag** for resources that may change slightly but are functionally identical.
+* Combine with `sendFile` or `send` middleware for **static files or JSON APIs**.
+* Always place `Etag` **after any transformation middlewares** that modify the response body.
+
+---

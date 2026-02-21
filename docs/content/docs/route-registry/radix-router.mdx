@@ -1,0 +1,145 @@
+---
+title: Radix Router
+description: RadixRouter is a high-performance HTTP router using a radix tree for fast, memory-efficient route matching. It supports static, dynamic, optional, and wildcard routes, with middleware stacking and router composition for modular applications.
+---
+ 
+`RadixRouter` is a **high-performance HTTP router** using a radix tree for **fast, memory-efficient route matching**. It supports static, dynamic, optional, and wildcard routes, with middleware stacking and router composition for modular applications.
+
+<Mermaid
+chart={`
+sequenceDiagram
+    autonumber
+    participant Client as HTTP Client
+    participant Router as RadixRouter
+    Note over Router: Match priority → **Static → Dynamic → Optional → Wildcard**
+
+    Client->>Router: Incoming Request (method + path)
+
+    alt Static Segment Match
+        Router-->>Client: Return Handlers
+    else Dynamic Segment Match
+        Router-->>Client: Return Handlers + Params
+    else Optional Segment Match
+        Router-->>Client: Return Handlers (Param or null)
+    else Wildcard Segment Match
+        Router-->>Client: Return Handlers (remaining path)
+    else No Match
+        Router-->>Client: 404 Not Found
+    end
+`}/>
+
+---
+
+## Key Features
+
+* **Static Routes:** `/users`
+* **Dynamic Parameters:** `/users/:id`
+* **Optional Parameters:** `/users/:id?`
+* **Wildcards:** `/files/*path`
+* **Middleware Stacking:** Global & route-specific
+* **Router Composition:** Merge sub-routers for maintainability
+
+---
+
+## Usage
+
+### Initialize Router
+
+```ts
+import { RadixRouter } from "tezx/registry";
+
+const router = new RadixRouter();
+```
+
+---
+
+### Add Routes
+
+```ts
+router.addRoute("GET", "/hello", [(ctx) => ctx.text("Hello World")]);
+
+router.addRoute("GET", "/user/:id?", [
+  (ctx) => ctx.text(`User ID: ${ctx.params.id ?? "Guest"}`),
+]);
+
+router.addRoute("GET", "/files/*path", [serveFileHandler]);
+```
+
+*Supports static, dynamic (`:id`), optional (`:id?`), and wildcard (`*path`) segments.*
+
+---
+
+### Search Routes
+
+```ts
+const match = router.search("GET", "/user/123");
+await match.handlers[0](ctx); // Executes matched handler
+```
+
+**Return Structure:**
+
+```ts
+{
+  method: "GET",
+  params: { id: "123" },
+  middlewares: [...],
+  handlers: [...],
+}
+```
+
+---
+
+## ⚡ Matching Priority
+
+1. **Static segments** (`/users`)
+2. **Dynamic segments** (`/users/:id`)
+3. **Optional segments** (`/users/:id?`)
+4. **Wildcard segments** (`/files/*path`)
+
+Backtracking ensures optional segments fallback gracefully.
+
+---
+
+## Performance (Updated Benchmark)
+
+```text
+RadixRouter.search()
+Total ops:       1,200,000
+Total time:      170.72 ms
+Avg per op:      142.26 ns (0.142 µs)
+Throughput:      7,029,244 ops/sec
+```
+
+> Extremely fast and suitable for **high-traffic, low-latency applications**.
+
+---
+
+## 🛠 Types
+
+```ts
+export type RouteMatchResult<T extends Record<string, any> = any> = {
+  /**
+   * The HTTP method of the matched route (e.g., "GET", "POST").
+   */
+  method: HTTPMethod;
+
+  /**
+   * The middleware functions that will be executed for this route.
+   */
+  match: Middleware<T>[];
+
+  /**
+   * An object containing route parameters extracted from the URL.
+   * The values can be strings, null (for optional params), or undefined.
+   */
+  params: Record<string, string | null | undefined>;
+};
+
+interface RouteRegistry {
+  name: string;
+  addRoute<T>(method: HTTPMethod, path: string, handler: HandlerType<T>): void;
+  search(method: HTTPMethod, path: string): RouteMatchResult<T>;
+}
+```
+
+---

@@ -1,0 +1,122 @@
+---
+title: Create TezX
+description: Easily scaffold a new TezX project optimized for Bun runtime. Whether you're building a backend with WebSocket support or a TypeScript-powered server, create-tezx sets up a Bun-ready project instantly — with optional npm support for installation.
+---
+
+Easily scaffold a new **TezX** project optimized for **Bun runtime**. Whether you're building a backend with WebSocket support or a TypeScript-powered server, `create-tezx` sets up a Bun-ready project instantly — with optional npm support for installation.
+
+---
+
+## Quick Start (Bun-First)
+
+Run one of the following:
+
+```bash
+# Bun (recommended)
+bun create tezx@latest
+
+# Or using npm as a runner
+npx create-tezx-app@latest
+npm create tezx@latest
+```
+
+This will launch the interactive Bun-focused project setup.
+You may also skip prompts using CLI flags.
+
+---
+
+## CLI Options
+
+### `-t`, `--template <template>`
+
+Choose a starter template.
+
+```bash
+bun create tezx@latest my-app -- --template minimal
+```
+
+---
+
+### `-i`, `--install`
+
+Automatically install dependencies using Bun.
+
+```bash
+bun create tezx@latest my-app -- --install
+```
+
+If you run via npm, Bun will still be used inside the generated project.
+
+---
+
+### `-p`, `--pm <bun|npm|pnpm|yarn>`
+
+Choose which package manager to finalize installation with
+(default: **bun**).
+
+```bash
+bun create tezx@latest my-app -- --pm bun
+```
+
+or using npm runner:
+
+```bash
+npm create tezx@latest my-app -- --pm bun
+```
+
+---
+
+### `--ts`, `-ts`
+
+Enable TypeScript for the new project.
+
+```bash
+bun create tezx@latest my-app -- --ts
+```
+
+---
+
+### `--yes`, `--y`
+
+Use all default values and skip prompts.
+
+```bash
+bun create tezx@latest my-app -- --yes
+```
+
+---
+
+## Supported Templates
+
+| Template        | Description            |
+| --------------- | ---------------------- |
+| `minimal`       | Minimal Bun + TS setup |
+| `google-oauth2` | Google OAuth2 ready    |
+| `github-oauth2` | GitHub OAuth2 ready    |
+
+More Bun-native templates coming soon.
+
+---
+
+## Example Usage
+
+### Create a Bun WebSocket + TypeScript project:
+
+```bash
+bun create tezx@latest ws-app -- --template ws --ts --install
+```
+
+### Create a Bun OAuth app using npm runner:
+
+```bash
+npm create tezx@latest auth-app -- --template google-oauth2 --pm bun --yes
+```
+
+---
+
+## Author
+
+Created by **Rakibul Islam**
+and **TezX Contributors**.
+
+---

@@ -1,0 +1,147 @@
+---
+title: Initialization
+description: TezX is a high-performance, middleware-first server framework designed exclusively for the Bun runtime.
+---
+
+`TezX` is a `high-performance`, middleware-first server framework designed exclusively for the `Bun` runtime. It offers:
+
+* Ultra-fast routing with dynamic path matching
+* Middleware chaining at both global and route levels
+* A clean, predictable request → context → response lifecycle
+* Native integration with Bun’s HTTP server
+
+---
+
+## Quick Start (`server.ts`)
+
+```ts
+// server.ts
+import { TezX } from "tezx";
+import { CustomRouter } from "./router.ts";
+import { logger } from "tezx/middleware";
+
+// Initialize TezX
+const app = new TezX({
+  routeRegistry: new CustomRouter(),            // Custom route tree
+});
+
+// Register global middleware
+app.use(logger);
+
+// Start server with Bun
+Bun.serve({
+  port: 5000,
+  fetch: app.serve,
+});
+```
+
+---
+
+## Recommended Project Structure
+
+```bash
+project/
+├── middlewares/
+│   └── logger.ts
+├── router.ts
+├── server.ts
+├── .env
+└── src/
+    └── handlers/
+        └── home.ts
+```
+
+---
+
+## TezX Configuration (`TezXConfig`)
+
+| Option          | Type                       | Description                                       |
+| --------------- | -------------------------- | ------------------------------------------------- |
+| `routeRegistry` | `Router`                   | Custom router implementing the `Router` interface |
+| `basePath`      | `string`                   | Global prefix applied to all routes               |
+
+---
+
+## Global Middleware
+
+Middleware receives `ctx` and `next()`:
+
+```ts
+import { Middleware } from "tezx";
+
+export const loggerMiddleware: Middleware = async (ctx, next) => {
+  console.log(`[${ctx.method}] ${ctx.pathname}`);
+  await next();
+};
+
+// Register globally
+app.use(loggerMiddleware);
+```
+
+---
+
+## Route-Level Middleware
+
+Attach middleware to a specific path:
+
+```ts
+app.when("ALL", "/admin/:section", adminAuthMiddleware);
+```
+
+---
+
+## Custom 404 Handler
+
+```ts
+app.notFound((ctx) => ctx.status(404).text("🔍 Not Found"));
+```
+
+---
+
+## Global Error Handling
+
+```ts
+app.onError((err, ctx) => {
+  console.error("Unhandled error:", err.details);
+  return ctx.status(500).text("🔥 Internal Server Error");
+});
+```
+
+---
+
+## Running the Server
+
+```bash
+bun run server.ts
+```
+
+Enable auto-reload during development:
+
+```bash
+bun --watch run server.ts
+```
+
+---
+
+## Runtime Compatibility (Bun Only)
+
+| Feature    | Bun        |
+| ---------- | ---------- |
+| `.serve()` | ✅ Native   |
+| Middleware | ✅ Yes      |
+| WebSocket  | ✅ Built-in |
+
+---
+
+## Summary
+
+| Feature      | Purpose                                  |
+| ------------ | ---------------------------------------- |
+| `TezX`       | Core application & runtime router        |
+| `use()`      | Register global middleware               |
+| `when()`     | Register dynamic route handlers          |
+| `notFound()` | Custom 404 response handler              |
+| `onError()`  | Centralized error handling               |
+| `serve()`    | Integrates with Bun’s native HTTP server |
+
+---

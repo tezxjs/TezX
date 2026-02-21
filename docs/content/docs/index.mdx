@@ -1,0 +1,148 @@
+---
+
+title: What's TezX?
+description: TezX v4+ – High-performance, Bun-only JavaScript framework with environment-first setup.
+---
+
+# TezX v4 (Bun Edition)
+
+**TezX** is a modern, ultra-lightweight, and high-performance JavaScript framework built **specifically for Bun**.
+It provides a **minimal yet powerful API**, seamless environment management, and a high-concurrency HTTP engine for building fast, scalable web applications.
+
+---
+
+## Key Features (Bun-only)
+
+* ⚡ **Ultra-Fast Performance** – Optimized for Bun’s native HTTP engine and streams.
+* 🧩 **Minimal & Intuitive API** – Clean and simple routing, middleware, and static file serving.
+* 🔌 **Flexible Middleware** – Stackable, composable, and easy to manage.
+* 🗂 **Static File Serving** – Efficient streaming, automatic MIME detection, optional **ETag** support.
+* 🧭 **Dynamic Routing** – Pattern-based, parameterized, and nested routes.
+* 🌍 **Environment-First Design** – Easy `.env` loading with typed access via `Bun.env`.
+* 🔐 **Secure by Default** – Safe headers, CORS, caching, and other best practices baked in.
+
+---
+
+## Installation
+
+```bash
+bun add tezx
+```
+
+---
+
+## Environment Setup
+
+TezX v4 is **Bun-native** and leverages `Bun.env` for configuration:
+
+```ts
+import { TezX } from "tezx";
+
+const app = new TezX();
+const port = Number(Bun.env.PORT || 3000);
+```
+
+---
+
+## Quick Start
+
+```ts
+import { TezX } from "tezx";
+import { serveStatic } from "tezx/static";
+
+const app = new TezX();
+
+// ✅ Simple GET route
+app.get("/", (ctx) => ctx.html("<h1>Welcome to TezX v4 for Bun</h1>"));
+
+// ✅ Static files
+app.static(serveStatic("/public", "./public"));
+
+// ✅ Middleware example
+app.use((ctx, next) => {
+  console.log(`Incoming request: ${ctx.req.url}`);
+  return next();
+});
+
+// ✅ Start server
+Bun.serve({
+  port,
+  fetch(req, server) {
+    return app.serve(req, server);
+  },
+});
+
+console.log(`🚀 TezX v4 running at http://localhost:${port}`);
+```
+
+---
+
+## 🗂 Static File Serving
+
+```ts
+import { serveStatic } from "tezx/static";
+
+app.static(serveStatic("/assets", "./assets"));
+```
+
+* Efficient **streaming** for large files.
+* Automatic **MIME type detection**.
+* Optional **ETag** and caching for faster reloads.
+
+---
+
+## Routing Examples
+
+```ts
+// GET request
+app.get("/about", (ctx) => ctx.html("<h1>About TezX</h1>"));
+
+// POST request
+app.post("/submit", (ctx) =>
+  ctx.json({ message: "Form submitted successfully" })
+);
+```
+
+---
+
+## Error Handling
+
+```ts
+app.onError((err, ctx) => {
+  console.error(err);
+  return ctx.status(500).json({ error: "Internal Server Error" });
+});
+```
+
+---
+
+## Development
+
+Run your app with Bun:
+
+```bash
+bun run src/index.ts
+```
+
+* Supports **hot reload** with Bun.
+* Access your app at: `http://localhost:3000`
+
+---
+
+## Notes
+
+* Fully **Bun optimized** – no Node.js or Deno dependencies required.
+* Combine **routing**, **middleware**, and **static serving** to build production-ready apps.
+* Lightweight and scalable, perfect for microservices and high-concurrency apps.
+
+---
+
+## Contributing & Support
+
+* ⭐ Star on [GitHub](https://github.com/tezxjs/tezx)
+* 💖 Sponsor development to help maintain TezX
+* 🐛 Report issues or submit pull requests
+
+---
+
+TezX v4 is **fast, modern, and Bun-first**, giving you everything you need to build production-ready JavaScript apps without unnecessary overhead.

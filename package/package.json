@@ -1,0 +1,107 @@
+{
+  "name": "tezx",
+  "version": "4.0.7",
+  "description": "TezX is a modern, ultra-lightweight, and high-performance JavaScript framework built specifically for Bun. It provides a minimal yet powerful API, seamless environment management, and a high-concurrency HTTP engine for building fast, scalable web applications.",
+  "type": "module",
+  "main": "cjs/index.js",
+  "module": "index.js",
+  "types": "index.d.ts",
+  "typings": "index.d.ts",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tezxjs/TezX.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tezxjs/TezX/issues"
+  },
+  "homepage": "https://github.com/tezxjs/TezX/issues#readme",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./cjs/index.js",
+      "types": "./index.d.ts"
+    },
+    "./config": {
+      "import": "./config/index.js",
+      "require": "./cjs/config/index.js",
+      "types": "./config/index.d.ts"
+    },
+    "./cookie": {
+      "import": "./cookie/index.js",
+      "require": "./cjs/cookie/index.js",
+      "types": "./cookie/index.d.ts"
+    },
+    "./helper": {
+      "import": "./helper/index.js",
+      "require": "./cjs/helper/index.js",
+      "types": "./helper/index.d.ts"
+    },
+    "./jwt": {
+      "import": "./jwt/index.js",
+      "require": "./cjs/jwt/index.js",
+      "types": "./jwt/index.d.ts"
+    },
+    "./middleware": {
+      "import": "./middleware/index.js",
+      "require": "./cjs/middleware/index.js",
+      "types": "./middleware/index.d.ts"
+    },
+    "./middleware/*": {
+      "import": "./middleware/*.js",
+      "require": "./cjs/middleware/*.js",
+      "types": "./middleware/*.d.ts"
+    },
+    "./registry": {
+      "import": "./registry/index.js",
+      "require": "./cjs/registry/index.js",
+      "types": "./registry/index.d.ts"
+    },
+    "./static": {
+      "import": "./static/index.js",
+      "require": "./cjs/static/index.js",
+      "types": "./static/index.d.ts"
+    },
+    "./utils": {
+      "import": "./utils/index.js",
+      "require": "./cjs/utils/index.js",
+      "types": "./utils/index.d.ts"
+    },
+    "./ws": {
+      "import": "./ws/index.js",
+      "require": "./cjs/ws/index.js",
+      "types": "./ws/index.d.ts"
+    }
+  },
+  "files": [
+    "cjs/",
+    "config/",
+    "cookie/",
+    "core/",
+    "helper/",
+    "jwt/",
+    "middleware/",
+    "registry/",
+    "static/",
+    "types/",
+    "utils/",
+    "ws/",
+    "index.d.ts",
+    "index.js"
+  ],
+  "keywords": [
+    "server",
+    "framework",
+    "http",
+    "middleware",
+    "router",
+    "high-performance",
+    "bun",
+    "serve",
+    "websocket",
+    "typescript",
+    "web-framework"
+  ],
+  "author": "SRAKIB17",
+  "license": "MIT"
+}

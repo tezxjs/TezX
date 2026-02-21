@@ -1,0 +1,53 @@
+---
+title: app.serve
+description: The app.serve() method is the core handler for processing HTTP requests in TezX when running in Bun. It bridges Bun's server with your application logic, executing middleware and route handlers seamlessly.
+---
+The `app.serve()` method is the core handler for processing `HTTP` requests in `TezX` when running in Bun. It bridges Bun's server with your application logic, executing middleware and route handlers seamlessly.
+
+## What It Does
+
+* Accepts a **Fetch API-compatible `Request`**.
+* Receives Bun’s `Server` instance for runtime context.
+* Executes your defined **middleware chain**.
+* Dispatches **route handlers**.
+* Returns a **`Response` object** for Bun to send.
+
+This provides a **plug-and-play** integration with Bun without any additional setup.
+
+---
+
+## Method Signature
+
+```ts
+public async serve(req: Request, server: Bun.Server): Promise<Response>
+```
+
+* `req` — The native Bun/Fetch API request object.
+* `server` — Bun server instance, used internally for request context if needed.
+
+---
+
+## Usage Example (Bun)
+
+```ts
+import { wsHandlers } from "tezx/ws";
+
+// Minimal integration
+Bun.serve({
+  port: 3000,
+  fetch: (req ,server) => app.serve(req, server)
+});
+
+// Full Bun server with WebSocket support
+Bun.serve({
+  port: 3000,
+  fetch: app.serve,
+  websocket: wsHandlers({})
+});
+```
+
+---
+
+> `app.serve()` in Bun is your **direct bridge** between the server runtime and application logic — fast, simple, and fully integrated.
+
+---

@@ -1,0 +1,127 @@
+---
+title: detectBot
+description: A high-performance bot-detection middleware for TezX, designed specifically for the Bun runtime. It identifies suspicious or automated traffic using User-Agent scanning, IP blacklisting, rate-limiting, and custom heuristics.
+---
+A high-performance bot-detection middleware for `TezX`, designed specifically for the `Bun` runtime. It identifies suspicious or automated traffic using **User-Agent scanning**, **IP blacklisting**, **rate-limiting**, and **custom heuristics**.
+
+## Import
+
+```ts
+import { detectBot } from "tezx/middleware";
+```
+
+---
+
+## Quick Start
+
+```ts
+app.use(
+  detectBot({
+    enableRateLimiting: true,
+    botUserAgents: ["bot", "crawler", "indexer"],
+    onBotDetected: (ctx, reason) =>
+      ctx.status(403).json({ error: `Bot detected: ${reason}` }),
+  })
+);
+```
+
+This middleware automatically:
+
+* Scans User-Agent strings for known bot patterns
+* Blocks requests from blacklisted IPs
+* Detects high-frequency requests using rate-limiting
+* Supports fully customizable detection logic
+
+---
+
+## Configuration Options
+
+### `DetectBotOptions`
+
+| Option                 | Type                                                 | Default                               | Description                                                      |
+| ---------------------- | ---------------------------------------------------- | ------------------------------------- | ---------------------------------------------------------------- |
+| **botUserAgents**      | `string[]`                                           | `["bot", "spider", "crawl", "slurp"]` | List of User-Agent substrings that indicate bot traffic.         |
+| **enableRateLimiting** | `boolean`                                            | `false`                               | Enable rate-limit based bot detection.                           |
+| **maxRequests**        | `number`                                             | `30`                                  | Maximum allowed requests per IP within the window.               |
+| **windowMs**           | `number`                                             | `60000`                               | Duration of rate-limit window (in milliseconds).                 |
+| **storage**            | `object`                                             | `In-memory Map`                       | Custom storage for rate-limit tracking (Redis, Memcached, etc.). |
+| **isBlacklisted**      | `(ctx: Context) => boolean \| Promise<boolean>`      | `() => false`                         | Function to check if IP is blacklisted.                          |
+| **customBotDetector**  | `(ctx: Context) => boolean \| Promise<boolean>`      | `undefined`                           | Custom logic for detecting bots (headers, params, etc.).         |
+| **onBotDetected**      | `(ctx: Context, reason: string) => HttpBaseResponse` | Returns `403 JSON`                    | Callback executed when a bot is detected.                        |
+
+---
+
+
+## Custom Examples
+
+### Detect using custom header or query
+
+```ts
+detectBot({
+  customBotDetector: (ctx) => ctx.query?.token === "fake-token",
+  onBotDetected: (ctx, reason) =>
+    ctx.status(403).json({ error: `Blocked by custom rule: ${reason}` }),
+});
+```
+
+### Block a specific IP
+
+```ts
+detectBot({
+  isBlacklisted: (ctx) => ctx.ip === "192.168.0.42",
+});
+```
+
+### Use Redis (or any KV store) for rate-limit tracking
+
+```ts
+detectBot({
+  enableRateLimiting: true,
+  storage: {
+    get: (key) => myRedis.get(key),
+    set: (key, value) => myRedis.set(key, JSON.stringify(value)),
+    clearExpired: () => {},
+  },
+});
+```
+
+---
+
+## Detection Flow
+
+1. User-Agent pattern check
+2. IP blacklist check
+3. Rate-limit check (optional)
+4. Custom bot detector
+5. If none match → request continues to the next middleware
+
+---
+
+## Default Response Examples
+
+| Scenario            | Default Middleware Response                        |
+| ------------------- | -------------------------------------------------- |
+| Bot by User-Agent   | `{ "error": "Bot detected: User-Agent" }`          |
+| Rate limit exceeded | `{ "error": "Rate limit exceeded. Retry later." }` |
+| Blacklisted IP      | `{ "error": "Bot detected: Blacklisted IP" }`      |
+
+All responses are fully customizable through `onBotDetected`.
+
+---
+
+## Type Definition
+
+```ts
+type DetectBotOptions = {
+  botUserAgents?: string[];
+  enableRateLimiting?: boolean;
+  maxRequests?: number;
+  windowMs?: number;
+  storage?: RateLimitStorage;
+  isBlacklisted?: (ctx: Context) => boolean | Promise<boolean>;
+  customBotDetector?: (ctx: Context) => boolean | Promise<boolean>;
+  onBotDetected?: (ctx: Context, reason: string) => HttpBaseResponse;
+};
+```
+
+---

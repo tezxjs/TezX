@@ -1,0 +1,147 @@
+---
+title: Cookie Utilities
+description: A lightweight utility module for managing HTTP cookies in TezX applications. Includes functions for reading, parsing, setting, and deleting cookies in a consistent and type-safe way.
+---
+ 
+ A lightweight utility module for managing HTTP cookies in `TezX` applications. Includes functions for `reading`, `parsing`, `setting`, and `deleting` cookies in a consistent and type-safe way.
+
+## Import
+
+```ts
+import {
+  getCookie,
+  allCookies,
+  setCookie,
+  deleteCookie,
+  serializeOptions,
+} from "tezx/cookie";
+```
+
+---
+
+## API Reference
+
+### `getCookie(ctx: Context, name: string): string | undefined`
+
+Returns the value of a specific cookie from the incoming request.
+
+**Parameters**
+
+* `ctx`: Request context
+* `name`: Cookie name
+
+**Returns**
+
+* The cookie value, or `undefined` if not found
+
+**Example**
+
+```ts
+const session = getCookie(ctx, "session_id");
+```
+
+---
+
+### `allCookies(ctx: Context): Record<string, string>`
+
+Parses and returns all cookies as a key-value object.
+
+**Parameters**
+
+* `ctx`: Request context
+
+**Returns**
+
+* Object containing all parsed cookies
+
+**Example**
+
+```ts
+const cookies = allCookies(ctx);
+```
+
+---
+
+### `setCookie(ctx: Context, name: string, value: string, options?: CookieOptions): void`
+
+Sets a cookie on the response.
+
+**Parameters**
+
+* `ctx`: Response context
+* `name`: Cookie name
+* `value`: Cookie value
+* `options`: Optional cookie attributes
+
+**Example**
+
+```ts
+setCookie(ctx, "session_id", "abc123", {
+  maxAge: 3600,
+  httpOnly: true,
+  secure: true,
+});
+```
+
+---
+
+### `deleteCookie(ctx: Context, name: string, options?: CookieOptions): void`
+
+Deletes a cookie by expiring it immediately.
+
+**Parameters**
+
+* `ctx`: Response context
+* `name`: Cookie name
+* `options`: Must match original attributes (e.g., `path`, `domain`)
+
+**Example**
+
+```ts
+deleteCookie(ctx, "session_id", { path: "/" });
+```
+
+---
+
+### `serializeOptions(options: CookieOptions): string`
+
+Serializes cookie options into a `Set-Cookie` header string fragment.
+
+**Parameters**
+
+* `options`: Cookie configuration
+
+**Returns**
+
+* A serialized string suitable for HTTP headers
+
+**Example**
+
+```ts
+serializeOptions({ maxAge: 3600, httpOnly: true });
+```
+
+---
+
+## CookieOptions Interface
+
+| Property   | Type                            | Description                       |
+| ---------- | ------------------------------- | --------------------------------- |
+| `maxAge`   | `number`                        | Cookie lifetime in seconds        |
+| `expires`  | `Date`                          | Absolute expiration date          |
+| `path`     | `string`                        | Path where the cookie is valid    |
+| `domain`   | `string`                        | Domain where the cookie applies   |
+| `secure`   | `boolean`                       | Sends only over HTTPS             |
+| `httpOnly` | `boolean`                       | Prevents JS access in the browser |
+| `sameSite` | `'Strict'` | `'Lax'` | `'None'` | Cross-site request restrictions   |
+
+---
+
+## Best Practices
+
+* Use `httpOnly` and `secure` for all sensitive cookies.
+* Set `sameSite: 'Strict'` or `'Lax'` to reduce CSRF risks.
+* Always match the original `path` and `domain` when deleting cookies.
+* Prefer `maxAge` over `expires` for predictable control.
+
+---

@@ -1,0 +1,115 @@
+---
+title: Server-Sent Events (SSE)
+description: Register real-time HTTP routes using Server-Sent Events (SSE) in TezX.
+---
+Registers a **Server-Sent Events (SSE)** route handler for the given path.  
+SSE is a simple and efficient way to send **real-time updates** from the server to the browser over HTTP using a single, long-lived connection.
+
+---
+
+## Syntax
+
+```ts
+app.get("/events", (ctx) => { ... });
+````
+
+---
+
+## Description
+
+* Registers an HTTP `GET` route at the specified `path`.
+* Sends **real-time updates** to connected clients via a persistent HTTP connection using the `text/event-stream` MIME type.
+* Automatically handles connection cleanup when the client disconnects.
+
+---
+
+## Headers set
+
+```http
+Content-Type: text/event-stream
+Cache-Control: no-cache
+Connection: keep-alive
+```
+
+> You can override or customize headers inside `ctx.newResponse(stream, { headers })`.
+
+---
+
+## Example
+
+```ts
+function encoder(str: string) {
+  return new TextEncoder().encode(str);
+}
+
+app.get("/events", (ctx) => {
+  const stream = new ReadableStream({
+    start(controller) {
+      // Initial event
+      controller.enqueue(encoder("data: Connected\n\n"));
+
+      // Periodic event
+      const interval = setInterval(() => {
+        const message = `data: ${new Date().toISOString()}\n\n`;
+        controller.enqueue(encoder(message));
+      }, 2000);
+
+      // Cleanup on client disconnect
+      ctx.rawRequest?.signal?.addEventListener("abort", () => {
+        clearInterval(interval);
+        controller.close();
+      });
+    },
+  });
+
+  return ctx.newResponse(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      "Connection": "keep-alive",
+    }
+  });
+});
+```
+
+---
+
+## Test Client (HTML)
+
+```ts
+app.get("/", async (ctx) => {
+  return ctx.html`
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SSE Demo</title>
+  </head>
+  <body>
+    <h1>Server-Sent Events</h1>
+    <pre id="output"></pre>
+    <script>
+      const output = document.getElementById("output");
+      const eventSource = new EventSource("/events");
+
+      eventSource.onmessage = (event) => {
+        output.textContent += event.data + "\\n";
+      };
+
+      eventSource.onerror = () => {
+        output.textContent += "🔴 Connection lost\\n";
+      };
+    </script>
+  </body>
+</html>
+  `;
+});
+```
+
+---
+
+## Notes
+
+* SSE uses a **single persistent HTTP connection** per client.
+* Ideal for **real-time dashboards**, notifications, or live data streams.
+* Works seamlessly in **modern browsers** with `EventSource`.
+* Automatic cleanup ensures **memory and resource efficiency** on client disconnect.

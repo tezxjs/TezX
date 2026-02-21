@@ -1,0 +1,145 @@
+---
+title: cacheControl
+description: A compact yet powerful HTTP caching middleware for TezX — built for speed, clarity, and zero overhead.
+---
+A compact yet powerful HTTP `caching` middleware for `TezX` — built for speed, clarity, and zero overhead. It automatically adds optimized `Cache-Control`, `Expires`, and optional `Vary` headers based on flexible, rule-driven logic.
+
+---
+
+## Features
+
+* Ultra-fast — optimized for V8 hot path (no `.find`, no closures, no overhead).
+* Lightweight — pure TypeScript, ~1KB.
+* Rule-based — dynamic cache rules depending on request patterns.
+* Plug & play — integrates smoothly with your `Context` and middleware chain.
+
+---
+
+## Installation
+
+```ts
+import { cacheControl } from "tezx/middleware";
+```
+
+---
+
+## Usage Example
+
+```ts
+app.use(
+  cacheControl({
+    defaultSettings: {
+      maxAge: 3600,        // 1 hour
+      scope: "public",
+    },
+    rules: [
+      {
+        condition: (ctx) => ctx.url.startsWith("/api/private"),
+        maxAge: 0,
+        scope: "private",
+      },
+      {
+        condition: (ctx) => ctx.url.includes("/images/"),
+        maxAge: 86400,     // 1 day
+        scope: "public",
+        vary: ["Accept-Encoding"],
+      },
+    ],
+    onError: (error, ctx) => {
+      return ctx.status(500).json(error.message);
+    },
+  })
+);
+```
+
+---
+
+## API Reference
+
+### `cacheControl(options: CacheOptions): Middleware`
+
+Creates and returns a high-performance caching middleware.
+
+#### Parameters
+
+| Name              | Type                                                              | Description                                          |
+| ----------------- | ----------------------------------------------------------------- | ---------------------------------------------------- |
+| `defaultSettings` | `CacheSettings`                                                   | Default caching policy applied when no rule matches. |
+| `rules`           | `CacheRule[]` (optional)                                          | Custom rule list. First matching rule is applied.    |
+| `onError`         | `(error: Error, ctx: Context) => HttpBaseResponse` (optional) | Custom middleware-level error handler.               |
+
+---
+
+## Type Definitions
+
+```ts
+export interface CacheRule {
+  /** Condition to determine if this rule applies */
+  condition: (ctx: Context) => boolean;
+  /** Max age in seconds */
+  maxAge: number;
+  /** Cache scope */
+  scope: "public" | "private";
+  /** Optional Vary header list */
+  vary?: string[];
+}
+
+export interface CacheSettings
+  extends Pick<CacheRule, "maxAge" | "scope" | "vary"> {}
+
+export interface CacheOptions {
+  defaultSettings: CacheSettings;
+  rules?: readonly CacheRule[];
+  onError?: (error: Error, ctx: Context) => HttpBaseResponse;
+}
+```
+
+---
+
+## How It Works
+
+1. Runs only on `GET` and `HEAD` requests.
+2. Evaluates rules in order; the first match is used.
+3. Falls back to `defaultSettings` when no rule matches.
+4. Automatically sets:
+
+   * `Cache-Control`
+   * `Expires`
+   * `Vary` (if provided)
+
+---
+
+## Error Handling
+
+If an error occurs:
+
+* It is wrapped in `Error`.
+* If `onError` is provided, it is executed.
+* Otherwise, a default response is returned:
+
+```json
+{ "error": "Cache middleware failed" }
+```
+
+---
+
+## Recommended Patterns
+
+| Scenario       | Suggested Settings       |
+| -------------- | ------------------------ |
+| Static assets  | `public`, `maxAge=86400` |
+| Private API    | `private`, `maxAge=0`    |
+| Dynamic pages  | `public`, `maxAge=60`    |
+| Sensitive data | `private`, `maxAge=0`    |
+
+---
+
+## Router Integration
+
+```ts
+app.use("/products", cacheControl({
+  defaultSettings: { maxAge: 600, scope: "public" },
+}));
+```
+
+---

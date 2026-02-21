@@ -1,0 +1,16 @@
+{
+    "title": "TezX",
+    "root": true,
+    "pages": [
+        "index",
+        "/getting-started",
+        "/integration",
+        "/api",
+        "/helpers",
+        "/middleware",
+        "/websocket",
+        "/route-registry",
+        "/toolkit",
+        "/examples"
+    ]
+}

@@ -1,0 +1,79 @@
+---
+title: File Upload
+description: Handle file uploads in TezX using useFormData helper, compatible with Bun, Node.js, and Deno.
+---
+
+## Overview
+
+TezX provides first-class support for file uploads via its `useFormData` utility, allowing you to handle file uploads with minimal setup. This example demonstrates how to accept, read, and save a file using native `fs/promises` and `path`.
+
+## Features
+
+- Parses incoming `multipart/form-data` requests
+- Supports extracting and saving uploaded files
+- Handles errors with clear responses
+- Compatible with modern runtimes like **Bun**, **Node.js**, and **Deno**
+
+---
+
+## Example Usage
+
+```ts
+import { join } from "path";
+import { writeFile } from "fs/promises";
+import { useFormData } from "tezx/helper";
+
+app.post("/data", async (ctx) => {
+  const formData = await useFormData(ctx);
+  const file = formData?.files as File; // Get uploaded file
+
+  if (!file) {
+    return ctx.json({ error: "No file uploaded" }, 400);
+  }
+
+  try {
+    const buffer = await file.arrayBuffer(); // Convert File to ArrayBuffer
+    const filePath = join(process.cwd(), "uploads", file.name); // Destination path
+
+    await writeFile(filePath, Buffer.from(buffer)); // Save to disk
+
+    return ctx.json({
+      message: "File uploaded successfully",
+      path: filePath,
+    });
+  } catch (error: any) {
+    return ctx.status(500).json(
+      {
+        error: "File save failed",
+        details: error.message,
+      }
+    );
+  }
+});
+````
+
+---
+
+## 🔍 Notes
+
+* Ensure the `uploads` directory exists or create it before saving.
+* `formData.files` can be an array if multiple files are submitted.
+* To support multiple files, iterate over `formData.files`:
+
+```ts
+const files = formData?.files as File[];
+for (const file of files) {
+  const buffer = await file.arrayBuffer();
+  await writeFile(join(process.cwd(), "uploads", file.name), Buffer.from(buffer));
+}
+```
+
+---
+
+## 🧪 Testing with cURL
+
+```bash
+curl -F "file=@/path/to/file.png" http://localhost:3000/data
+```
+
+---

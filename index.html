@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>SSE Demo</title>
+  </head>
+  <body>
+    <h1>Server-Sent Events</h1>
+    <pre id="output"></pre>
+    <script>
+      const output = document.getElementById("output");
+      const eventSource = new EventSource("http://localhost:3001");
+      console.log(eventSource);
+      eventSource.onmessage = (event) => {
+        output.textContent += event.data + "\\n";
+      };
+
+      eventSource.onerror = () => {
+        output.textContent += "🔴 Connection lost\\n";
+      };
+    </script>
+  </body>
+</html>

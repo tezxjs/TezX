@@ -1,0 +1,94 @@
+---
+title: Integration Guide
+description: Leverage TezX on the ultra-fast Bun runtime to build modern, scalable APIs with WebSocket support.
+---
+
+Leverage `TezX` on the ultra-fast Bun runtime to build modern, scalable APIs with `WebSocket` support.
+
+## Prerequisites
+
+Make sure you have:
+
+* [**Bun**](https://bun.sh) — modern all-in-one JavaScript runtime
+* [**TezX**](https://www.npmjs.com/package/tezx) — high-performance backend framework
+
+Install TezX via Bun:
+
+```bash
+bun add tezx
+```
+
+---
+
+## Recommended Project Structure
+
+```bash
+project/
+├── src/
+│   └── app.ts       # TezX app instance & routes
+├── server.ts        # Bun HTTP server entry point
+├── .env             # Environment variables
+```
+
+---
+
+## Server Setup (with WebSocket Support)
+
+### `server.ts`
+
+```ts
+import { wsHandlers } from "tezx/ws";
+import { app } from "./src/app"; // TezX app instance
+
+Bun.serve({
+  port: Number(process.env.PORT) || 3001,
+  reusePort: true, // Enables multi-process clustering
+  fetch(req, server) {
+    return app.serve(req, server); // Handle requests via TezX
+  },
+  websocket: wsHandlers({
+    // Optional WebSocket configure
+  })
+});
+
+console.log(`🚀 Server running at http://localhost:${process.env.PORT}`);
+```
+
+---
+
+## Running the Server
+
+Start with live-reload during development:
+
+```bash
+bun run --watch server.ts
+```
+
+Or start normally:
+
+```bash
+bun run server.ts
+```
+
+---
+
+## Key Concepts & Features
+
+| Feature              | Description                                                       |
+| -------------------- | ----------------------------------------------------------------- |
+| `Bun.serve()`        | Launches the HTTP server (similar to Node.js `createServer`)      |
+| `reusePort: true`    | Enables multi-process (cluster) support for improved scalability  |
+| `fetch(req, server)` | Entry point for handling HTTP requests via TezX's `app.serve()`   |
+| `websocket`          | Manages WS lifecycle: `open`, `message`, `close` events           |
+| `ws.data`            | Attach custom session-specific data per WebSocket connection      |
+
+---
+
+## Pro Tips
+
+* **Clustering**: `reusePort: true` allows Bun to spawn multiple processes for high-concurrency workloads.
+* **WebSockets**: Use `wsHandlers()` to easily manage real-time connections and events.
+* **Environment management**: Always define `PORT` and other sensitive values in `.env`.
+* **Middleware-ready**: TezX middlewares work seamlessly in Bun for logging, security, and more.
+
+---
