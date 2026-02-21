@@ -1,83 +1,209 @@
+# ⚡ TezX – High-Performance JavaScript Framework for **Bun**
+
+**TezX** is a modern, ultra-fast, and lightweight JavaScript framework built specifically for **Bun**.
+With a clean API, powerful routing, WebSocket support, middleware stacking, and native static file serving — TezX helps you build scalable applications with unmatched speed.
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tezxjs/TezX)
+
+---
+
+## 🚀 Why TezX (Built for Bun)?
+
+* ⚡ **Blazing Fast** — Fully optimized for Bun’s event loop & native performance.
+* 🧩 **Minimal, Clean API** — Developer-friendly and intuitive.
+* 🗂 **Native Static Serving** — No external dependencies needed.
+* 🔌 **Powerful Middleware Engine** — Compose any logic effortlessly.
+* 🧭 **Advanced Routing** — Dynamic, nested, and pattern-based.
+* 🔐 **Secure by Default** — Built-in safe context handling.
+* 📡 **WebSocket Support** — Real-time apps made easy with `wsHandlers`.
+* ♻️ **Multi-Process Ready** — Via Bun’s `reusePort`.
+
+---
+
+## 📦 Installation
+
 ```bash
-npx eslint . --fix
-npx prettier --write .
-wrk -t12 -c400 -d10s http://localhost:3000
+bun add tezx
+# or
+npm install tezx
 ```
 
-<https://www.iana.org/assignments/http-fields/http-fields.xhtml>
+---
 
-### 📁 Certificate Structure
-
-Make sure you have:
-
-- `cert.pem` – your SSL certificate.
-- `key.pem` – your private key.
-
-You can generate a self-signed certificate using OpenSSL:
-
-```bash
-openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365
-```
-
-## SHOW FILE
-
-```sh
-find dist -type f
-```
-
-If you need a complete list in JSON format to replace the `files` array in `package.json`, run:
-
-```sh
-node -e "console.log(JSON.stringify({ files: require('fs').readdirSync('dist', { recursive: true }).map(f => 'dist/' + f) }, null, 2))"
-```
-
-1. optional ->
-   /_
-   If path is `/api/animals/:type?` it will return:
-   [`/api/animals`, `/api/animals/:type`]
-   in other cases it will return null
-   _/
-
-2. remove unnesasray
+## ⚡ Quick Start (Bun)
 
 ```ts
-wrk -t12 -c400 -d10s http://localhost:3000
-autocannon -c 100 -d 20 http://localhost:3000
+import { TezX } from "tezx";
+import { logger } from "tezx/middleware";
+import { serveStatic } from "tezx/static";
+import { wsHandlers } from "tezx/ws";
+
+const app = new TezX();
+
+// Middlewares
+app.use(logger());
+
+// Static files
+app.static(serveStatic("/", "./static"));
+
+// Route
+app.get("/", (ctx) =>
+  ctx.html(`
+    <h1>Welcome to TezX</h1>
+    <p>High-performance JavaScript framework optimized for Bun.</p>
+  `)
+);
+
+// Server
+const port = Number(process.env.PORT) || 3001;
+
+Bun.serve({
+  port,
+  reusePort: true,
+  fetch(req, server) {
+    return app.serve(req, server);
+  },
+  websocket: wsHandlers({
+    // Optional WebSocket config
+  }),
+});
+
+console.log(`🚀 TezX server running at http://localhost:${port}`);
 ```
+
+---
+
+## ▶ Run the Server
+
+```bash
+bun run server.ts
+```
+
+---
+
+## 🔌 Middleware Example
 
 ```ts
-// Tezx
-wrk -t12 -c400 -d10s http://localhost:3002
-Running 10s test @ http://localhost:3002
-  12 threads and 400 connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     5.52ms  615.18us  14.15ms   83.73%
-    Req/Sec     6.01k   680.34    17.30k    97.34%
-  720215 requests in 10.10s, 85.17MB read
-Requests/sec:  71341.89
-Transfer/sec:      8.44MB
-// Expressjs with bun
-wrk -t12 -c400 -d10s http://localhost:3000
-Running 10s test @ http://localhost:3000
-  12 threads and 400 connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency    12.50ms    2.55ms  73.34ms   92.92%
-    Req/Sec     2.66k   273.14     3.31k    70.08%
-  318190 requests in 10.02s, 61.90MB read
-Requests/sec:  31761.98
-Transfer/sec:      6.18MB
-// express with node
- wrk -t12 -c400 -d10s http://localhost:3000
-Running 10s test @ http://localhost:3000
-  12 threads and 400 connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency    51.08ms  136.27ms   2.00s    97.34%
-    Req/Sec   839.07    400.15     2.88k    74.15%
-  86348 requests in 10.10s, 20.67MB read
-  Socket errors: connect 0, read 0, write 0, timeout 222
-Requests/sec:   8549.13
-Transfer/sec:      2.05MB
+app.use((ctx, next) => {
+  console.log("➡ Request:", ctx.req.url);
+  return next();
+});
 ```
 
-1. remove ctx.send
-3. add
+---
+
+## 🗂 Static File Serving
+
+```ts
+import { serveStatic } from "tezx/static";
+
+app.static(serveStatic("/assets", "./assets"));
+```
+
+Access via:
+
+```bash
+http://localhost:3001/assets/your-file.ext
+```
+
+---
+
+## 🧭 Routing
+
+```ts
+app.get("/about", (ctx) => ctx.html("<h1>About TezX</h1>"));
+
+app.post("/contact", async (ctx) => {
+  const body = await ctx.json();
+  return ctx.json({ received: body });
+});
+```
+
+---
+
+## ⚠️ Error Handling
+
+```ts
+app.onError((err, ctx) => {
+  return ctx.status(500).json({
+    error: "Internal Server Error",
+    message: err.message,
+  });
+});
+```
+
+---
+
+## 🧪 Development Setup
+
+### `dev` script for Bun
+
+**package.json**
+
+```json
+{
+  "scripts": {
+    "dev": "bun run --hot --watch src/index.ts"
+  }
+}
+```
+
+### Example: `src/index.ts`
+
+```ts
+import app from "./app";
+
+Bun.serve({
+  port: 3001,
+  reusePort: true,
+  fetch(req, server) {
+    return app.serve(req, server);
+  },
+});
+```
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions!
+
+1. Fork the repo
+2. Create a new branch
+3. Commit your changes
+4. Open a pull request
+
+👉 GitHub: **[https://github.com/tezxjs](https://github.com/tezxjs)**
+
+---
+
+## 💖 Support TezX
+
+If TezX helps you, consider supporting:
+
+* ⭐ Star on GitHub
+* 💸 Sponsor on GitHub: [https://github.com/sponsors/srakib17](https://github.com/sponsors/srakib17)
+
+Your support helps improve the framework.
+
+---
+
+## 🙌 Sponsor
+
+<a href="http://papernxt.com" target="_blank">
+  <img
+  src="https://papernxt.com/favicon.ico"
+  width="48"
+  hight="48"
+  alt="papernxt.com"
+  title="papernxt.com"
+  />
+</a>
+
+---
+
+## 📜 License
+
+Licensed under the **MIT License**.
+
+---
