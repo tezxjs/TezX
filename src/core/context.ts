@@ -278,68 +278,6 @@ export class Context<TPath extends string = any> {
     );
   }
 
-  // /**
-  // * Send a response with automatic content type detection.
-  // *
-  // * This method determines the proper `Content-Type` header based on the type of `body`.
-  // * If a `Content-Type` is provided in `init.headers`, it will be used instead.
-  // *
-  // * Supported types:
-  // * - `string` / `number` → "text/plain"
-  // * - `object` → JSON serialized, "application/json"
-  // * - `Uint8Array` / `ArrayBuffer` / `ReadableStream` → "application/octet-stream"
-  // * - `Blob` / `File` → uses `body.type` or falls back to "application/octet-stream"
-  // * - `null` / `undefined` → empty string, "text/plain"
-  // * - any other → `String(body)`, "text/plain"
-  // *
-  // * @param {any} body - Response body of any type.
-  // * @param {ResponseInit} [init] - Optional response init object, headers, status, etc.
-  // * @returns {HttpBaseResponse} - A Bun-compatible response object.
-  // *
-  // * @example
-  // * // Send a string
-  // * ctx.send("Hello World");
-  // *
-  // * // Send JSON
-  // * ctx.send({ user: "Alice", id: 123 });
-  // *
-  // * // Send binary
-  // * ctx.send(new Uint8Array([1,2,3]));
-  // *
-  // * // Custom content-type
-  // * ctx.send("Hello", { headers: { "Content-Type": "text/html" } });
-  // */
-  // public send(body: any, init?: ResponseInit): HttpBaseResponse {
-  //   let _body: any;
-  //   let type: string;
-
-  //   // Determine body type
-  //   if (body === null || body === undefined) {
-  //     _body = "";
-  //     type = "text/plain";
-  //   } else if (typeof body === "string" || typeof body === "number") {
-  //     _body = body;
-  //     type = "text/plain";
-  //   }
-  //   else if (body instanceof Uint8Array || body instanceof ArrayBuffer || (typeof ReadableStream !== "undefined" && body instanceof ReadableStream)) {
-  //     _body = body;
-  //     type = "application/octet-stream";
-  //   }
-  //   else if (body instanceof Blob || (typeof File !== "undefined" && body instanceof File)) {
-  //     _body = body;
-  //     type = body.type || "application/octet-stream";
-  //   }
-  //   else if (typeof body === "object") {
-  //     _body = JSON.stringify(body);
-  //     type = "application/json";
-  //   }
-  //   else {
-  //     _body = String(body);
-  //     type = "text/plain";
-  //   }
-  //   return this.createResponse(_body, type, init);
-  // }
-
   /**
    * Sends an HTTP redirect response to the specified URL.
    *

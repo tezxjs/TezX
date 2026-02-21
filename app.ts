@@ -22,7 +22,7 @@ app.get("/users/:fds", paginationHandler({
 
 app.get("/", async (ctx) => {
   // If cspUseNonce is enabled, nonce is available in ctx.cspNonce
-  return ctx.text('test')
+  return ctx.sendFile('./public/Benchmarking_Tezx_Bun_Node_Performance.mp4')
 });
 
 // Suppose each item is { id: number; name: string }
@@ -115,12 +115,7 @@ app.get("/fallback/*", (ctx) =>
   ctx.json({ msg: "fallback-wildcard", params: ctx.req.params }),
 );
 
-// ENDPOINT TOTAL: 30 routes (static + dynamic + wildcard + optional + post)
 const PORT = 3002;
-// Deno.serve({ port: Number(Deno.env.get("PORT") || 5000) }, (req, connInfo) => {
-//   return app.serve(req, connInfo);
-// });
-
 Bun.serve({
   port: PORT,
   reusePort: true, // enables SO_REUSEPORT for clustering
@@ -131,10 +126,3 @@ Bun.serve({
 
 console.log(`🚀 Server running at http://localhost:${PORT}`);
 
-
-import { Client } from './src/client/index.js';
-export const api = Client('http://localhost:3002', app);
-
-// const id = api.account?.[":id"](345)[":test?"](345)["*sdf"](4353).get({ headers: {} })
-
-// console.log(await id)
