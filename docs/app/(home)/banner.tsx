@@ -1,11 +1,11 @@
 
+import { version } from "../../version";
 type Props = {}
-import { version } from "../../package/package.json"
 export default function Banner({ }: Props) {
     return (
         <section className="text-center space-y-4 py-20">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
-                <span className="text-[#FF581E]">TezX</span> {version?.split(".")?.[0]} (Bun Edition)
+                <span className="text-[#FF581E]">TezX</span> {version} (Bun Edition)
             </h1>
             <p className="text-gray-700 dark:text-gray-300 max-w-3xl text-sm sm:text-base mx-auto">
                 TezX is a modern, ultra-lightweight, and high-performance JavaScript framework built specifically for Bun. It provides a minimal yet powerful API, seamless environment management, and a high-concurrency HTTP engine for building fast, scalable web applications.
