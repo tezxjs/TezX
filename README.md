@@ -46,14 +46,6 @@ app.use(logger());
 // Static files
 app.static(serveStatic("/", "./static"));
 
-// Route
-app.get("/", (ctx) =>
-  ctx.html(`
-    <h1>Welcome to TezX</h1>
-    <p>High-performance JavaScript framework optimized for Bun.</p>
-  `)
-);
-
 // Server
 const port = Number(process.env.PORT) || 3001;
 
@@ -111,7 +103,6 @@ http://localhost:3001/assets/your-file.ext
 ## 🧭 Routing
 
 ```ts
-app.get("/about", (ctx) => ctx.html("<h1>About TezX</h1>"));
 
 app.post("/contact", async (ctx) => {
   const body = await ctx.json();
