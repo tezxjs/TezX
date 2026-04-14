@@ -1,8 +1,9 @@
 // src/core/context.ts
-import { ExtractParamsFromPath, HttpBaseResponse, ResHeaderKey, ResponseHeaders, ResponseInit, WebSocketEvent } from "../types/index.js";
+import { ExtractParamsFromPath, HttpBaseResponse, ResHeaderKey, ResponseHeaders, ResponseInit } from "../types/index.js";
 import { ContentType, defaultMimeType } from "../utils/mimeTypes.js";
 import { mergeHeaders } from "../utils/response.js";
 import { TezXRequest } from "./request.js";
+declare const Bun: any;
 
 export class Context<TPath extends string = any> {
   [key: string]: any;
@@ -43,7 +44,7 @@ export class Context<TPath extends string = any> {
    * @type {Bun.Server}
    * @private
    */
-  #server: Bun.Server<WebSocketEvent>;
+  #server: any;
 
   /**
    * The URL associated with the current context.
@@ -76,7 +77,7 @@ export class Context<TPath extends string = any> {
    * @type {string}
    */
   public readonly method: string;
-  constructor(req: Request, pathname: string, method: string, server: Bun.Server<WebSocketEvent>) {
+  constructor(req: Request, pathname: string, method: string, server: any) {
     this.#server = server;
     this.rawRequest = req;
     this.url = req.url;
@@ -356,7 +357,7 @@ export class Context<TPath extends string = any> {
    * @public
    * @returns {Bun.Server} The active Bun server instance.
    */
-  public get server(): Bun.Server<WebSocketEvent> {
+  public get server(): any {
     return this.#server;
   }
 }

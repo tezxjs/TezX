@@ -4,7 +4,7 @@
     "module": "CommonJS",
     "target": "ESNext",
     // ES2022
-    "moduleResolution": "node",
+    "moduleResolution": "node10",
     "skipLibCheck": true,
     "removeComments": false,
     "esModuleInterop": true,

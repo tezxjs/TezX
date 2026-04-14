@@ -1,4 +1,4 @@
-import { ExtractParamsFromPath, HttpBaseResponse, ResHeaderKey, ResponseInit, WebSocketEvent } from "../types/index.js";
+import { ExtractParamsFromPath, HttpBaseResponse, ResHeaderKey, ResponseInit } from "../types/index.js";
 import { ContentType } from "../utils/mimeTypes.js";
 import { TezXRequest } from "./request.js";
 export declare class Context<TPath extends string = any> {
@@ -49,7 +49,7 @@ export declare class Context<TPath extends string = any> {
      * @type {string}
      */
     readonly method: string;
-    constructor(req: Request, pathname: string, method: string, server: Bun.Server<WebSocketEvent>);
+    constructor(req: Request, pathname: string, method: string, server: any);
     /**
      * Access the response headers.
      *
@@ -243,5 +243,5 @@ export declare class Context<TPath extends string = any> {
      * @public
      * @returns {Bun.Server} The active Bun server instance.
      */
-    get server(): Bun.Server<WebSocketEvent>;
+    get server(): any;
 }

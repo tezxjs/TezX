@@ -29,7 +29,7 @@ export type {
 } from "./types/index.js";
 
 export { Router, TezX };
-export let version = "4.0.9";
+export let version = "4.0.11";
 export default {
   Router,
   TezX,

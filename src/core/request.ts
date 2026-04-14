@@ -1,6 +1,7 @@
 // src/core/request.ts
 import { ExtractParamsFromPath, HTTPMethod, NetAddr, ReqHeaderKey, RequestHeaders } from "../types/index.js";
 import { url2query } from "../utils/url.js";
+
 /**
  * A wrapper around the raw HTTP request that provides convenient access to URL, headers, body parsing, and route parameters.
  *

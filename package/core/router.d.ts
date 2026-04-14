@@ -121,11 +121,6 @@ export declare class Router<T extends Record<string, any> = {}> {
     options<U extends Record<string, any> = {}, Path extends string = any>(path: Path, middleware: Middleware<T & U, Path>, callback: Callback<T & U, Path>): this;
     options<U extends Record<string, any> = {}, Path extends string = any>(path: Path, middlewares: Middleware<T & U, Path>[], callback: Callback<T & U, Path>): this;
     /**
-     * Registers a HEAD route (returns headers only)
-     * @param path - URL path pattern
-     * @param args - Handler callback or middleware(s) + handler
-     */
-    /**
      * Register a route that responds to all HTTP methods.
      *
      * @param path - URL path pattern

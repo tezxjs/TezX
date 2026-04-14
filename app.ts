@@ -1,7 +1,7 @@
 import { Router, TezX } from "./src/index.js";
 import { logger, paginationHandler } from "./src/middleware"
 const app = new TezX({});
-app.use(logger())
+// app.use(logger())
 app.static({
   files: [
     {
@@ -21,8 +21,9 @@ app.get("/users/:fds", paginationHandler({
 }));
 
 app.get("/", async (ctx) => {
+  return ctx.json({})
   // If cspUseNonce is enabled, nonce is available in ctx.cspNonce
-  return ctx.sendFile('./public/Benchmarking_Tezx_Bun_Node_Performance.mp4')
+  // return ctx.sendFile('./public/Benchmarking_Tezx_Bun_Node_Performance.mp4')
 });
 
 // Suppose each item is { id: number; name: string }

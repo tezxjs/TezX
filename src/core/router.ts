@@ -10,6 +10,8 @@ import {
 } from "../types/index.js";
 import { sanitizePathSplitBasePath } from "../utils/url.js";
 
+declare const Bun: any;
+
 /**
  * Router configuration options.
  */
@@ -285,19 +287,6 @@ export class Router<T extends Record<string, any> = {}> {
     this.#registerRoute("OPTIONS", path, ...args);
     return this;
   }
-
-  /**
-   * Registers a HEAD route (returns headers only)
-   * @param path - URL path pattern
-   * @param args - Handler callback or middleware(s) + handler
-   */
-  // public head<U extends Record<string, any> = {}, Path extends string = any>(path: Path, callback: Callback<T & U, Path>): this;
-  // public head<U extends Record<string, any> = {}, Path extends string = any>(path: Path, middleware: Middleware<T & U, Path>, callback: Callback<T & U, Path>,): this;
-  // public head<U extends Record<string, any> = {}, Path extends string = any>(path: Path, middlewares: Middleware<T & U, Path>[], callback: Callback<T & U, Path>,): this;
-  // public head(path: string, ...args: any[]): this {
-  //   this.#registerRoute("HEAD", path, ...args);
-  //   return this;
-  // }
 
   /**
    * Register a route that responds to all HTTP methods.
@@ -589,16 +578,11 @@ export class Router<T extends Record<string, any> = {}> {
     path: string,
     router: Router<T & U>,
   ) {
-
     if (!(router instanceof Router)) {
       throw new Error("Router instance is required.");
     }
     router.routes.forEach((r) => {
-      this.#addRoute(
-        r?.method,
-        `/${sanitizePathSplitBasePath(path, r?.pattern).join("/")}`,
-        r?.handlers,
-      );
+      this.#addRoute(r?.method, `/${sanitizePathSplitBasePath(path, r?.pattern).join("/")}`, r?.handlers);
     });
     Object.assign(this.staticFile, router.staticFile);
   }

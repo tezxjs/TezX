@@ -10,6 +10,7 @@ import {
   RouteRegistry,
   WebSocketEvent
 } from "../types/index.js";
+
 import { handleErrorResponse, notFoundResponse } from "../utils/response.js";
 import { getPathname } from "../utils/url.js";
 import { Context } from "./context.js";
@@ -123,7 +124,7 @@ export class TezX<T extends Record<string, any> = {}> extends Router<T> {
     return dispatch(0);
   }
 
-  async #handleRequest(req: Request, method: string, server: Bun.Server<WebSocketEvent>): Promise<Response> {
+  async #handleRequest(req: Request, method: string, server: any): Promise<Response> {
     const pathname = getPathname(req.url);
     const ctx = new Context(req, pathname, method, server) as Ctx<T>;
     try {
@@ -180,7 +181,7 @@ export class TezX<T extends Record<string, any> = {}> extends Router<T> {
    *   fetch: (req) => app.serve(req, server),
    * });
    */
-  public async serve(req: Request, server: Bun.Server<any>): Promise<Response> {
+  public async serve(req: Request, server: any): Promise<Response> {
     const method = req.method;
     if (method === "HEAD") {
       const res = await this.#handleRequest(req, "GET", server);
