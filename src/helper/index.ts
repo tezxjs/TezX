@@ -25,5 +25,13 @@ export default {
  * console.log(conn.address, conn.port);
  */
 export function getConnInfo(ctx: Ctx): NetAddr {
+  if (typeof Bun === "undefined") {
+    let request = ctx.server?.[0];
+    return {
+      family: request.socket.remoteFamily,
+      address: request.socket.remoteAddress, // Client IP
+      port: request.socket.remotePort, // Client Port
+    };
+  }
   return ctx?.server?.requestIP?.(ctx.rawRequest) as NetAddr;
 }

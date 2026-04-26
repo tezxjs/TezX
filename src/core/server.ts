@@ -7,8 +7,7 @@ import {
   HttpBaseResponse,
   HTTPMethod,
   Middleware,
-  RouteRegistry,
-  WebSocketEvent
+  RouteRegistry
 } from "../types/index.js";
 
 import { handleErrorResponse, notFoundResponse } from "../utils/response.js";
@@ -164,7 +163,8 @@ export class TezX<T extends Record<string, any> = {}> extends Router<T> {
    * This is the core request handler for TezX. It processes
    * the request through middleware and route handlers, returning a
    * standard Fetch API `Response`.
-   *
+   * node: (req, req) => app.serve(req, [req, server])
+   * bun: (req, server) => app.serve(req, server)
    * @example
    * Bun.serve({
    *   port: 3000,
