@@ -2,8 +2,8 @@ import { readdirSync } from "node:fs";
 import { join } from "node:path";
 
 import { ServeStatic, StaticFileArray, StaticServeOption } from "../types/index.js";
-import { extensionExtract, } from "../utils/utils.js";
 import { sanitizePathSplitBasePath } from "../utils/url.js";
+import { extensionExtract, } from "../utils/utils.js";
 
 /**
  * Registers static files for serving from a folder, optionally under a specific route.
@@ -70,6 +70,20 @@ export function serveStatic(
   };
 }
 
+
+import crypto from "node:crypto";
+import { statSync } from "node:fs";
+
+function generateETag(filePath: string): string {
+  const stat = statSync(filePath);
+
+  // lightweight hash (fast + good enough for static files)
+  return crypto
+    .createHash("md5")
+    .update(`${stat.size}-${stat.mtimeMs}`)
+    .digest("hex");
+}
+
 /**
  * Recursively collects files from a directory, applying filters.
  *
@@ -90,7 +104,9 @@ function getFiles(
     const fullPath = join(dir, entry.name);
 
     if (entry.isDirectory()) {
-      files.push(...getFiles(fullPath, `${basePath}/${entry.name}`, option));
+      files.push(
+        ...getFiles(fullPath, `${basePath}/${entry.name}`, option)
+      );
     } else {
       const ext = extensionExtract(entry.name);
 
@@ -98,10 +114,19 @@ function getFiles(
         continue;
       }
 
-      files.push({
+      const file: any = {
         fileSource: fullPath,
         route: `/${sanitizePathSplitBasePath(basePath, entry.name).join("/")}`,
-      });
+      };
+
+      // =========================
+      // ETag SUPPORT (NEW)
+      // =========================
+      if (option?.disableEtag) {
+        file.etag = generateETag(fullPath);
+      }
+
+      files.push(file);
     }
   }
 

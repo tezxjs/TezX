@@ -218,7 +218,8 @@ export type StaticServeOption = {
 export type StaticFileArray = {
   /** Absolute path to the static file on the file system. */
   fileSource: string;
-
+  /** Optional precomputed ETag for the file. If not provided, it will be computed automatically. */
+  etag?: string;
   /** Public route (URL path) where the file will be served. */
   route: string;
 }[];

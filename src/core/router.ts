@@ -103,7 +103,9 @@ export class Router<T extends Record<string, any> = {}> {
             if (serveStatic?.options?.cacheControl) {
               ctx.setHeader("Cache-Control", serveStatic?.options.cacheControl);
             }
-            return ctx.sendFile(s.fileSource, {
+            const { sendFile } = await (typeof Bun !== "undefined" ? import("../bun/send-file.js") : import("../node/send-file.js"));
+
+            return sendFile(ctx, s.fileSource, {
               headers: serveStatic?.options?.headers,
             });
           };
@@ -115,9 +117,7 @@ export class Router<T extends Record<string, any> = {}> {
             if (serveStatic?.options?.cacheControl) {
               ctx.setHeader("Cache-Control", serveStatic?.options.cacheControl);
             }
-            const stat = await Bun.file(s?.fileSource).stat();
-            const raw = `${stat.size}-${Math.floor(stat.mtimeMs ?? Date.now())}`;
-            let etagVal = strong ? `"${raw}"` : `W/"${raw}"`;
+            let etagVal = strong ? `"${s?.etag}"` : `W/"${s?.etag}"`;
             ctx.headers.set("Etag", etagVal);
             const ifNoneMatch = ctx.req.header("if-none-match");
             if (ifNoneMatch === etagVal) {
@@ -126,8 +126,9 @@ export class Router<T extends Record<string, any> = {}> {
                 headers: { "ETag": etagVal },
               });
             }
+            const { sendFile } = await (typeof Bun !== "undefined" ? import("../bun/send-file.js") : import("../node/send-file.js"));
 
-            return ctx.sendFile(s.fileSource, {
+            return sendFile(ctx, s.fileSource, {
               headers: serveStatic?.options?.headers,
             });
           };

@@ -35,7 +35,6 @@ export type TezXConfig = {
  * const app = new TezX();
  *
  * app.get("/hello", (ctx) => ctx.text("Hello TezX"));
- * bunAdapter(app).listen();
  * ```
  */
 export class TezX<T extends Record<string, any> = {}> extends Router<T> {
@@ -161,19 +160,10 @@ export class TezX<T extends Record<string, any> = {}> extends Router<T> {
   }
 
   /**
-   * Handles incoming HTTP requests in a Bun environment.
    *
-   * This is the core request handler for TezX in Bun. It processes
+   * This is the core request handler for TezX. It processes
    * the request through middleware and route handlers, returning a
    * standard Fetch API `Response`.
-   *
-   * Special handling for `HEAD` requests:
-   * - Converts `HEAD` to a `GET` request internally.
-   * - Returns headers and status, but no body, per HTTP spec.
-   *
-   * @param {Request} req - The incoming Fetch API Request object.
-   * @param {Bun.Server} server - The Bun server instance.
-   * @returns {Promise<Response>} A Fetch API Response object, ready to be sent by Bun.
    *
    * @example
    * Bun.serve({
