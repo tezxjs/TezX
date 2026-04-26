@@ -117,13 +117,13 @@ app.get("/fallback/*", (ctx) =>
 );
 
 const PORT = 3002;
-Bun.serve({
-  port: PORT,
-  reusePort: true, // enables SO_REUSEPORT for clustering
-  fetch: (req, server) => {
-    return app.serve(req, server)
-  },
-});
+// Bun.serve({
+//   port: PORT,
+//   reusePort: true, // enables SO_REUSEPORT for clustering
+//   fetch: (req, server) => {
+//     return app.serve(req, server)
+//   },
+// });
 
 console.log(`🚀 Server running at http://localhost:${PORT}`);
 
