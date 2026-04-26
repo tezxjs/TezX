@@ -3,6 +3,7 @@ import { ExtractParamsFromPath, HttpBaseResponse, ResHeaderKey, ResponseHeaders,
 import { ContentType, defaultMimeType } from "../utils/mimeTypes.js";
 import { mergeHeaders } from "../utils/response.js";
 import { TezXRequest } from "./request.js";
+declare const Bun: any;
 
 export class Context<TPath extends string = any> {
   [key: string]: any;
@@ -23,6 +24,7 @@ export class Context<TPath extends string = any> {
   readonly params: ExtractParamsFromPath<TPath> = {} as ExtractParamsFromPath<TPath>;
 
   /**
+   * The raw `Request` object received from Bun's server.
    * 
    * This represents the original Fetch API `Request`
    * before any parsing or modifications. Useful for
@@ -33,7 +35,14 @@ export class Context<TPath extends string = any> {
   rawRequest!: Request;
 
   /**
-   * Internal server instance used to manage low-level server behavior, configurations, and request handling.
+   * Internal Bun server instance used to manage low-level
+   * server behavior, configurations, and request handling.
+   *
+   * This is a **private class field** (with `#`) and should
+   * not be accessed from outside the class.
+   *
+   * @type {Bun.Server}
+   * @private
    */
   #server: any;
 
@@ -287,6 +296,7 @@ export class Context<TPath extends string = any> {
   }
 
   /**
+  * Sends a file using Bun's streaming API.
   *
   * Behaviors:
   *  - If only `filePath` is provided → serves file normally.
@@ -338,7 +348,14 @@ export class Context<TPath extends string = any> {
     });
   }
   /**
-   * Returns the underlying server instance.
+   * Returns the underlying Bun server instance.
+   *
+   * This getter provides protected-level access to the
+   * internal `Bun.Server` object, allowing subclasses to
+   * extend or interact with low-level server behavior.
+   *
+   * @public
+   * @returns {Bun.Server} The active Bun server instance.
    */
   public get server(): any {
     return this.#server;
