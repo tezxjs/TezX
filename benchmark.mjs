@@ -1,66 +1,56 @@
-// benchmark.mjs
+import { performance } from "node:perf_hooks";
 
-export function mergeHeaders(existing, init) {
-    // যদি existing না থাকে, নতুন Headers বানাও — initHeaders দিয়ে ইনিশিয়ালাইজ করা যাবে
+// Your version
+export function customGetPathname(url) {
+    const len = url.length;
+    if (len === 0) return "/";
 
-    if (!existing) return new Headers(init);
+    const start = url.indexOf("/", url.charCodeAt(9) === 58 ? 13 : 8);
+    if (start === -1) return "/";
 
-    // যদি কোন initHeaders না থাকে, রেফারেন্স ফিরিয়ে দাও (no copy)
-    if (!init) return existing;
-    // যদি initHeaders একটি Headers হলে, আমরা copy করে merge করব
-    const out = new Headers(existing); // একবারে কপি — তারপর initHeaders apply
-    for (const key in init) {
-        const val = init[key];
-        if (val && key.toLowerCase() === "set-cookie") {
-            out.append(key, val);
-        }
-        else if (val) {
-            out.set(key, val);
-        }
-    }
-    return out;
-}
-// Dummy headers
-const baseHeaders = new Headers({ "x-test": "1" });
+    let end = url.indexOf("?", start);
+    if (end === -1) end = url.indexOf("#", start);
+    if (end === -1) end = len;
 
-// #newResponse version
-function newResponse(body, type, init = {}) {
-    let headers = mergeHeaders(baseHeaders, init.headers);
-    if (!headers.has("Content-Type")) headers.set("Content-Type", type);
-    return new Response(body, {
-        status: init.status ?? 200,
-        statusText: init.statusText,
-        headers,
-    });
+    return start === end ? "/" : url.slice(start, end);
 }
 
-// createResponse version
-function createResponse(body, type, init = {}) {
-    const headers = mergeHeaders(baseHeaders, init.headers);
-    if (type) headers.set("Content-Type", type);
-    return new Response(body, {
-        status: init.status ?? 200,
-        statusText: init.statusText,
-        headers,
-    });
+// URL version
+export function nodeGetPathname(url) {
+    return new URL(url, "http://x").pathname;
 }
 
-// Benchmark runner
-function benchmark(fn, iterations = 1_000_000) {
+// fast version
+export function fastGetPathname(url) {
+    const q = url.indexOf("?");
+    const h = url.indexOf("#");
+
+    let end = -1;
+
+    if (q === -1) end = h;
+    else if (h === -1) end = q;
+    else end = q < h ? q : h;
+
+    return end === -1 ? url : url.slice(0, end);
+}
+
+// benchmark runner
+function run(fn, name, input, times = 1e6) {
     const start = performance.now();
-    for (let i = 0; i < iterations; i++) {
-        fn("Hello World", "text/plain", { headers: { "x-custom": "test" } });
+
+    for (let i = 0; i < times; i++) {
+        fn(input);
     }
+
     const end = performance.now();
-    return end - start;
+    console.log(`${name}: ${(end - start).toFixed(2)}ms`);
 }
 
-const iterations = 1_000_000;
+// test input
+const testUrl = "https://example.com/api/user?id=123#section";
 
-console.log("Running benchmark for", iterations, "iterations...");
+console.log("Running benchmarks...\n");
 
-const t1 = benchmark(newResponse, iterations);
-console.log("#newResponse time:", t1.toFixed(2), "ms");
-
-const t2 = benchmark(createResponse, iterations);
-console.log("createResponse time:", t2.toFixed(2), "ms");
+run(customGetPathname, "customGetPathname", testUrl);
+run(nodeGetPathname, "node URL()", testUrl);
+run(fastGetPathname, "fastGetPathname", testUrl);

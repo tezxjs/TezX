@@ -7,13 +7,13 @@ import {
   HttpBaseResponse,
   HTTPMethod,
   Middleware,
-  RouteRegistry,
-  WebSocketEvent
+  RouteRegistry
 } from "../types/index.js";
 
 import { handleErrorResponse, notFoundResponse } from "../utils/response.js";
 import { getPathname } from "../utils/url.js";
-import { Context } from "./context.js";
+import { Request } from "./req.js";
+import { Response } from "./response.js";
 import { Router, RouterConfig } from "./router.js";
 
 export type TezXConfig = {
@@ -126,38 +126,41 @@ export class TezX<T extends Record<string, any> = {}> extends Router<T> {
 
   async #handleRequest(req: Request, method: string, server: any): Promise<Response> {
     const pathname = getPathname(req.url);
-    const ctx = new Context(req, pathname, method, server) as Ctx<T>;
-    try {
-      // ------------------------
-      // Static file shortcut
-      // ------------------------
-      const staticHandler = this.staticFile?.[`${method} ${pathname}`];
-      if (staticHandler) return staticHandler(ctx);
-      // ------------------------
-      // Route lookup
-      // ------------------------
-      const result = this.router?.search(method as HTTPMethod, pathname);
-      if (!result) return this.#notFound(ctx);
-      const { match: middlewares, params } = result;
+    const staticHandler = this.staticFile?.[`${method} ${pathname}`];
+    // if (staticHandler) return staticHandler(ctx);
+    return this.router?.handleRequest(method, pathname, req, {});
 
-      const mLen = middlewares.length;
-      if (mLen === 0) return this.#notFound(ctx);
-      (ctx as any).params = params;
+    // const ctx = new Context(req, pathname, method, server) as Ctx<T>;
+    // try {
+    //   // ------------------------
+    //   // Static file shortcut
+    //   // ------------------------
 
-      // 6. Execution Strategy
-      if (mLen === 1) {
-        // Optimization: Direct call for single handler (No recursion overhead)
-        ctx.res = await (middlewares[0] as Callback)(ctx);
-      } else {
-        // Composition for middleware chain
-        ctx.res = await this.#composeChain(ctx, middlewares);
-      }
-      return ctx.res ?? this.#notFound(ctx);
-    }
-    catch (err) {
-      let error = err instanceof Error ? err : new Error(String(err));
-      return this.#errorHandler?.(error, ctx as Ctx<T>);
-    }
+    //   // ------------------------
+    //   // Route lookup
+    //   // ------------------------
+    //   const result = this.router?.search(method as HTTPMethod, pathname);
+    //   if (!result) return this.#notFound(ctx);
+    //   const { match: middlewares, params } = result;
+
+    //   const mLen = middlewares.length;
+    //   if (mLen === 0) return this.#notFound(ctx);
+    //   (ctx as any).params = params;
+
+    //   // 6. Execution Strategy
+    //   if (mLen === 1) {
+    //     // Optimization: Direct call for single handler (No recursion overhead)
+    //     ctx.res = await (middlewares[0] as Callback)(ctx);
+    //   } else {
+    //     // Composition for middleware chain
+    //     ctx.res = await this.#composeChain(ctx, middlewares);
+    //   }
+    //   return ctx.res ?? this.#notFound(ctx);
+    // }
+    // catch (err) {
+    //   let error = err instanceof Error ? err : new Error(String(err));
+    //   return this.#errorHandler?.(error, ctx as Ctx<T>);
+    // }
   }
 
   /**
@@ -181,16 +184,19 @@ export class TezX<T extends Record<string, any> = {}> extends Router<T> {
    *   fetch: (req) => app.serve(req, server),
    * });
    */
-  public async serve(req: Request, server: any): Promise<Response> {
-    const method = req.method;
-    if (method === "HEAD") {
-      const res = await this.#handleRequest(req, "GET", server);
-      return new Response(null, {
-        status: res.status,
-        statusText: res.statusText,
-        headers: res.headers,
-      });
-    }
-    return this.#handleRequest(req, method, server);
+  public async serve(req: Request, res: Response): Promise<Response> {
+    const method = req.method as HTTPMethod;
+    // if (method === "HEAD") {
+    //   const res = await this.#handleRequest(req, "GET", server);
+    //   return new Response(null, {
+    //     status: res.status,
+    //     statusText: res.statusText,
+    //     headers: res.headers,
+    //   });
+    // }
+    const pathname = getPathname(req.url ?? "/");
+    const staticHandler = this.staticFile?.[`${method} ${pathname}`];
+    // if (staticHandler) return staticHandler(ctx);
+    return this.router?.handleRequest(method, pathname, req, res);
   }
 }

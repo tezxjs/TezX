@@ -4,6 +4,7 @@ export type { Context as BaseContext } from "./core/context.js";
 export type { TezXRequest } from "./core/request.js";
 export type { RouterConfig } from "./core/router.js";
 export type { TezXConfig } from "./core/server.js";
+
 export type {
   NetAddr as AddressType,
   Callback,
@@ -30,6 +31,7 @@ export type {
 
 export { Router, TezX };
 export let version = "4.0.11";
+
 export default {
   Router,
   TezX,

@@ -139,6 +139,8 @@ export interface CookieOptions {
   sameSite?: "Strict" | "Lax" | "None";
 }
 
+import { Request } from "../core/req.js";
+import { Response } from "../core/response.js";
 import { BaseContext, Context } from "../index.js";
 import { RequestHeader, ResponseHeader } from "./headers.js";
 
@@ -308,7 +310,7 @@ export type Ctx<T extends Record<string, any> = {}, Path extends string = any> =
  * @param ctx - The context object for the request.
  * @returns An HTTP response or a promise that resolves to an HTTP response.
  */
-export type Callback<T extends Record<string, any> = {}, Path extends string = any> = (ctx: Ctx<T, Path>) => HttpBaseResponse;
+export type Callback<T extends Record<string, any> = {}, Path extends string = any> = (ctx: Request<T, Path>, res: Response) => HttpBaseResponse;
 
 /**
  * Middleware function type used in TezX.
@@ -497,4 +499,18 @@ export interface RouteRegistry {
    * @returns The result of the match.
    */
   search(method: HTTPMethod, path: string): RouteMatchResult;
+
+  /**
+   * Handles an incoming HTTP request by:
+   * 1. Finding the matching route
+   * 2. Building execution context
+   * 3. Running middleware chain
+   * 4. Returning final response
+   *
+   * @param method - HTTP method (GET, POST, etc.)
+   * @param pathname - Request URL path (e.g. /user/1)
+   * @param req - Native Web API Request object
+   * @param res - Response instance (used for headers / helpers)
+   */
+  handleRequest(method: HTTPMethod, pathname: string, req: Request, res: Response): string
 }

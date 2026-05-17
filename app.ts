@@ -1,6 +1,8 @@
+import { createServer } from "node:http";
 import { Router, TezX } from "./src/index.js";
-import { logger, paginationHandler } from "./src/middleware"
-const app = new TezX({});
+
+const app = new TezX({
+});
 // app.use(logger())
 app.static({
   files: [
@@ -11,17 +13,8 @@ app.static({
   ]
 });
 
-app.get("/users/:fds", paginationHandler({
-  getDataSource: async (ctx) => {
-    return {
-      data: [],
-      total: 0
-    } as any
-  }
-}));
-
-app.get("/", async (ctx) => {
-  return ctx.json({})
+app.get("/", async (req, res) => {
+  res.json("sfsfsfsdf");
   // If cspUseNonce is enabled, nonce is available in ctx.cspNonce
   // return ctx.sendFile('./public/Benchmarking_Tezx_Bun_Node_Performance.mp4')
 });
@@ -117,6 +110,12 @@ app.get("/fallback/*", (ctx) =>
 );
 
 const PORT = 3002;
+createServer({}, async (req, res) => {
+  return app.serve(req, res);
+}).listen(3000)
+// nodeAdapter(app).listen(3000, () => {
+//   console.log("🚀 TezX Benchmark Server running on http://localhost:3000");
+// });
 // Bun.serve({
 //   port: PORT,
 //   reusePort: true, // enables SO_REUSEPORT for clustering
@@ -125,5 +124,4 @@ const PORT = 3002;
 //   },
 // });
 
-console.log(`🚀 Server running at http://localhost:${PORT}`);
 
