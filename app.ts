@@ -50,16 +50,14 @@ app.get("/*", (ctx) => {
 });
 
 // OPTIONAL / SKIPPED (if router supports optional expansion, can add :id? etc)
-app.get("/optional/:id?", (ctx) =>
-  ctx.json({ msg: "optional", params: ctx.req.params }),
+app.get("/optional/:id?", (req, res) =>
+  res.json({ msg: "optional", params: req.params }),
 );
 // app.use("/optional/:id?", mw("mw:/optional/:id?"));
 
-// POST HANDLERS
-app.post("/user/:id", (ctx) =>
-  ctx.json({ msg: "user-post", params: ctx.req.params }),
-);
+
 app.post("/post/:postId", async (ctx) => {
+
   console.log(new TextDecoder('utf-8').decode(await ((await ctx.req.formData()).get('test') as File).arrayBuffer()))
   return ctx.json({ msg: "post-post", params: ctx.req.params })
 });

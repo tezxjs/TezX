@@ -207,6 +207,10 @@ export class RadixRouter implements RouteRegistry {
     }
     return { success: false, node };
   }
+  handleRequest(method: HTTPMethod, pathname: string, req: Request, res: Response): string {
+    res.write('tesf');
+    res.end();
+  }
   /**
    * Parses a route pattern into structured segments.
    *

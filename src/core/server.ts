@@ -1,5 +1,6 @@
 //src/core/server.ts
 import { RadixRouter } from "../registry/RadixRouter.js";
+
 import {
   Callback,
   Ctx,
@@ -9,11 +10,12 @@ import {
   Middleware,
   RouteRegistry
 } from "../types/index.js";
+import { Request } from "../types/request.js";
+import { Response } from "../types/response.js";
 
 import { handleErrorResponse, notFoundResponse } from "../utils/response.js";
-import { getPathname } from "../utils/url.js";
-import { Request } from "./req.js";
-import { Response } from "./response.js";
+import { getPathname, url2query } from "../utils/url.js";
+
 import { Router, RouterConfig } from "./router.js";
 
 export type TezXConfig = {
@@ -128,7 +130,7 @@ export class TezX<T extends Record<string, any> = {}> extends Router<T> {
     const pathname = getPathname(req.url);
     const staticHandler = this.staticFile?.[`${method} ${pathname}`];
     // if (staticHandler) return staticHandler(ctx);
-    return this.router?.handleRequest(method, pathname, req, {});
+    // return this.router?.handleRequest(method, pathname, req, {});
 
     // const ctx = new Context(req, pathname, method, server) as Ctx<T>;
     // try {
@@ -186,7 +188,11 @@ export class TezX<T extends Record<string, any> = {}> extends Router<T> {
    */
   public async serve(req: Request, res: Response): Promise<Response> {
     const method = req.method as HTTPMethod;
+    // request 
+    req.query = url2query(req.url);
+
     // if (method === "HEAD") {
+
     //   const res = await this.#handleRequest(req, "GET", server);
     //   return new Response(null, {
     //     status: res.status,
@@ -194,9 +200,10 @@ export class TezX<T extends Record<string, any> = {}> extends Router<T> {
     //     headers: res.headers,
     //   });
     // }
+
     const pathname = getPathname(req.url ?? "/");
-    const staticHandler = this.staticFile?.[`${method} ${pathname}`];
-    // if (staticHandler) return staticHandler(ctx);
+    // const staticHandler = this.staticFile?.[`${method} ${pathname}`];
+    // // if (staticHandler) return staticHandler(ctx);
     return this.router?.handleRequest(method, pathname, req, res);
   }
 }
