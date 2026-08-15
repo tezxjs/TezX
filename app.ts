@@ -1,15 +1,17 @@
+import serveStatic from "./src/static/index.js";
 import { Router, TezX } from "./src/index.js";
 import { logger, paginationHandler } from "./src/middleware"
 const app = new TezX({});
 // app.use(logger())
-app.static({
-  files: [
-    {
-      fileSource: "./public/logo.png",
-      route: "/test.jpg"
-    }
-  ]
-});
+// app.static({
+//   files: [
+//     {
+//       fileSource: "./public/logo.png",
+//       route: "/test.jpg"
+//     }
+//   ]
+// });
+app.static(serveStatic('/', './node_modules'))
 
 app.get("/users/:fds", paginationHandler({
   getDataSource: async (ctx) => {
@@ -28,6 +30,7 @@ app.get("/", async (ctx) => {
 
 // Suppose each item is { id: number; name: string }
 const router = new Router();
+router.static(serveStatic('/', './node_modules'))
 router.get("/router", (ctx) => {
   return ctx.json({ router: true });
 });
@@ -117,13 +120,13 @@ app.get("/fallback/*", (ctx) =>
 );
 
 const PORT = 3002;
-// Bun.serve({
-//   port: PORT,
-//   reusePort: true, // enables SO_REUSEPORT for clustering
-//   fetch: (req, server) => {
-//     return app.serve(req, server)
-//   },
-// });
+Bun.serve({
+  port: PORT,
+  reusePort: true, // enables SO_REUSEPORT for clustering
+  fetch: (req, server) => {
+    return app.serve(req, server)
+  },
+});
 
 console.log(`🚀 Server running at http://localhost:${PORT}`);
 

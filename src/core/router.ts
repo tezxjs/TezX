@@ -46,7 +46,7 @@ export class Router<T extends Record<string, any> = {}> {
   }[] = [];
 
   /** Static file routes mapping */
-  protected staticFile: Record<string, Callback<any>> = Object.create(null);
+  protected staticFile: Map<string, Callback<any, any>> = new Map();
 
   /** Base path prefix for all routes */
   protected basePath: string;
@@ -99,19 +99,19 @@ export class Router<T extends Record<string, any> = {}> {
       const disabled = serveStatic?.options?.disableEtag;
       if (disabled) {
         serveStatic?.files.forEach((s) => {
-          this.staticFile[`GET ${s?.route}`] = async (ctx: Context) => {
+          this.staticFile.set(`GET ${s?.route}`, async (ctx: Context) => {
             if (serveStatic?.options?.cacheControl) {
               ctx.setHeader("Cache-Control", serveStatic?.options.cacheControl);
             }
             return ctx.sendFile(s.fileSource, {
               headers: serveStatic?.options?.headers,
             });
-          };
+          });
         });
       }
       else {
         serveStatic?.files.forEach((s) => {
-          this.staticFile[`GET ${s?.route}`] = async (ctx: Context) => {
+          this.staticFile.set(`GET ${s?.route}`, async (ctx: Context) => {
             if (serveStatic?.options?.cacheControl) {
               ctx.setHeader("Cache-Control", serveStatic?.options.cacheControl);
             }
@@ -126,11 +126,10 @@ export class Router<T extends Record<string, any> = {}> {
                 headers: { "ETag": etagVal },
               });
             }
-
             return ctx.sendFile(s.fileSource, {
               headers: serveStatic?.options?.headers,
             });
-          };
+          });
         });
       }
     }
@@ -584,6 +583,10 @@ export class Router<T extends Record<string, any> = {}> {
     router.routes.forEach((r) => {
       this.#addRoute(r?.method, `/${sanitizePathSplitBasePath(path, r?.pattern).join("/")}`, r?.handlers);
     });
-    Object.assign(this.staticFile, router.staticFile);
+
+    for (const [key, value] of router.staticFile) {
+      console.log(key)
+      this.staticFile.set(key, value);
+    }
   }
 }

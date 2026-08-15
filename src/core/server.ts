@@ -131,7 +131,7 @@ export class TezX<T extends Record<string, any> = {}> extends Router<T> {
       // ------------------------
       // Static file shortcut
       // ------------------------
-      const staticHandler = this.staticFile?.[`${method} ${pathname}`];
+      const staticHandler = this.staticFile.get(`${method} ${pathname}`);
       if (staticHandler) return staticHandler(ctx);
       // ------------------------
       // Route lookup
